@@ -14,7 +14,8 @@ Example:
 """
 
 from itertools import combinations
-from typing import List, Optional
+from operator import itemgetter
+from typing import List, Optional, Tuple
 
 
 class Solution:
@@ -69,3 +70,37 @@ class Solution2:
                for i, num in enumerate(nums)
                if num in needs and i != needs[num])
         return next(gen, None)
+
+
+class Solution3:
+    """核心方法 - 对撞指针.
+
+    对撞指针的想法源自于数组排序只需要 O(logN), 而最基本的解法需要 O(N^2), 因而进一步的思考有序数组
+    的解法. 在对撞指针中, 发现每一次指针的移动, 都等价于抛弃了一个元素 (具体看下例). 对撞指针的关键在
+    于当指针移动后, 当前元素将再也无法被选中, 因此要确保当前元素已经失去了价值.
+
+    例如:
+        数组为: [0, 3, 15, 26, 78, 99], 假设找 100. 将左右指针分别指向 0 和 99.
+
+        因为 0 + 99 < 100, 所以 0 + 其他小于 99 的数都必定 < 100, 因此 0 没用了, 左指针向右移动.
+        因为 3 + 99 > 100, 所以 其他大于 3 的数 + 99 都必定 > 100, 因此 99 没用了, 右指针向左移动.
+        因为 3 + 78 < 100, 类推, 因此 3 没用了, 左指针向右移动.
+        因为 15 + 78 < 100, 类推, 因此 15 没用了, 左指针向右移动.
+        因为 26 + 78 != 100, 所以本题无解.
+    """
+
+    @staticmethod
+    def twoSum(nums: List[int], target: int) -> Optional[List[int]]:
+        # 使用 `enumerate` 保留原本的索引信息.
+        # `nums` 使用类型的原因是 Pycharm 迷之识别不了 `enumerate` 的类型 ...
+        nums: List[Tuple[int, int]] = list(enumerate(nums))
+        nums.sort(key=itemgetter(1))
+        l, r = 0, len(nums) - 1
+        while l < r:
+            total = nums[l][1] + nums[r][1]
+            if total == target:
+                return [nums[l][0], nums[r][0]]
+            elif total < target:
+                l += 1
+            else:
+                r -= 1
