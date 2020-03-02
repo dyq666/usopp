@@ -3,6 +3,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
 int _compare_int(const void *a, const void *b);
 
@@ -35,10 +36,7 @@ int* twoSum2(const int* nums, int numsSize, int target, int* returnSize) {
     int sum, new_nums[numsSize];
     int l = 0, r = numsSize - 1, *res = malloc(SIZE * sizeof(int));
 
-    // 不修改原有的 `nums`.
-    for (int i = 0; i < numsSize; i ++) {
-        new_nums[i] = nums[i];
-    }
+    memcpy(new_nums, nums, numsSize * sizeof(int));
 
     // TODO 这里需要想办法让 `nums` 的索引参与排序中, 可能需要 struct.
     qsort(new_nums, numsSize, sizeof(int), _compare_int);
