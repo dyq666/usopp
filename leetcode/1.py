@@ -32,7 +32,7 @@ class Solution:
         # 此外, 虽然可以自己写两个 for 循环代替 `combinations`, 但第一不能很好的表达
         # 这是一个组合问题, 第二经 LeetCode 测试, `combinations` 的速度比自己写 for 循环
         # 快很多, 因此可以无视 `nums.index` 消耗的时间.
-        gen = ([index_one := nums.index(one), nums.index(two, index_one + 1)]
+        gen = ([index1 := nums.index(one), nums.index(two, index1 + 1)]
                for one, two in combinations(nums, 2)
                if one + two == target)
         return next(gen, None)
