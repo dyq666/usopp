@@ -33,8 +33,12 @@ int* twoSum(const int nums[], int numsSize, int target, int *returnSize) {
 int* twoSum2(const int nums[], int numsSize, int target, int *returnSize) {
     /* 核心方法 - 对撞指针. */
     const int SIZE = 2;
-    int sum, new_nums[numsSize];
+    int new_nums[numsSize];
     int l = 0, r = numsSize - 1, *res = malloc(SIZE * sizeof(int));
+
+    if (res == NULL) {
+        exit(EXIT_FAILURE);
+    }
 
     memcpy(new_nums, nums, numsSize * sizeof(int));
 
@@ -42,23 +46,23 @@ int* twoSum2(const int nums[], int numsSize, int target, int *returnSize) {
     qsort(new_nums, numsSize, sizeof(int), _compare_int);
 
     while (l < r) {
-        sum = new_nums[l] + new_nums[r];
-        if (sum == target) {
+        int value_l = new_nums[l], value_r = new_nums[r];
+        if (value_l + value_r == target) {
             // 初始化 res, -1 作为默认值, 用于判断当前位置是否被修改过.
             for (int i = 0; i < SIZE; i ++) {
                 res[i] = -1;
             }
-            // res 的每个位置只能被修改一次, 用找到的值去 `nums` 中找到原始的索引.
+            // 去 `nums` 中找原始的索引.
             for (int i = 0; i < numsSize; i ++) {
-                if (res[0] == -1 && nums[i] == new_nums[l]) {
+                if (res[0] == -1 && nums[i] == value_l) {
                     res[0] = i;
-                } else if (res[1] == - 1 && nums[i] == new_nums[r]) {
+                } else if (res[1] == - 1 && nums[i] == value_r) {
                     res[1] = i;
                 }
             }
             *returnSize = SIZE;
             return res;
-        } else if (sum < target) {
+        } else if (value_l + value_r < target) {
             l ++;
         } else {
             r --;
