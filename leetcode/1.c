@@ -7,7 +7,7 @@
 
 int _compare_int(const void *a, const void *b);
 
-int* twoSum(const int* nums, int numsSize, int target, int* returnSize) {
+int* twoSum(const int nums[], int numsSize, int target, int *returnSize) {
     /* 核心方法 - Combination. */
     const int SIZE = 2;
     int *res = malloc(SIZE * sizeof(int));
@@ -30,7 +30,7 @@ int* twoSum(const int* nums, int numsSize, int target, int* returnSize) {
     return res;
 }
 
-int* twoSum2(const int* nums, int numsSize, int target, int* returnSize) {
+int* twoSum2(const int nums[], int numsSize, int target, int *returnSize) {
     /* 核心方法 - 对撞指针. */
     const int SIZE = 2;
     int sum, new_nums[numsSize];
