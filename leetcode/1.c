@@ -3,9 +3,13 @@
  */
 
 #include <stdlib.h>
-#include <string.h>
 
-int _compare_int(const void *a, const void *b);
+struct IndexArray {
+    int index;
+    int value;
+};
+
+int _compare(const void *a, const void *b);
 
 int* twoSum(const int nums[], int numsSize, int target, int *returnSize) {
     /* 核心方法 - Combination. */
@@ -33,37 +37,26 @@ int* twoSum(const int nums[], int numsSize, int target, int *returnSize) {
 int* twoSum2(const int nums[], int numsSize, int target, int *returnSize) {
     /* 核心方法 - 对撞指针. */
     const int SIZE = 2;
-    int new_nums[numsSize];
+    struct IndexArray array[numsSize];
     int l = 0, r = numsSize - 1, *res = (int *) malloc(SIZE * sizeof(int));
 
     if (res == NULL) {
         exit(EXIT_FAILURE);
     }
 
-    memcpy(new_nums, nums, numsSize * sizeof(int));
-
-    // TODO 这里需要想办法让 `nums` 的索引参与排序中, 可能需要 struct.
-    qsort(new_nums, numsSize, sizeof(int), _compare_int);
+    for (int i = 0; i < numsSize; i ++) {
+        array[i].index = i;
+        array[i].value = nums[i];
+    }
+    qsort(array, numsSize, sizeof(struct IndexArray), _compare);
 
     while (l < r) {
-        int value_l = new_nums[l], value_r = new_nums[r];
-        if (value_l + value_r == target) {
-            // 根据值去原始数组中寻找索引.
-            for (int i = 0; i < numsSize; i ++) {
-                if (nums[i] == value_l) {
-                    res[0] = i;
-                    break;
-                }
-            }
-            for (int i = 0; i < numsSize; i ++) {
-                if (i != res[0] && nums[i] == value_r) {
-                    res[1] = i;
-                    break;
-                }
-            }
+        if (array[l].value + array[r].value == target) {
+            res[0] = array[l].index;
+            res[1] = array[r].index;
             *returnSize = SIZE;
             return res;
-        } else if (value_l + value_r < target) {
+        } else if (array[l].value + array[r].value < target) {
             l ++;
         } else {
             r --;
@@ -73,14 +66,14 @@ int* twoSum2(const int nums[], int numsSize, int target, int *returnSize) {
     return res;
 }
 
-int _compare_int(const void *a, const void *b) {
+int _compare(const void *a, const void *b) {
     /* copy from https://devdocs.io/c/algorithm/qsort */
-    int value_a = *((const int *) a);
-    int value_b = *((const int *) b);
+    struct IndexArray aa = *((const struct IndexArray *) a);
+    struct IndexArray bb = *((const struct IndexArray *) b);
 
-    if (value_a < value_b) {
+    if (aa.value < bb.value) {
         return -1;
-    } else if (value_a > value_b) {
+    } else if (aa.value > bb.value) {
         return 1;
     }
     return 0;
