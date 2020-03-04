@@ -27,14 +27,11 @@ class Solution:
 
     @staticmethod
     def twoSum(nums: List[int], target: int) -> Optional[List[int]]:
-        # 由于 `combinations` 只能返回值, 所以必需反向找索引, 找索引时需注意存在两个值相等
-        # 的情况 (因而第二索引必须从第一个索引后面开始找).
-        # 此外, 虽然可以自己写两个 for 循环代替 `combinations`, 但第一不能很好的表达
-        # 这是一个组合问题, 第二经 LeetCode 测试, `combinations` 的速度比自己写 for 循环
-        # 快很多, 因此可以无视 `nums.index` 消耗的时间.
-        gen = ([index1 := nums.index(one), nums.index(two, index1 + 1)]
-               for one, two in combinations(nums, 2)
-               if one + two == target)
+        # 由于 `combinations` 只能返回值, 所以用 `enumerate` 将索引信息保存下来.
+        # 此外, 虽然可以自己写两个 for 循环代替 `combinations`,
+        # 但 `combinations` 可以很直观的表达这是一个组合问题.
+        gen = ([a[0], b[0]] for a, b in combinations(enumerate(nums), 2)
+               if a[1] + b[1] == target)
         return next(gen, None)
 
 
