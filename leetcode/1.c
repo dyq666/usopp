@@ -48,16 +48,17 @@ int* twoSum2(const int nums[], int numsSize, int target, int *returnSize) {
     while (l < r) {
         int value_l = new_nums[l], value_r = new_nums[r];
         if (value_l + value_r == target) {
-            // 初始化 res, -1 作为默认值, 用于判断当前位置是否被修改过.
-            for (int i = 0; i < SIZE; i ++) {
-                res[i] = -1;
-            }
-            // 去 `nums` 中找原始的索引.
+            // 根据值去原始数组中寻找索引.
             for (int i = 0; i < numsSize; i ++) {
-                if (res[0] == -1 && nums[i] == value_l) {
+                if (nums[i] == value_l) {
                     res[0] = i;
-                } else if (res[1] == - 1 && nums[i] == value_r) {
+                    break;
+                }
+            }
+            for (int i = 0; i < numsSize; i ++) {
+                if (i != res[0] && nums[i] == value_r) {
                     res[1] = i;
+                    break;
                 }
             }
             *returnSize = SIZE;
