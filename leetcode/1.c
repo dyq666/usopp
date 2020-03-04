@@ -11,7 +11,8 @@ struct IndexArray {
 
 int _compare(const void *a, const void *b);
 
-int* twoSum(const int nums[], int numsSize, int target, int *returnSize) {
+int* twoSum(const int nums[], const int numsSize,
+            const int target, int * const returnSize) {
     /* 核心方法 - Combination. */
     const int SIZE = 2;
     int *res = (int *) malloc(SIZE * sizeof(int));
@@ -34,7 +35,8 @@ int* twoSum(const int nums[], int numsSize, int target, int *returnSize) {
     return res;
 }
 
-int* twoSum2(const int nums[], int numsSize, int target, int *returnSize) {
+int* twoSum2(const int nums[], const int numsSize,
+             const int target, int * const returnSize) {
     /* 核心方法 - 对撞指针. */
     const int SIZE = 2;
     struct IndexArray array[numsSize];
@@ -67,9 +69,8 @@ int* twoSum2(const int nums[], int numsSize, int target, int *returnSize) {
 }
 
 int _compare(const void *a, const void *b) {
-    /* copy from https://devdocs.io/c/algorithm/qsort */
-    struct IndexArray aa = *((const struct IndexArray *) a);
-    struct IndexArray bb = *((const struct IndexArray *) b);
+    const struct IndexArray aa = *((const struct IndexArray *) a);
+    const struct IndexArray bb = *((const struct IndexArray *) b);
 
     if (aa.value < bb.value) {
         return -1;
