@@ -4,10 +4,10 @@
 
 #include <stdlib.h>
 
-struct IndexArray {
+typedef struct {
     int index;
     int value;
-};
+} IndexArray;
 
 int _compare(const void *a, const void *b);
 
@@ -39,7 +39,7 @@ int* twoSum2(const int nums[], const int numsSize,
              const int target, int * const returnSize) {
     /* 核心方法 - 对撞指针. */
     const int SIZE = 2;
-    struct IndexArray array[numsSize];
+    IndexArray array[numsSize];
     int l = 0, r = numsSize - 1, *res = (int *) malloc(SIZE * sizeof(int));
 
     if (res == NULL) {
@@ -47,9 +47,9 @@ int* twoSum2(const int nums[], const int numsSize,
     }
 
     for (int i = 0; i < numsSize; i ++) {
-        array[i] = (struct IndexArray) {.index = i, .value = nums[i]};
+        array[i] = (IndexArray) {.index = i, .value = nums[i]};
     }
-    qsort(array, numsSize, sizeof(struct IndexArray), _compare);
+    qsort(array, numsSize, sizeof(IndexArray), _compare);
 
     while (l < r) {
         if (array[l].value + array[r].value == target) {
@@ -68,8 +68,8 @@ int* twoSum2(const int nums[], const int numsSize,
 }
 
 int _compare(const void *a, const void *b) {
-    const struct IndexArray aa = *((const struct IndexArray *) a);
-    const struct IndexArray bb = *((const struct IndexArray *) b);
+    const IndexArray aa = *((const IndexArray *) a);
+    const IndexArray bb = *((const IndexArray *) b);
 
     if (aa.value < bb.value) {
         return -1;
