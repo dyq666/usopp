@@ -47,8 +47,7 @@ int* twoSum2(const int nums[], const int numsSize,
     }
 
     for (int i = 0; i < numsSize; i ++) {
-        array[i].index = i;
-        array[i].value = nums[i];
+        array[i] = (struct IndexArray) {.index = i, .value = nums[i]};
     }
     qsort(array, numsSize, sizeof(struct IndexArray), _compare);
 
