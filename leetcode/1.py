@@ -90,8 +90,7 @@ class Solution3:
     def twoSum(nums: List[int], target: int) -> Optional[List[int]]:
         # 使用 `enumerate` 保留原本的索引信息.
         # `nums` 使用类型的原因是 Pycharm 迷之识别不了 `enumerate` 的类型 ...
-        nums: List[Tuple[int, int]] = list(enumerate(nums))
-        nums.sort(key=itemgetter(1))
+        nums: List[Tuple[int, int]] = sorted(enumerate(nums), key=itemgetter)
         l, r = 0, len(nums) - 1
         while l < r:
             total = nums[l][1] + nums[r][1]
