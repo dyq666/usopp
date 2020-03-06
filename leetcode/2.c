@@ -12,7 +12,6 @@ ListNode * addTwoNumbers(ListNode *l1, ListNode *l2) {
     主链表 (`dummy`) 的停止条件: `l1` 和 `l2` 都走到头, 且没有进位.
     */
     int v1, v2, total;
-    ListNode *temp;
 
     bool has_carry = false;  // 是否有进位.
     ListNode dummy = (ListNode) {.val = -1, .next = NULL};
@@ -28,17 +27,15 @@ ListNode * addTwoNumbers(ListNode *l1, ListNode *l2) {
         total = v1 + v2 + has_carry;
         has_carry = total >= 10;
 
-        temp = malloc(sizeof(ListNode));
-        *temp = (ListNode) {.val = total % 10, .next = NULL};
-        needle -> next = temp;
+        needle -> next = malloc(sizeof(ListNode));
+        *(needle -> next) = (ListNode) {.val = total % 10, .next = NULL};
         needle = needle -> next;
     }
 
     // 当两个链表都走到头时, 依然可能有进位需要处理.
     if (has_carry) {
-        temp = malloc(sizeof(ListNode));
-        *temp = (ListNode) {.val = 1, .next = NULL};
-        needle -> next = temp;
+        needle -> next = malloc(sizeof(ListNode));
+        *(needle -> next) = (ListNode) {.val = 1, .next = NULL};
     }
 
     return dummy.next;
