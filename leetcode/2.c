@@ -7,13 +7,14 @@ typedef struct ListNode {
 } ListNode;
 
 ListNode * addTwoNumbers(ListNode *l1, ListNode *l2) {
-   /* 核心方法 - 链表.
+    /* 核心方法 - 链表.
+
     主链表 (`dummy`) 的停止条件: `l1` 和 `l2` 都走到头, 且没有进位.
     */
     int v1, v2, total;
     ListNode *temp;
 
-    bool has_carry = false;  // 是否进位.
+    bool has_carry = false;  // 是否有进位.
     ListNode dummy = (ListNode) {.val = -1, .next = NULL};
     ListNode *needle = &dummy;
 
@@ -33,6 +34,7 @@ ListNode * addTwoNumbers(ListNode *l1, ListNode *l2) {
         needle = needle -> next;
     }
 
+    // 当两个链表都走到头时, 依然可能有进位需要处理.
     if (has_carry) {
         temp = malloc(sizeof(ListNode));
         *temp = (ListNode) {.val = 1, .next = NULL};
