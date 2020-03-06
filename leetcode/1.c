@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 
-typedef struct {
+typedef struct IndexArray {
     int index;
     int value;
 } IndexArray;
