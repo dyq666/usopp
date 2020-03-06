@@ -39,8 +39,9 @@ int* twoSum2(const int nums[], const int numsSize,
              const int target, int * const returnSize) {
     /* 核心方法 - 对撞指针. */
     const int SIZE = 2;
+    int l = 0, r = numsSize - 1;
+    int *res = malloc(SIZE * sizeof(int));
     IndexArray array[numsSize];
-    int l = 0, r = numsSize - 1, *res = malloc(SIZE * sizeof(int));
 
     if (res == NULL) {
         exit(EXIT_FAILURE);
