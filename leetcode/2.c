@@ -17,7 +17,7 @@ ListNode * addTwoNumbers(ListNode *l1, ListNode *l2) {
     ListNode dummy = (ListNode) {.val = -1, .next = NULL};
     ListNode *needle = &dummy;
 
-    while (l1 != NULL || l2 != NULL) {
+    while (l1 || l2 || has_carry) {
         v1 = l1 == NULL ? 0 : l1 -> val;
         v2 = l2 == NULL ? 0 : l2 -> val;
         // TODO 为什么不能用 `l1 = l1 && l1 -> next;` ?
@@ -30,12 +30,6 @@ ListNode * addTwoNumbers(ListNode *l1, ListNode *l2) {
         needle -> next = malloc(sizeof(ListNode));
         *(needle -> next) = (ListNode) {.val = total % 10, .next = NULL};
         needle = needle -> next;
-    }
-
-    // 当两个链表都走到头时, 依然可能有进位需要处理.
-    if (has_carry) {
-        needle -> next = malloc(sizeof(ListNode));
-        *(needle -> next) = (ListNode) {.val = 1, .next = NULL};
     }
 
     return dummy.next;
