@@ -20,7 +20,6 @@ ListNode * addTwoNumbers(ListNode *l1, ListNode *l2) {
     while (l1 || l2 || has_carry) {
         v1 = l1 == NULL ? 0 : l1 -> val;
         v2 = l2 == NULL ? 0 : l2 -> val;
-        // TODO 为什么不能用 `l1 = l1 && l1 -> next;` ?
         l1 = l1 == NULL ? l1 : l1 -> next;
         l2 = l2 == NULL ? l2 : l2 -> next;
 
