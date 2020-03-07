@@ -9,13 +9,13 @@ class ListNode:
 
 
 class Solution:
+    """核心方法 - 链表.
+
+    主链表 (`dummy`) 的停止条件: `l1` 和 `l2` 都走到头, 且没有进位.
+    """
 
     @staticmethod
     def addTwoNumbers(l1: ListNode, l2: ListNode) -> Optional[ListNode]:
-        """核心方法 - 链表.
-
-        主链表 (`dummy`) 的停止条件: `l1` 和 `l2` 都走到头, 且没有进位.
-        """
         has_carry = False  # 是否有进位
         dummy = ListNode(None)
         needle = dummy
