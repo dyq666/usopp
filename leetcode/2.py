@@ -21,12 +21,12 @@ class Solution:
         needle = dummy
 
         while l1 or l2 or has_carry:
-            v1 = 0 if l1 is None else l1.val
-            v2 = 0 if l2 is None else l2.val
+            v1 = l1.val if l1 else 0
+            v2 = l2.val if l2 else 0
             l1 = l1 and l1.next
             l2 = l2 and l2.next
 
-            total = v1 + v2 + int(has_carry)
+            total = v1 + v2 + has_carry
             has_carry = total >= 10
             needle.next = ListNode(total % 10)
             needle = needle.next
