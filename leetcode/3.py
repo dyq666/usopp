@@ -13,7 +13,12 @@ class Solution:
 
     滑动窗口时间复杂度为 O(N), 实际上就是 l 和 r 分别执行了一次遍历.
 
+    对于本题来说, 当下一个元素 (即, s[r]) 在窗口内则左移, 否则右移.
+
     此外, 对于本题来说求得是最大的窗口长度, 因此只需使 r 到达 len 即可. (lengthOfLongestSubstring2)
+
+    lengthOfLongestSubstring3 做了一小步优化, 当下一个元素在窗口内时, 直接找到 l 下一步的位置, 而不是
+    一步一步的向前移动.
     """
 
     @staticmethod
@@ -46,6 +51,24 @@ class Solution:
             else:
                 chars.remove(s[l])
                 l += 1
+        return max_len
+
+    @staticmethod
+    def lengthOfLongestSubstring3(s: str) -> int:
+        chars = set()
+        max_len = 0
+        l, r = 0, 0
+
+        while r < len(s):
+            if s[r] not in chars:
+                chars.add(s[r])
+                r += 1
+                max_len = max(max_len, r - l)
+            else:
+                next_index = s.index(s[r], l) + 1
+                for c in s[l: next_index]:
+                    chars.remove(c)
+                l = next_index
         return max_len
 
 
