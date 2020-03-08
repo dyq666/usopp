@@ -2,6 +2,23 @@ from itertools import combinations_with_replacement
 
 
 class Solution:
+    """核心方法 - 组合.
+
+    子串实际上等于两个索引之间的字符串, 因此求所有子串就是求所有索引对.
+    而索引对之间排列是等价的, 因而这个问题变成了一个组合问题.
+
+    此外时间复杂度是 O(N^3), len(str_) == len(set(str_)) 也是很耗时的.
+    具体计算方法参考: https://leetcode.com/articles/longest-substring-without-repeating-characters/
+    """
+
+    @staticmethod
+    def lengthOfLongestSubstring(s: str) -> int:
+        sub_strs = (s[i:j + 1] for i, j in combinations_with_replacement(range(len(s)), 2))
+        max_length = (len(set(str_)) for str_ in sub_strs if len(str_) == len(set(str_)))
+        return max(max_length, default=0)
+
+
+class Solution2:
     """核心方法 - 滑动窗口.
 
     这里提供一种通用的滑动窗口解法:
@@ -70,20 +87,3 @@ class Solution:
                     chars.remove(c)
                 l = next_index
         return max_len
-
-
-class Solution2:
-    """核心方法 - 组合.
-
-    子串实际上等于两个索引之间的字符串, 因此求所有子串就是求所有索引对.
-    而索引对之间排列是等价的, 因而这个问题变成了一个组合问题.
-
-    此外时间复杂度是 O(N^3), len(str_) == len(set(str_)) 也是很耗时的.
-    具体计算方法参考: https://leetcode.com/articles/longest-substring-without-repeating-characters/
-    """
-
-    @staticmethod
-    def lengthOfLongestSubstring(s: str) -> int:
-        sub_strs = (s[i:j + 1] for i, j in combinations_with_replacement(range(len(s)), 2))
-        max_length = (len(set(str_)) for str_ in sub_strs if len(str_) == len(set(str_)))
-        return max(max_length, default=0)
