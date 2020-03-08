@@ -15,7 +15,8 @@ class Solution:
         # 由于 `combinations` 只能返回值, 所以用 `enumerate` 将索引信息保存下来.
         # 此外, 虽然可以自己写两个 for 循环代替 `combinations`,
         # 但 `combinations` 可以很直观的表达这是一个组合问题.
-        gen = ([a[0], b[0]] for a, b in combinations(enumerate(nums), 2)
+        gen = ([a[0], b[0]]
+               for a, b in combinations(enumerate(nums), 2)
                if a[1] + b[1] == target)
         return next(gen, None)
 

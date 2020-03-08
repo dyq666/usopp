@@ -2,7 +2,7 @@ from itertools import combinations_with_replacement
 
 
 class Solution:
-    """核心方法 - 组合.
+    """核心方法 - Combination.
 
     子串实际上等于两个索引之间的字符串, 因此求所有子串就是求所有索引对.
     而索引对之间排列是等价的, 因而这个问题变成了一个组合问题.

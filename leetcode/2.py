@@ -9,7 +9,7 @@ class ListNode:
 
 
 class Solution:
-    """核心方法 - 链表.
+    """核心方法 - LinkedList.
 
     主链表 (`dummy`) 的停止条件: `l1` 和 `l2` 都走到头, 且没有进位.
     """
@@ -20,11 +20,11 @@ class Solution:
         dummy = ListNode(None)
         needle = dummy
 
-        while l1 or l2 or has_carry:
-            v1 = l1.val if l1 else 0
-            v2 = l2.val if l2 else 0
-            l1 = l1 and l1.next
-            l2 = l2 and l2.next
+        while l1 is not None or l2 is not None or has_carry:
+            v1 = l1.val if l1 is not None else 0
+            v2 = l2.val if l2 is not None else 0
+            l1 = l1.next if l1 is not None else None
+            l2 = l2.next if l2 is not None else None
 
             total = v1 + v2 + has_carry
             has_carry = total >= 10
