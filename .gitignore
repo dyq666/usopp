@@ -13,3 +13,5 @@ venv/
 
 # c
 *.o
+# temporary file for learning c syntax, it will be removed in the future.
+learn.c
