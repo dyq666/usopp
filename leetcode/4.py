@@ -33,18 +33,14 @@ class Solution2:
 
     @staticmethod
     def findMedianSortedArrays(nums1: List[int], nums2: List[int]) -> float:
-        # 确保 nums1[0], nums2[0] 都是合法的.
         len_ = len(nums1) + len(nums2)
         if len_ == 0:
             return 0.0
-        elif len_ == 1:
-            return nums1[0] if nums1 else nums2[0]
 
-        target = len_ // 2
         i1, i2 = 0, 0
         pre, cur = 0, 0
 
-        while i1 + i2 != target:
+        while i1 + i2 != len_ // 2:
             v1 = nums1[i1] if i1 < len(nums1) else float('inf')
             v2 = nums2[i2] if i2 < len(nums2) else float('inf')
             pre = min(v1, v2)
