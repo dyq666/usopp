@@ -11,7 +11,7 @@ int * twoSum(const int nums[], const int numsSize,
              const int target, int * const returnSize) {
     /* 核心方法 - Combination. */
     const int SIZE = 2;
-    int *res = malloc(SIZE * sizeof(int));
+    int * const res = malloc(SIZE * sizeof(int));
 
     for (int i = 0; i < numsSize; i ++) {
         for (int j = i + 1; j < numsSize; j ++) {
@@ -31,7 +31,7 @@ int * twoSum2(const int nums[], const int numsSize,
     /* 核心方法 - 对撞指针. */
     const int SIZE = 2;
     int l = 0, r = numsSize - 1;
-    int *res = malloc(SIZE * sizeof(int));
+    int * const res = malloc(SIZE * sizeof(int));
     IndexArray array[numsSize];
 
     for (int i = 0; i < numsSize; i ++) {

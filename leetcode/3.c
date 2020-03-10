@@ -1,6 +1,6 @@
 #include <iso646.h>
 
-int lengthOfLongestSubstring(char *s) {
+int lengthOfLongestSubstring(const char *s) {
     /* 核心方法 - Hash.
 
     这里默认了 `s` 中只有 0-127 的 ASCII code, 因此可以使用 128 长度的
@@ -9,7 +9,7 @@ int lengthOfLongestSubstring(char *s) {
     */
     int chars[128] = {0};
     int max_len = 0;
-    char *l = s, *r = s;
+    const char *l = s, *r = s;
 
     while (*l != '\0') {
         if (*r != '\0' and chars[*r] == 0) {
