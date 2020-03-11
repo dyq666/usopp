@@ -30,35 +30,3 @@ double findMedianSortedArrays(const int *nums1, const int nums1Size,
         return (nums[SIZE / 2 - 1] + nums[SIZE / 2]) / 2.0;
     }
 }
-
-double findMedianSortedArrays2(const int *nums1, const int nums1Size,
-                               const int *nums2, const int nums2Size) {
-    /* 核心方法 - 有序数组.
-
-    直接找中位数.
-    */
-    const int SIZE = nums1Size + nums2Size;
-    int v1, v2;
-    int pre = 0, cur = 0;
-    int idx1 = 0, idx2 = 0;
-
-    while (idx1 + idx2 != SIZE / 2) {
-        v1 = idx1 < nums1Size ? nums1[idx1] : INT_MAX;
-        v2 = idx2 < nums2Size ? nums2[idx2] : INT_MAX;
-        pre = v1 < v2 ? v1 : v2;
-        if (v1 < v2) {
-            idx1 ++;
-        } else {
-            idx2 ++;
-        }
-    }
-
-    v1 = idx1 < nums1Size ? nums1[idx1] : INT_MAX;
-    v2 = idx2 < nums2Size ? nums2[idx2] : INT_MAX;
-    cur = v1 < v2 ? v1 : v2;
-    if ((SIZE & 1) == 1) {
-        return (double) cur;
-    } else {
-        return (pre + cur) / 2.0;
-    }
-}

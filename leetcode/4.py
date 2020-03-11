@@ -8,11 +8,13 @@ class Solution:
 
     时间复杂度: O(N)
 
-    先合并两个有序数组, 在找中位数.
+    `findMedianSortedArrays` 先合并两个有序数组, 在找中位数.
+    `findMedianSortedArrays2` 直接找中位数.
     """
 
     @staticmethod
     def findMedianSortedArrays(nums1: List[int], nums2: List[int]) -> float:
+        # 不要使用 `statistics.median` 代替下面的步骤, `median` 中使用了 `sorted`.
         nums = list(merge_sorted_list(nums1, nums2))
         len_ = len(nums)
         if len_ == 0:
@@ -22,17 +24,8 @@ class Solution:
         else:
             return (nums[len_ // 2 - 1] + nums[len_ // 2]) / 2
 
-
-class Solution2:
-    """核心方法 - 有序数组.
-
-    直接找中位数.
-
-    TODO 计算本方法的时间复杂度.
-    """
-
     @staticmethod
-    def findMedianSortedArrays(nums1: List[int], nums2: List[int]) -> float:
+    def findMedianSortedArrays2(nums1: List[int], nums2: List[int]) -> float:
         len_ = len(nums1) + len(nums2)
         if len_ == 0:
             return 0.0
@@ -59,7 +52,7 @@ class Solution2:
 if __name__ == '__main__':
     fs = [
         Solution.findMedianSortedArrays,
-        Solution.findMedianSortedArrays,
+        Solution.findMedianSortedArrays2,
     ]
 
     for f in fs:
