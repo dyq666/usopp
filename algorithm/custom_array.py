@@ -7,111 +7,7 @@ DATE: 2018.7.24
 
 from random import randint
 
-from helper import closed_reversed_range, closed_range, format_one_char
 from decorator import index_valid, size_change, non_empty
-
-
-class DynamicArray:
-    """
-    动态数组
-    概述
-    1. 动态数组类只实现了核心的增加和删除
-    2. python中最基础的数据结构中没有静态数组，在这里我们使用`list`作为我们动态数组类的底层数据结构。
-    3. 总共有两个参数来描述我们动态数组的大小，
-       第一个是`capacity`，它代表了当前动态数组的总容量，也就是底层`list`的大小。
-       第二个是`size`，它代表当前动态数组中的元素个数。容量对于用户是隐藏的，而size是用户可以访问到的
-    方法
-    1. 魔法方法: len, str, init
-    2. 公有方法: add, remove
-    3. 私有方法: is_full, get_capacity, resize 
-    """
-    def __init__(self, capacity=10):
-        """初始化一个容量为capacity的动态数组"""
-        self.__data = [None] * capacity
-        self._size = 0 # size使用单下划线的原因是需要让装饰器访问, 设置为双下划线, 装饰器将不具有通用性
-
-    def __len__(self):
-        """获取元素个数，判断是否为空"""
-        return self._size
-
-    def __str__(self):
-        """提供比较整齐的显示方式。'容量: 大小: 数组:'"""
-        capacity_str = format_one_char(str(self.__get_capacity()))
-        size_str = format_one_char(str(self._size))
-
-        return f'Capacity: {capacity_str} Size: {size_str} Array: {self.__data[:self._size]}'
-
-    @index_valid('0', 'self._size')
-    @size_change(1)
-    def add(self, index, value):
-        """
-        功能: 在位置index初增加一个value
-        限制: 只能选择在[0, size]之间增加值
-        时间复杂度: O(n)
-        1. 如果满了, 则将容量扩大两倍
-        2. 将[size-1, index]范围的元素后移动, 在index的位置插入元素
-        """
-        # 1. 如果满了就扩容
-        if self.__is_full():
-            self.__resize(self.__get_capacity() * 2)
-
-        # 2. 逆向遍历范围[最后一个元素, 插入位置]   
-        for i in closed_reversed_range(self._size-1, index):
-            self.__data[i+1] = self.__data[i]
-        self.__data[index] = value
-
-    @index_valid('0', 'self._size-1')
-    def remove(self, index):
-        """
-        功能: 删除index位置的元素, 并返回值
-        限制: 只能选择在[0, size-1]之间删除值
-        时间复杂度: O(n)
-        1. 保存当前index位置的元素
-        2. [index+1, size-1]的元素向前移动
-        3. 维护数组的大小
-        4. 如果数组大小比容量的1/3还小则缩容两倍, 因为容量必须大于1, 因此还需要满足缩容后的容量大于0
-        5. 返回删除的值
-        """
-        # 1
-        remove_value = self.__data[index]
-
-        # 2
-        for i in closed_range(index+1, self._size-1):
-            self.__data[i-1] = self.__data[i]
-
-        # 3
-        self._size -= 1
-
-        # 4
-        if self._size <= self.__get_capacity() // 3 and self.__get_capacity() // 2 > 0:
-            self.__resize(self.__get_capacity() // 2)
-
-        # 5 
-        return remove_value
-
-    def __is_full(self):
-        """判断元素个数是否等于数组的容量"""
-        return self._size == self.__get_capacity()
-
-    def __get_capacity(self):
-        """返回数组的容量"""
-        return len(self.__data)
-
-    def __resize(self, new_capacity):
-        """
-        更改数组的容量
-        1. 生成一个新的数组
-        2. 将原来数组中所有元素赋值到新数组
-        3. 将原数组变为新数组
-        """
-        # 1.
-        new_data = [None] * new_capacity
-
-        # 2.
-        new_data[0:self._size] = self.__data[0:self._size]
-
-        # 3.
-        self.__data = new_data
 
 
 class LoopDynamicArray:
@@ -135,14 +31,6 @@ class LoopDynamicArray:
 
     def __len__(self):
         return self._size
-
-    def __str__(self):
-        """提供比较整齐的显示方式。"""
-        front_str = format_one_char(str(self.__front))
-        last_str = format_one_char(str(self.__last))
-        data = [str(data) if data is not None else ' ' for data in self.__data]
-
-        return f'Front: {front_str} Last: {last_str} Array: {data}'
 
     def get_real_data(self):
         """返回一个外界可用的从front->last的数组, 也就是对外界隐藏我们是用循环实现的"""

@@ -12,13 +12,11 @@ def closed_range(l, r, step=1):
     """提供左闭右闭合的range"""
     return range(l, r+1, step)
 
+
 def closed_reversed_range(r, l, step=-1):
     """提供左闭右闭的逆向range"""
     return range(r, l-1, step)
 
-def format_one_char(s):
-    """如果是单字符就变成0+字符"""
-    return "0" + s if len(s) == 1 else s
 
 def swap_two_ele(nums, ele1, ele2):
     """
