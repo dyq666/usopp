@@ -46,22 +46,22 @@ class TestDynamicArray:
             d.pop(len(d))
 
         # 从末尾删除元素
-        for i in range(15):
+        for i in range(14):
             assert 19 - i == d.pop()
             assert len(d._data) == 20
             assert len(d) == 19 - i
 
         # 缩容, 20 // 4 == 5
-        assert len(d) == 5
+        assert len(d) == 6
         assert len(d._data) == 20
         d.pop()
-        assert len(d) == 4
+        assert len(d) == 5
         assert len(d._data) == 10
 
         # 由于限制了容量必须 >= 10, 所以当 10 // 4 = 2 时, 也没有缩容.
-        for i in range(4):
+        for i in range(5):
             d.pop()
-            assert len(d) == 3 - i
+            assert len(d) == 4 - i
             assert len(d._data) == 10
 
         # 空数组不能 pop

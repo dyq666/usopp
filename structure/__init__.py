@@ -50,6 +50,7 @@ class DynamicArray:
         if not (0 <= index < len(self) + 1):
             raise IndexError
 
+        # 扩容
         if len(self) == len(self._data):
             self._resize(len(self._data) * 2)
 
@@ -67,12 +68,14 @@ class DynamicArray:
         if not (0 <= index < len(self)):
             raise IndexError
 
-        if len(self) == len(self._data) // 4:
-            self._resize(len(self._data) // 2)
-
         res = self._data[index]
         self._data[index: len(self) - 1] = self._data[index + 1: len(self)]
         self._size -= 1
+
+        # 缩容
+        if len(self) == len(self._data) // 4:
+            self._resize(len(self._data) // 2)
+
         return res
 
     def _resize(self, capacity: int):
