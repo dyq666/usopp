@@ -16,6 +16,8 @@ class DynamicArray:
          当 size == capacity / 4 时缩容, 将容积缩为 capactiy / 2, 此时 capacity == 2 * size,
          动态数组中仍有空间可以添加元素. 如果容积缩为 capacity / 4, 此时 capacity == size,
          添加元素就又需要扩容了, 消耗时间.
+
+    此外可以用 LeetCode 20 来测试本数据结构是否正确.
     """
 
     MIN_SIZE = 10
