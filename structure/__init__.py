@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Optional
+from typing import Any, Optional
 
 
 class DynamicArray:
@@ -28,21 +28,15 @@ class DynamicArray:
         return self._size
 
     def __repr__(self) -> str:
-        return repr(self._data)
-
-    def __iter__(self) -> Iterable:
-        return iter(self._data[:self._size])
-
-    def __contains__(self, value: Any) -> bool:
-        return value in self._data[:self._size]
+        return repr(self._data[:len(self)])
 
     def __getitem__(self, index: int) -> Any:
-        if not (0 <= index < self._size):
+        if not (0 <= index < len(self)):
             raise IndexError
         return self._data[index]
 
     def __setitem__(self, index: int, value: Any):
-        if not (0 <= index < self._size):
+        if not (0 <= index < len(self)):
             raise IndexError
         self._data[index] = value
 
@@ -51,15 +45,15 @@ class DynamicArray:
 
         如果不传 `index` 则向末尾插入.
         """
-        index = self._size if index is None else index
+        index = len(self) if index is None else index
 
-        if not (0 <= index <= self._size):
+        if not (0 <= index < len(self) + 1):
             raise IndexError
 
-        if self._size == len(self._data):
+        if len(self) == len(self._data):
             self._resize(len(self._data) * 2)
 
-        self._data[index + 1: self._size + 1] = self._data[index: self._size]
+        self._data[index + 1: len(self) + 1] = self._data[index: len(self)]
         self._data[index] = value
         self._size += 1
 
@@ -68,24 +62,23 @@ class DynamicArray:
 
         如果不传 `index` 则从末尾删除.
         """
-        index = self._size - 1 if index is None else index
+        index = len(self) - 1 if index is None else index
 
-        if not (0 <= index < self._size):
+        if not (0 <= index < len(self)):
             raise IndexError
 
-        if self._size == len(self._data) // 4:
+        if len(self) == len(self._data) // 4:
             self._resize(len(self._data) // 2)
 
         res = self._data[index]
-        self._data[index: self._size - 1] = self._data[index + 1: self._size]
+        self._data[index: len(self) - 1] = self._data[index + 1: len(self)]
         self._size -= 1
         return res
 
     def _resize(self, capacity: int):
         """改变静态数组的容量."""
-        # 永久使 capacity >= 10
         if capacity < self.MIN_SIZE:
             return
-        old = self._data
-        self._data = [None for _ in range(capacity)]
-        self._data[:self._size] = old[:self._size]
+        new = [None for _ in range(capacity)]
+        new[:len(self)] = self._data[:len(self)]
+        self._data = new
