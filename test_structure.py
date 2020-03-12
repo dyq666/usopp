@@ -100,6 +100,8 @@ class TestDynamicArray:
         # 删除
         d.pop(2)
         assert list(iter(d)) == [0, 100, 2, 3, 4, 5, 6, 7, 8, 9]
+        assert d._data == [0, 100, 2, 3, 4, 5, 6, 7, 8, 9,
+                           None, None, None, None, None, None, None, None, None, None]
 
     def test_get_and_set(self):
         d = DynamicArray()

@@ -71,6 +71,9 @@ class DynamicArray:
         res = self._data[index]
         self._data[index: len(self) - 1] = self._data[index + 1: len(self)]
         self._size -= 1
+        # `len(self)` 的元素实际上不会被动态数组访问, 如果不将此元素改为 None
+        # 的话, 此处的对象会一直存在静态数组中, 因而不会被垃圾回收机制回收, 占用内存.
+        self._data[len(self)] = None
 
         # 缩容
         if len(self) == len(self._data) // 4:
