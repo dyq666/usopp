@@ -8,7 +8,7 @@ class TestDynamicArray:
     def test_normal(self):
         d = DynamicArray()
         # 默认情况下容量是 10, 大小是 0
-        assert len(d._data) == 10
+        assert len(d._data) == d.MIN_SIZE
         assert len(d) == 0
 
     def test_insert(self):
@@ -87,9 +87,9 @@ class TestDynamicArray:
         assert list(iter(d)) == []
 
         # 插满元素
-        for i in range(10):
+        for i in range(d.MIN_SIZE):
             d.insert(i)
-        assert list(iter(d)) == list(range(10))
+        assert list(iter(d)) == list(range(d.MIN_SIZE))
 
         # 扩容
         d.insert(100, 1)
@@ -100,3 +100,25 @@ class TestDynamicArray:
         # 删除
         d.pop(2)
         assert list(iter(d)) == [0, 100, 2, 3, 4, 5, 6, 7, 8, 9]
+
+    def test_get_and_set(self):
+        d = DynamicArray()
+        for i in range(d.MIN_SIZE):
+            d.insert(i)
+
+        # 不能在小于 0 或大于 size 的位置 get / set 元素
+        with pytest.raises(IndexError):
+            temp = d[-1]
+        with pytest.raises(IndexError):
+            temp = d[len(d)]
+        with pytest.raises(IndexError):
+            d[-1] = 1
+        with pytest.raises(IndexError):
+            d[len(d)] = 1
+
+        for i in range(d.MIN_SIZE):
+            assert d[i] == i
+        for i in range(d.MIN_SIZE):
+            d[i] = i * 100
+        for i in range(d.MIN_SIZE):
+            assert d[i] == i * 100

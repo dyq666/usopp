@@ -16,14 +16,11 @@ class DynamicArray:
          当 size == capacity / 4 时缩容, 将容积缩为 capactiy / 2, 此时 capacity == 2 * size,
          动态数组中仍有空间可以添加元素. 如果容积缩为 capacity / 4, 此时 capacity == size,
          添加元素就又需要扩容了, 消耗时间.
-
-    TODO 还需要增加 __getitem__ __setitem__
     """
 
     MIN_SIZE = 10
 
     def __init__(self):
-        # 默认 capacity 为 10.
         self._data = [None for _ in range(self.MIN_SIZE)]
         self._size = 0
 
@@ -36,8 +33,18 @@ class DynamicArray:
     def __iter__(self) -> Iterable:
         return iter(self._data[:self._size])
 
-    def __contains__(self, item: Any) -> bool:
-        return item in self._data[:self._size]
+    def __contains__(self, value: Any) -> bool:
+        return value in self._data[:self._size]
+
+    def __getitem__(self, index: int) -> Any:
+        if not (0 <= index < self._size):
+            raise IndexError
+        return self._data[index]
+
+    def __setitem__(self, index: int, value: Any):
+        if not (0 <= index < self._size):
+            raise IndexError
+        self._data[index] = value
 
     def insert(self, value: Any, index: Optional[int] = None):
         """插入元素.
