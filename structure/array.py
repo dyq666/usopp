@@ -2,6 +2,7 @@ __all__ = (
     'DynamicArrayV1',
     'DynamicArrayV2',
     'LoopArrayV1',
+    'LoopArrayV2',
 )
 
 from functools import wraps
@@ -233,6 +234,56 @@ class LoopArrayV1:
         # 这里必须用 tuple unpack, 因为 `len(self)` 的计算跟 `self._head` 有关
         self._head, self._tail = 0, len(self)
         self._data = new
+
+    @property
+    def _capacity(self) -> int:
+        return len(self._data)
+
+
+class LoopArrayV2:
+    """循环数组"""
+
+    MIN_SIZE = 10
+
+    def __init__(self):
+        self._data = [None for _ in range(self.MIN_SIZE)]
+        self._tail = 0
+        self._head = 0
+        self._size = 0
+
+    def __len__(self) -> int:
+        return self._size
+
+    def __iter__(self) -> Iterable:
+        h, t = self._head, self._tail
+        if h < t:
+            return iter(self._data[h:t])
+        elif h == t:
+            return iter([]) if len(self) == 0 else iter(self._data[h:] + self._data[:t])
+        else:
+            return iter(self._data[h:] + self._data[:t])
+
+    def append(self, value: Any):
+        if len(self) == self._capacity:
+            raise IndexError
+
+        self._data[self._tail] = value
+        self._tail = self._move(self._tail)
+        self._size += 1
+
+    def popleft(self) -> Any:
+        if len(self) == 0:
+            raise IndexError
+
+        res = self._data[self._head]
+        # 让垃圾回收机制可以回收此处的元素
+        self._data[self._head] = None
+        self._head = self._move(self._head)
+        self._size -= 1
+        return res
+
+    def _move(self, index: int) -> int:
+        return (index + 1) % self._capacity
 
     @property
     def _capacity(self) -> int:
