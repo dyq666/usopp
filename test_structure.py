@@ -171,7 +171,8 @@ def test_LoopArrayV2():
     4. 此时头指针应该已经循环到开头, `append` 1 个元素, 查看头指针位置, 静态数组和动态数组.
     5. `popleft` 三个元素, 头指针和尾指针重合, 动态数组大小为 0, 观察静态数组和动态数组, 此时不能 `popleft`.
     6. `append` 10 个元素填满静态数组, 头指针和尾指针重合, 动态数组大小为 10, 观察静态数组和动态数组.
-    7. `append` 1 个元素应报错.
+    7. `append` 1 个元素应扩容, 头尾指针重置, 观察静态数组和动态数组.
+    8. `popleft` 6 个元素应缩容, 头尾指针重置, 观察静态数组和动态数组.
     """
     array = LoopArrayV2()
 
@@ -212,7 +213,6 @@ def test_LoopArrayV2():
     for i in range(6, 9):
         assert i == array.popleft()
     assert array._tail == array._head == 1
-    assert len(array) == 0
     assert array._data == [None for _ in range(10)]
     assert list(array) == []
     with pytest.raises(IndexError):
@@ -222,10 +222,17 @@ def test_LoopArrayV2():
     for i in range(10):
         array.append(i)
     assert array._tail == array._head == 1
-    assert len(array) == 10
     assert array._data == [9] + list(range(9))
     assert list(array) == list(range(10))
 
     # 7
-    with pytest.raises(IndexError):
-        array.append(10)
+    array.append(10)
+    assert array._head == 0 and array._tail == len(array)
+    assert array._data == list(range(11)) + [None for _ in range(9)]
+    assert list(array) == list(range(11))
+
+    for i in range(6):
+        assert i == array.popleft()
+    assert array._head == 0 and array._tail == len(array)
+    assert array._data == list(range(6, 11)) + [None for _ in range(5)]
+    assert list(array) == list(range(6, 11))

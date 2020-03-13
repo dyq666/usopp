@@ -241,7 +241,14 @@ class LoopArrayV1:
 
 
 class LoopArrayV2:
-    """循环数组"""
+    """循环数组.
+
+    循环数组有以下关键点:
+
+        1. 指针向右移动时需要 mod 操作来实现循环.
+        2. 改变容量时注意需要将头尾指针重置.
+        3. 当动态数组为空或满时头尾指针都将重合, 需要通过数组的大小来判断具体是哪种, 然后进行不同的处理.
+    """
 
     MIN_SIZE = 10
 
@@ -264,8 +271,9 @@ class LoopArrayV2:
             return iter(self._data[h:] + self._data[:t])
 
     def append(self, value: Any):
+        # 扩容
         if len(self) == self._capacity:
-            raise IndexError
+            self._resize(2 * self._capacity)
 
         self._data[self._tail] = value
         self._tail = self._move(self._tail)
@@ -280,10 +288,25 @@ class LoopArrayV2:
         self._data[self._head] = None
         self._head = self._move(self._head)
         self._size -= 1
+
+        # 缩容
+        if len(self) == self._capacity // 4:
+            self._resize(self._capacity // 2)
+
         return res
 
     def _move(self, index: int) -> int:
         return (index + 1) % self._capacity
+
+    def _resize(self, capacity: int):
+        if capacity < self.MIN_SIZE:
+            return
+
+        new = [None for _ in range(capacity)]
+        new[:len(self)] = list(self)
+        self._head = 0
+        self._tail = len(self)
+        self._data = new
 
     @property
     def _capacity(self) -> int:
