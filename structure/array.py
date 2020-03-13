@@ -89,7 +89,7 @@ class DynamicArrayV1:
             return
 
         new = [None for _ in range(capactiy)]
-        new[:len(self)] = self._data[:len(self)]
+        new[:len(self)] = list(self)
         self._data = new
 
     @property
@@ -116,6 +116,8 @@ class DynamicArrayV2:
         return self._size
 
     def __iter__(self) -> Iterable:
+        # __contains__ 实际上是不需要显示定义的, Python 会自动调用 __iter__,
+        # 它的实现等价于 `return value in iter(self)`
         return iter(self._data[:len(self)])
 
     @check_index()
@@ -125,9 +127,6 @@ class DynamicArrayV2:
     @check_index()
     def __setitem__(self, index: int, value: Any):
         self._data[index] = value
-
-    def __contains__(self, value: Any):
-        return value in self._data[:len(self)]
 
     @check_index(offset=1)
     def insert(self, index: int, value: Any):
@@ -169,7 +168,7 @@ class DynamicArrayV2:
             return
 
         new = [None for _ in range(capacity)]
-        new[:len(self)] = self._data[:len(self)]
+        new[:len(self)] = list(self)
         self._data = new
 
     @property
@@ -230,7 +229,7 @@ class LoopArrayV1:
         capacity = max(capacity, self.MIN_SIZE)
 
         new = [None for _ in range(capacity)]
-        new[:len(self)] = self._data[self._head:self._tail]
+        new[:len(self)] = list(self)
         # 这里必须用 tuple unpack, 因为 `len(self)` 的计算跟 `self._head` 有关
         self._head, self._tail = 0, len(self)
         self._data = new
