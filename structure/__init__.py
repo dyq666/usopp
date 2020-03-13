@@ -1,6 +1,6 @@
 __all__ = (
     'DynamicArrayV2',
-    'TwoPointsArray',
+    'LoopArray',
 )
 
 from typing import Any, Iterable, Optional
@@ -101,10 +101,13 @@ class DynamicArrayV2:
         self._data = new
 
 
-class TwoPointsArray:
+class LoopArray:
     """头尾指针数组.
 
-    这里只实现了头出尾进的功能 (因此可能叫队列更加准确).
+    头尾指针数组实际上是动态数组到循环数组的过渡. 头尾指针数组头插入的时间复杂度为 O(1),
+    而不是动态数组的 O(N), 但同时引入了空间浪费的问题, 这个问题需要由循环数组解决.
+
+    这里偷了个懒, 目前只实现了头出尾进的功能, 不提供其他位置的插入或删除.
 
     此数据结构的缺陷是:
       1. 数组中的 `head` 和 `tail` 只能向右移动, 导致部分空间被浪费.

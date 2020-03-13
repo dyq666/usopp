@@ -1,6 +1,6 @@
 import pytest
 
-from structure import DynamicArrayV2, TwoPointsArray
+from structure import DynamicArrayV2, LoopArray
 
 
 class TestDynamicArrayV2:
@@ -126,7 +126,7 @@ class TestDynamicArrayV2:
             assert d[i] == i * 100
 
 
-def test_TwoPointsArray():
+def test_LoopArray():
     """
     1. 查看初始状态的静态数组和动态数组, 初始状态不能 `popleft`.
     2. `append` 2 个元素, 查看静态数组和动态数组, 再 `popleft` 2 个元素,
@@ -135,7 +135,7 @@ def test_TwoPointsArray():
     4. `append` 1 个元素, 查看静态数组和动态数组是否正确的扩容.
     5. `popleft` 1 个元素, 查看静态数组和动态数组是否正确的缩容.
     """
-    array = TwoPointsArray()
+    array = LoopArray()
 
     # 1
     assert array._data == [None for _ in range(10)]
