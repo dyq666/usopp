@@ -4,7 +4,7 @@ __all__ = (
     'LoopArray',
 )
 
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable
 
 
 class DynamicArrayV1:
@@ -53,7 +53,7 @@ class DynamicArrayV1:
             raise IndexError
 
         res = self._data[len(self) - 1]
-        # 让垃圾回收机制可以回收此处的元素.
+        # 让垃圾回收机制可以回收此处的元素
         self._data[len(self) - 1] = None
         self._size -= 1
 
@@ -76,7 +76,12 @@ class DynamicArrayV1:
 
 
 class DynamicArrayV2:
-    """动态数组.
+    """动态数组 V2.
+
+    在 V1 的基础上提供了按任意索引插入或删除元素, 同时也提供了 get / set / contains.
+    V2 和 V1 最大的区别就是插入和删除元素时, 需要用一个 O(N) 的操作移动数组中的元素.
+
+    此外可以用 LeetCode 20 来测试本数据结构中栈相关的操作是否正确.
     """
 
     MIN_SIZE = 10
@@ -85,11 +90,11 @@ class DynamicArrayV2:
         self._data = [None for _ in range(self.MIN_SIZE)]
         self._size = 0
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self._size
 
-    def __repr__(self) -> str:
-        return repr(self._data[:len(self)])
+    def __iter__(self) -> Iterable:
+        return iter(self._data[:len(self)])
 
     def __getitem__(self, index: int) -> Any:
         if not (0 <= index < len(self)):
@@ -101,54 +106,55 @@ class DynamicArrayV2:
             raise IndexError
         self._data[index] = value
 
-    def insert(self, value: Any, index: Optional[int] = None):
-        """插入元素.
+    def __contains__(self, value: Any):
+        return value in self._data[:len(self)]
 
-        如果不传 `index` 则向末尾插入.
-        """
-        index = len(self) if index is None else index
-
+    def insert(self, index: int, value: Any):
         if not (0 <= index < len(self) + 1):
             raise IndexError
 
         # 扩容
-        if len(self) == len(self._data):
-            self._resize(len(self._data) * 2)
+        if len(self) == self._capacity:
+            self._resize(2 * self._capacity)
 
+        # [index, size) 向后移动一位
         self._data[index + 1: len(self) + 1] = self._data[index: len(self)]
         self._data[index] = value
         self._size += 1
 
-    def pop(self, index: Optional[int] = None) -> Any:
-        """删除元素.
+    def append(self, value: Any):
+        self.insert(len(self), value)
 
-        如果不传 `index` 则从末尾删除.
-        """
-        index = len(self) - 1 if index is None else index
-
+    def remove(self, index: int) -> Any:
         if not (0 <= index < len(self)):
             raise IndexError
 
         res = self._data[index]
+        # [index + 1, len) 向前移动一位
         self._data[index: len(self) - 1] = self._data[index + 1: len(self)]
+        # 让垃圾回收机制可以回收此处的元素
+        self._data[len(self) - 1] = None
         self._size -= 1
-        # `len(self)` 的元素实际上不会被动态数组访问, 如果不将此元素改为 None
-        # 的话, 此处的对象会一直存在静态数组中, 因而不会被垃圾回收机制回收, 占用内存.
-        self._data[len(self)] = None
 
         # 缩容
-        if len(self) == len(self._data) // 4:
-            self._resize(len(self._data) // 2)
+        if len(self) == self._capacity // 4:
+            self._resize(self._capacity // 2)
 
         return res
 
+    def pop(self) -> Any:
+        return self.remove(len(self) - 1)
+
     def _resize(self, capacity: int):
-        """改变静态数组的容量."""
         if capacity < self.MIN_SIZE:
             return
         new = [None for _ in range(capacity)]
         new[:len(self)] = self._data[:len(self)]
         self._data = new
+
+    @property
+    def _capacity(self) -> int:
+        return len(self._data)
 
 
 class LoopArray:
