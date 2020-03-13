@@ -1,6 +1,53 @@
 import pytest
 
-from structure import DynamicArrayV2, LoopArray
+from structure import DynamicArrayV1, DynamicArrayV2, LoopArray
+
+
+def test_DynamicArrayV1():
+    """
+    1. 检查初始状态的静态数组和动态数组, 初始状态不能 `pop`.
+    2. `append` 2 个元素, 查看静态数组和动态数组, 再 `pop` 2 个元素,
+       观察元素是否和 `append` 顺序相反, 查看静态数组和动态数组, 此时不能 `pop`.
+    3. `append` 10 个元素, 查看静态数组和动态数组, 再 `append` 1 个元素, 查看是否扩容.
+    4. `pop` 5 个元素, 查看静态数组和动态数组, 再 `pop` 1 个元素, 查看是否缩容.
+    """
+    array = DynamicArrayV1()
+
+    # 1
+    assert array._data == [None for _ in range(10)]
+    assert list(array) == []
+    with pytest.raises(IndexError):
+        array.pop()
+
+    # 2
+    for i in range(2):
+        array.append(i)
+    assert array._data == list(range(2)) + [None for _ in range(8)]
+    assert list(array) == [0, 1]
+    for i in range(1, -1, -1):
+        assert i == array.pop()
+    assert array._data == [None for _ in range(10)]
+    assert list(array) == []
+    with pytest.raises(IndexError):
+        array.pop()
+
+    # 3
+    for i in range(10):
+        array.append(i)
+    assert array._data == list(array) == list(range(10))
+    array.append(10)
+    assert array._data == list(range(11)) + [None for _ in range(9)]
+    assert list(array) == list(range(11))
+
+    # 4
+    for _ in range(5):
+        array.pop()
+    assert array._data == list(range(6)) + [None for _ in range(14)]
+    assert list(array) == list(range(6))
+    array.pop()
+    print(len(array))
+    assert array._data == list(range(5)) + [None for _ in range(5)]
+    assert list(array) == list(range(5))
 
 
 class TestDynamicArrayV2:
