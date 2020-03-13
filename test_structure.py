@@ -1,6 +1,6 @@
 import pytest
 
-from structure import DynamicArrayV1, DynamicArrayV2, LoopArray
+from structure import DynamicArrayV1, DynamicArrayV2, LoopArrayV1
 
 
 @pytest.mark.parametrize('cls', (DynamicArrayV1, DynamicArrayV2))
@@ -107,8 +107,8 @@ def test_DynamicArrayV2():
     assert array[3] == 100
 
 
-def test_LoopArray():
-    """测试 `LoopArray` 的所有方法
+def test_LoopArrayV1():
+    """测试 `LoopArrayV1` 的所有方法
 
     1. 查看初始状态的静态数组和动态数组, 初始状态不能 `popleft`.
     2. `append` 2 个元素, 查看静态数组和动态数组, 再 `popleft` 2 个元素,
@@ -117,7 +117,7 @@ def test_LoopArray():
     4. `append` 1 个元素, 查看静态数组和动态数组是否正确的扩容.
     5. `popleft` 1 个元素, 查看静态数组和动态数组是否正确的缩容.
     """
-    array = LoopArray()
+    array = LoopArrayV1()
 
     # 1
     assert array._data == [None for _ in range(10)]

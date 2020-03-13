@@ -1,7 +1,7 @@
 __all__ = (
     'DynamicArrayV1',
     'DynamicArrayV2',
-    'LoopArray',
+    'LoopArrayV1',
 )
 
 from functools import wraps
@@ -176,7 +176,7 @@ class DynamicArrayV2:
         return len(self._data)
 
 
-class LoopArray:
+class LoopArrayV1:
     """头尾指针数组.
 
     头尾指针数组实际上是动态数组到循环数组的过渡. 此数组相较于动态数组的优点是
