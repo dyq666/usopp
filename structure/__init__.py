@@ -1,7 +1,16 @@
+__all__ = (
+    'DynamicArrayV2',
+    'TwoPointsArray',
+)
+
 from typing import Any, Iterable, Optional
 
 
 class DynamicArray:
+    pass
+
+
+class DynamicArrayV2:
     """动态数组.
 
     动态数组是在静态数组的基础上封装的. 在 Python 中, 没有常用的静态数组,

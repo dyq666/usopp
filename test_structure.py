@@ -1,18 +1,18 @@
 import pytest
 
-from structure import DynamicArray, TwoPointsArray
+from structure import DynamicArrayV2, TwoPointsArray
 
 
-class TestDynamicArray:
+class TestDynamicArrayV2:
 
     def test_normal(self):
-        d = DynamicArray()
+        d = DynamicArrayV2()
         # 默认情况下容量是 10, 大小是 0
         assert len(d._data) == d.MIN_SIZE
         assert len(d) == 0
 
     def test_insert(self):
-        d = DynamicArray()
+        d = DynamicArrayV2()
 
         # 不能在小于 0 或大于 size 的位置插入元素
         with pytest.raises(IndexError):
@@ -35,7 +35,7 @@ class TestDynamicArray:
             assert len(d) == i
 
     def test_pop(self):
-        d = DynamicArray()
+        d = DynamicArrayV2()
         for i in range(20):
             d.insert(i)
 
@@ -69,7 +69,7 @@ class TestDynamicArray:
             d.pop()
 
     def test_contains(self):
-        d = DynamicArray()
+        d = DynamicArrayV2()
         for i in range(9):
             d.insert(i)
 
@@ -81,7 +81,7 @@ class TestDynamicArray:
             assert i in d
 
     def test_iter(self):
-        d = DynamicArray()
+        d = DynamicArrayV2()
 
         # 空数组
         assert list(iter(d)) == []
@@ -104,7 +104,7 @@ class TestDynamicArray:
                            None, None, None, None, None, None, None, None, None, None]
 
     def test_get_and_set(self):
-        d = DynamicArray()
+        d = DynamicArrayV2()
         for i in range(d.MIN_SIZE):
             d.insert(i)
 
