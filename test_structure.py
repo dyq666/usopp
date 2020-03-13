@@ -51,127 +51,60 @@ def test_DynamicArrayV1_and_part_of_DynamicArrayV2(cls):
     assert list(array) == list(range(5))
 
 
-class TestDynamicArrayV2:
+def test_DynamicArrayV2():
+    """测试 `DynamicArrayV2` 相较于 `DynamicArrayV1` 中新增的方法.
 
-    def test_normal(self):
-        d = DynamicArrayV2()
-        # 默认情况下容量是 10, 大小是 0
-        assert len(d._data) == d.MIN_SIZE
-        assert len(d) == 0
+    1. 初始状态先插入 8 个元素, 随意选取一元素它应该在数组中, 而 `None` 不应该在.
+    2. 从首尾分别插入元素, 分别查看插入后元素是否在数组中以及当前静态和动态数组.
+    3. 从第 3 个位置插入元素, 此元素应该在数组中, 并查看是否扩容.
+    4. 删除第 3 个位置元素, 此元素不应该再数组中, 从首删除两个元素, 从尾删除两个元素,
+       查看此时容量, 在从首删除一个元素, 查看是否缩容.
+    5. 测试从有效索引外 get 和 set, 应该报错. set 第四个索引的元素, 再获取此元素.
+    """
+    # 1
+    array = DynamicArrayV2()
+    for i in range(8):
+        array.append(i)
+    assert 5 in array
+    assert None not in array
 
-    def test_insert(self):
-        d = DynamicArrayV2()
+    # 2
+    array.append(8)
+    assert array._data == list(range(9)) + [None]
+    assert list(array) == list(range(9))
+    array.insert(0, -1)
+    assert array._data == list(array) == list(range(-1, 9))
 
-        # 不能在小于 0 或大于 size 的位置插入元素
-        with pytest.raises(IndexError):
-            d.insert('a', -1)
-        with pytest.raises(IndexError):
-            d.insert('a', len(d) + 1)
+    # 3
+    array.insert(2, 100)
+    assert 100 in array
+    assert array._data == list(range(-1, 1)) + [100] + list(range(1, 9)) + [None for _ in range(9)]
+    assert list(array) == list(range(-1, 1)) + [100] + list(range(1, 9))
 
-        # 从末尾插入 10 个元素
-        for i in range(1, 11):
-            d.insert('c')
-            assert len(d._data) == 10
-            assert len(d) == i
-        # 插入结束后 size == capactiy
-        assert len(d) == len(d._data)
+    # 4
+    value = array.remove(2)
+    assert value == 100 and value not in array
+    for _ in range(2):
+        array.pop()
+    for _ in range(2):
+        array.remove(0)
+    assert array._capacity == 20
+    assert len(array) == 6
+    array.remove(0)
+    assert array._capacity == 10
+    assert len(array) == 5
 
-        # 再插入 10 个元素, 此时容量变成之前的两倍
-        for i in range(11, 21):
-            d.insert('zzz')
-            assert len(d._data) == 20
-            assert len(d) == i
-
-    def test_pop(self):
-        d = DynamicArrayV2()
-        for i in range(20):
-            d.insert(i)
-
-        # 不能在小于 0 或大于 size - 1 的位置茶元素
-        with pytest.raises(IndexError):
-            d.pop(-1)
-        with pytest.raises(IndexError):
-            d.pop(len(d))
-
-        # 从末尾删除元素
-        for i in range(14):
-            assert 19 - i == d.pop()
-            assert len(d._data) == 20
-            assert len(d) == 19 - i
-
-        # 缩容, 20 // 4 == 5
-        assert len(d) == 6
-        assert len(d._data) == 20
-        d.pop()
-        assert len(d) == 5
-        assert len(d._data) == 10
-
-        # 由于限制了容量必须 >= 10, 所以当 10 // 4 = 2 时, 也没有缩容.
-        for i in range(5):
-            d.pop()
-            assert len(d) == 4 - i
-            assert len(d._data) == 10
-
-        # 空数组不能 pop
-        with pytest.raises(IndexError):
-            d.pop()
-
-    def test_contains(self):
-        d = DynamicArrayV2()
-        for i in range(9):
-            d.insert(i)
-
-        # None 在底层的静态数组中, 但不在动态数组中
-        assert None not in d
-        assert None in d._data
-
-        for i in range(9):
-            assert i in d
-
-    def test_iter(self):
-        d = DynamicArrayV2()
-
-        # 空数组
-        assert list(iter(d)) == []
-
-        # 插满元素
-        for i in range(d.MIN_SIZE):
-            d.insert(i)
-        assert list(iter(d)) == list(range(d.MIN_SIZE))
-
-        # 扩容
-        d.insert(100, 1)
-        assert list(iter(d)) == [0, 100, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-        assert d._data == [0, 100, 1, 2, 3, 4, 5, 6, 7, 8,
-                           9, None, None, None, None, None, None, None, None, None]
-
-        # 删除
-        d.pop(2)
-        assert list(iter(d)) == [0, 100, 2, 3, 4, 5, 6, 7, 8, 9]
-        assert d._data == [0, 100, 2, 3, 4, 5, 6, 7, 8, 9,
-                           None, None, None, None, None, None, None, None, None, None]
-
-    def test_get_and_set(self):
-        d = DynamicArrayV2()
-        for i in range(d.MIN_SIZE):
-            d.insert(i)
-
-        # 不能在小于 0 或大于 size 的位置 get / set 元素
-        with pytest.raises(IndexError):
-            temp = d[-1]
-        with pytest.raises(IndexError):
-            temp = d[len(d)]
-        with pytest.raises(IndexError):
-            d[-1] = 1
-        with pytest.raises(IndexError):
-            d[len(d)] = 1
-
-        for i in range(d.MIN_SIZE):
-            assert d[i] == i
-        for i in range(d.MIN_SIZE):
-            d[i] = i * 100
-        for i in range(d.MIN_SIZE):
-            assert d[i] == i * 100
+    # 5, 此时数组为 [2, 3, 4, 5, 6]
+    with pytest.raises(IndexError):
+        array.remove(-1)
+    with pytest.raises(IndexError):
+        array.remove(len(array))
+    with pytest.raises(IndexError):
+        array.insert(-1, 200)
+    with pytest.raises(IndexError):
+        array.insert(len(array) + 1, 200)
+    array[3] = 100
+    assert array[3] == 100
 
 
 def test_LoopArray():
