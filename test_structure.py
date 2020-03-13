@@ -114,8 +114,8 @@ def test_LoopArrayV1():
     2. `append` 2 个元素, 查看静态数组和动态数组, 再 `popleft` 2 个元素,
        观察元素是否和 `append` 相同, 查看静态数组和动态数组, 此时不能 `popleft`.
     3. `append` 8 个元素, `popleft` 6 个元素, 查看静态数组和动态数组.
-    4. `append` 1 个元素, 查看静态数组和动态数组是否正确的扩容.
-    5. `popleft` 1 个元素, 查看静态数组和动态数组是否正确的缩容.
+    4. `append` 1 个元素, 查看静态数组和动态数组是否正确的扩容. (因为当前元素个数为 3, 2 * 3 < 10, 扩容后的大小仍为 10)
+    5. `append` 7 个元素, 再 `append` 一个元素, 查看是否正确的扩容. (当前元素为 10, 2 * 10 > 10, 扩容后的大小为 20)
     """
     array = LoopArrayV1()
 
@@ -145,10 +145,12 @@ def test_LoopArrayV1():
 
     # 4
     array.append('c')
-    assert array._data == [6, 7, 'c'] + [None for _ in range(17)]
+    assert array._data == [6, 7, 'c'] + [None for _ in range(7)]
     assert list(array) == [6, 7, 'c']
 
     # 5
-    assert 6 == array.popleft()
-    assert array._data == [7, 'c'] + [None for _ in range(8)]
-    assert list(array) == [7, 'c']
+    for i in range(7):
+        array.append(i)
+    array.append(7)
+    assert array._data == [6, 7, 'c'] + list(range(8)) + [None for _ in range(9)]
+    assert list(array) == [6, 7, 'c'] + list(range(8))

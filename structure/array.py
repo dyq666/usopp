@@ -189,6 +189,9 @@ class LoopArrayV1:
     实际上循环数组中的 `_size` 和 `_tail` 是一样的, 而循环数组中的 `_tail` 永远等于 0.
 
     循环数组作为队列使用时, 只需要实现 `append` 和 `popleft`, 因此在 V1 版本中只实现这些功能.
+
+    另外在本数据结构中, 由于底层静态数组非常容易被填充满, 因此不再进行缩容, 只进行扩容,
+    扩容的大小应为实际动态数组的两倍.
     """
 
     MIN_SIZE = 10
@@ -207,7 +210,7 @@ class LoopArrayV1:
     def append(self, value: Any):
         # 扩容
         if self._tail == self._capacity:
-            self._resize(self._capacity * 2)
+            self._resize(len(self) * 2)
 
         self._data[self._tail] = value
         self._tail += 1
@@ -220,16 +223,10 @@ class LoopArrayV1:
         # 让垃圾回收机制可以回收此处的元素
         self._data[self._head] = None
         self._head += 1
-
-        # 缩容
-        if self._tail <= self._capacity // 4:
-            self._resize(self._capacity // 2)
-
         return res
 
     def _resize(self, capacity: int):
-        if capacity < self.MIN_SIZE:
-            return
+        capacity = max(capacity, self.MIN_SIZE)
 
         new = [None for _ in range(capacity)]
         new[:len(self)] = self._data[self._head:self._tail]
