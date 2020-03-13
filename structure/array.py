@@ -86,6 +86,7 @@ class DynamicArrayV1:
     def _resize(self, capactiy: int):
         if capactiy < self.MIN_SIZE:
             return
+
         new = [None for _ in range(capactiy)]
         new[:len(self)] = self._data[:len(self)]
         self._data = new
@@ -165,6 +166,7 @@ class DynamicArrayV2:
     def _resize(self, capacity: int):
         if capacity < self.MIN_SIZE:
             return
+
         new = [None for _ in range(capacity)]
         new[:len(self)] = self._data[:len(self)]
         self._data = new
@@ -177,17 +179,16 @@ class DynamicArrayV2:
 class LoopArray:
     """头尾指针数组.
 
-    头尾指针数组实际上是动态数组到循环数组的过渡. 头尾指针数组头插入的时间复杂度为 O(1),
-    而不是动态数组的 O(N), 但同时引入了空间浪费的问题, 这个问题需要由循环数组解决.
+    头尾指针数组实际上是动态数组到循环数组的过渡. 此数组相较于动态数组的优点是
+    头插入的时间复杂度为 O(1), 但同时也引入了如下问题:
 
-    这里偷了个懒, 目前只实现了头出尾进的功能, 不提供其他位置的插入或删除.
+      1. 数组中的 `_head` 和 `_tail` 只能向右移动, 导致左部空间被浪费.
+      2. 扩容和缩容都是根据 `_tail` 来决定的, 而不是根据 `len` (因为只能向右移动, 所以必须用 `_tail`),
+         导致会频繁的触发 `_resize` 使 `append`, `popleft` 不再是 O(1) 的时间复杂度了 (产生了复杂度震荡).
 
-    此数据结构的缺陷是:
-      1. 数组中的 `head` 和 `tail` 只能向右移动, 导致部分空间被浪费.
-      2. 扩容和缩容都是根据 `tail` 来决定的, 而不是根据 `len`
-         决定 (因为只能向右移动, 所以必须用 `tail`), 导致会频繁的触发
-         `_resize` 使 `append`, `popleft` 并不一定是 O(1) 的
-         时间复杂度了 (也叫做复杂度震荡).
+    实际上循环数组中的 `_size` 和 `_tail` 是一样的, 而循环数组中的 `_tail` 永远等于 0.
+
+    循环数组作为队列使用时, 只需要实现 `append` 和 `popleft`, 因此在 V1 版本中只实现这些功能.
     """
 
     MIN_SIZE = 10
@@ -200,14 +201,6 @@ class LoopArray:
     def __len__(self) -> int:
         return self._tail - self._head
 
-    def __repr__(self) -> str:
-        return repr(self._data[self._head:self._tail])
-
-    def __getitem__(self, index: int) -> Any:
-        if not (self._head <= index < self._tail):
-            raise IndexError
-        return self._data[index]
-
     def __iter__(self) -> Iterable:
         return iter(self._data[self._head:self._tail])
 
@@ -215,6 +208,7 @@ class LoopArray:
         # 扩容
         if self._tail == self._capacity:
             self._resize(self._capacity * 2)
+
         self._data[self._tail] = value
         self._tail += 1
 
@@ -223,7 +217,7 @@ class LoopArray:
             raise IndexError
 
         res = self._data[self._head]
-        # 让垃圾回收可以回收此处的元素.
+        # 让垃圾回收机制可以回收此处的元素
         self._data[self._head] = None
         self._head += 1
 
@@ -236,6 +230,7 @@ class LoopArray:
     def _resize(self, capacity: int):
         if capacity < self.MIN_SIZE:
             return
+
         new = [None for _ in range(capacity)]
         new[:len(self)] = self._data[self._head:self._tail]
         # 这里必须用 tuple unpack, 因为 `len(self)` 的计算跟 `self._head` 有关
@@ -243,5 +238,5 @@ class LoopArray:
         self._data = new
 
     @property
-    def _capacity(self):
+    def _capacity(self) -> int:
         return len(self._data)

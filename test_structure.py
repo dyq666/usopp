@@ -108,11 +108,12 @@ def test_DynamicArrayV2():
 
 
 def test_LoopArray():
-    """
+    """测试 `LoopArray` 的所有方法
+
     1. 查看初始状态的静态数组和动态数组, 初始状态不能 `popleft`.
     2. `append` 2 个元素, 查看静态数组和动态数组, 再 `popleft` 2 个元素,
        观察元素是否和 `append` 相同, 查看静态数组和动态数组, 此时不能 `popleft`.
-    3. `append` 8 个元素,  `popleft` 6 个元素, 查看静态数组和动态数组.
+    3. `append` 8 个元素, `popleft` 6 个元素, 查看静态数组和动态数组.
     4. `append` 1 个元素, 查看静态数组和动态数组是否正确的扩容.
     5. `popleft` 1 个元素, 查看静态数组和动态数组是否正确的缩容.
     """
@@ -121,19 +122,16 @@ def test_LoopArray():
     # 1
     assert array._data == [None for _ in range(10)]
     assert list(array) == []
-    assert None not in array
     with pytest.raises(IndexError):
         array.popleft()
 
     # 2
     for i in range(2):
         array.append(i)
-        assert i in array
     assert array._data == list(range(2)) + [None for _ in range(8)]
     assert list(array) == [0, 1]
     for i in range(2):
         assert i == array.popleft()
-        assert i not in array
     assert array._data == [None for _ in range(10)]
     assert list(array) == []
 
