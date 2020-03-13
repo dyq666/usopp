@@ -262,13 +262,10 @@ class LoopArrayV2:
         return self._size
 
     def __iter__(self) -> Iterable:
-        h, t = self._head, self._tail
-        if h < t:
-            return iter(self._data[h:t])
-        elif h == t:
-            return iter([]) if len(self) == 0 else iter(self._data[h:] + self._data[:t])
-        else:
-            return iter(self._data[h:] + self._data[:t])
+        # 如果按照 `self._head` 和 `self._tail` 定位动态数组
+        # 的范围, 那么一定不要忘记当二者相等时可能动态数组是空的也可能是满的.
+        for i in range(len(self)):
+            yield self._data[self._move(self._head, i)]
 
     def append(self, value: Any):
         # 扩容
@@ -295,8 +292,8 @@ class LoopArrayV2:
 
         return res
 
-    def _move(self, index: int) -> int:
-        return (index + 1) % self._capacity
+    def _move(self, index: int, offset: int = 1) -> int:
+        return (index + offset) % self._capacity
 
     def _resize(self, capacity: int):
         if capacity < self.MIN_SIZE:
