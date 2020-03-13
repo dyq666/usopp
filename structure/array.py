@@ -4,7 +4,27 @@ __all__ = (
     'LoopArray',
 )
 
-from typing import Any, Iterable
+from functools import wraps
+from typing import Any, Callable, Iterable
+
+
+def check_index(offset: int = 0) -> Callable:
+    """在执行数据结构某个方法前检查索引是否有效.
+
+    方法必须满足第一个参数是 `self`, 第二是索引, 同时类必须实现 `__len__`.
+
+    索引的检查范围是 [0, len + offset).
+    """
+    def deco(f: Callable) -> Callable:
+        @wraps(f)
+        def wrapper(self: Any, index: int, *args, **kwargs):
+            if not (0 <= index < len(self) + offset):
+                raise IndexError
+            return f(self, index, *args, **kwargs)
+
+        return wrapper
+
+    return deco
 
 
 class DynamicArrayV1:
@@ -96,23 +116,19 @@ class DynamicArrayV2:
     def __iter__(self) -> Iterable:
         return iter(self._data[:len(self)])
 
+    @check_index()
     def __getitem__(self, index: int) -> Any:
-        if not (0 <= index < len(self)):
-            raise IndexError
         return self._data[index]
 
+    @check_index()
     def __setitem__(self, index: int, value: Any):
-        if not (0 <= index < len(self)):
-            raise IndexError
         self._data[index] = value
 
     def __contains__(self, value: Any):
         return value in self._data[:len(self)]
 
+    @check_index(offset=1)
     def insert(self, index: int, value: Any):
-        if not (0 <= index < len(self) + 1):
-            raise IndexError
-
         # 扩容
         if len(self) == self._capacity:
             self._resize(2 * self._capacity)
@@ -125,6 +141,7 @@ class DynamicArrayV2:
     def append(self, value: Any):
         self.insert(len(self), value)
 
+    @check_index()
     def remove(self, index: int) -> Any:
         if not (0 <= index < len(self)):
             raise IndexError
