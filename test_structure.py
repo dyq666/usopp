@@ -1,6 +1,6 @@
 import pytest
 
-from structure import DynamicArray
+from structure import DynamicArray, TwoPointsArray
 
 
 class TestDynamicArray:
@@ -124,3 +124,52 @@ class TestDynamicArray:
             d[i] = i * 100
         for i in range(d.MIN_SIZE):
             assert d[i] == i * 100
+
+
+def test_TwoPointsArray():
+    """
+    1. 查看初始状态的静态数组和动态数组, 初始状态不能 `popleft`.
+    2. `append` 2 个元素, 查看静态数组和动态数组, 再 `popleft` 2 个元素,
+       观察元素是否和 `append` 相同, 查看静态数组和动态数组, 此时不能 `popleft`.
+    3. `append` 8 个元素,  `popleft` 6 个元素, 查看静态数组和动态数组.
+    4. `append` 1 个元素, 查看静态数组和动态数组是否正确的扩容.
+    5. `popleft` 1 个元素, 查看静态数组和动态数组是否正确的缩容.
+    """
+    array = TwoPointsArray()
+
+    # 1
+    assert array._data == [None for _ in range(10)]
+    assert list(array) == []
+    assert None not in array
+    with pytest.raises(IndexError):
+        array.popleft()
+
+    # 2
+    for i in range(2):
+        array.append(i)
+        assert i in array
+    assert array._data == list(range(2)) + [None for _ in range(8)]
+    assert list(array) == [0, 1]
+    for i in range(2):
+        assert i == array.popleft()
+        assert i not in array
+    assert array._data == [None for _ in range(10)]
+    assert list(array) == []
+
+    # 3
+    for i in range(8):
+        array.append(i)
+    for i in range(6):
+        assert i == array.popleft()
+    assert array._data == [None for _ in range(8)] + list(range(6, 8))
+    assert list(array) == [6, 7]
+
+    # 4
+    array.append('c')
+    assert array._data == [6, 7, 'c'] + [None for _ in range(17)]
+    assert list(array) == [6, 7, 'c']
+
+    # 5
+    assert 6 == array.popleft()
+    assert array._data == [7, 'c'] + [None for _ in range(8)]
+    assert list(array) == [7, 'c']

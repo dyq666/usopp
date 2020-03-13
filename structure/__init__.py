@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Iterable, Optional
 
 
 class DynamicArray:
@@ -90,3 +90,73 @@ class DynamicArray:
         new = [None for _ in range(capacity)]
         new[:len(self)] = self._data[:len(self)]
         self._data = new
+
+
+class TwoPointsArray:
+    """头尾指针数组.
+
+    这里只实现了头出尾进的功能 (因此可能叫队列更加准确).
+
+    此数据结构的缺陷是:
+      1. 数组中的 `head` 和 `tail` 只能向右移动, 导致部分空间被浪费.
+      2. 扩容和缩容都是根据 `tail` 来决定的, 而不是根据 `len`
+         决定 (因为只能向右移动, 所以必须用 `tail`), 导致会频繁的触发
+         `_resize` 使 `append`, `popleft` 并不一定是 O(1) 的
+         时间复杂度了 (也叫做复杂度震荡).
+    """
+
+    MIN_SIZE = 10
+
+    def __init__(self):
+        self._data = [None for _ in range(self.MIN_SIZE)]
+        self._tail = 0
+        self._head = 0
+
+    def __len__(self) -> int:
+        return self._tail - self._head
+
+    def __repr__(self) -> str:
+        return repr(self._data[self._head:self._tail])
+
+    def __getitem__(self, index: int) -> Any:
+        if not (self._head <= index < self._tail):
+            raise IndexError
+        return self._data[index]
+
+    def __iter__(self) -> Iterable:
+        return iter(self._data[self._head:self._tail])
+
+    def append(self, value: Any):
+        # 扩容
+        if self._tail == self._capacity:
+            self._resize(self._capacity * 2)
+        self._data[self._tail] = value
+        self._tail += 1
+
+    def popleft(self) -> Any:
+        if len(self) == 0:
+            raise IndexError
+
+        res = self._data[self._head]
+        # 让垃圾回收可以回收此处的元素.
+        self._data[self._head] = None
+        self._head += 1
+
+        # 缩容
+        if self._tail <= self._capacity // 4:
+            self._resize(self._capacity // 2)
+
+        return res
+
+    def _resize(self, capacity: int):
+        if capacity < self.MIN_SIZE:
+            return
+        new = [None for _ in range(capacity)]
+        new[:len(self)] = self._data[self._head:self._tail]
+        # 这里必须用 tuple unpack, 因为 `len(self)` 的计算跟 `self._head` 有关
+        self._head, self._tail = 0, len(self)
+        self._data = new
+
+    @property
+    def _capacity(self):
+        return len(self._data)
