@@ -21,6 +21,8 @@ class LinkedListV1:
     `self._head` 其实是 -1 索引.
 
     只实现了两个 O(1) 的 `appendleft` 和 `popleft`.
+
+    另外数据结构中关于栈相关的属性可以去 LeetCode 20 上测试.
     """
 
     def __init__(self):
@@ -56,6 +58,8 @@ class LinkedListV2:
 
     此外需要注意的是当链表中只有一个元素并且执行 `popleft` 后需要重置 `tail`.
     重置前的 `tail` 实际上指向被 `popleft` 出去的元素.
+
+    另外数据结构中关于栈相关的属性可以去 LeetCode 20 上测试.
     """
 
     def __init__(self):
