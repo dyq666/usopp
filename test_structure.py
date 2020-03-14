@@ -349,3 +349,108 @@ class TestLoopArrayV3:
         assert array._head == array._tail == 5
         assert array._data == [None for _ in range(10)]
         assert list(array) == []
+
+    def test_insert(self):
+        """测试在其他位置插入元素.
+
+        1. 向四个元素数组索引为 2 的位置插入元素, 尾指针移动, 查看静态和动态数组.
+        2. 向四个元素数组索引为 1 的位置插入元素, 首指针移动, 查看静态和动态数组.
+        3. 向五个元素数组索引为 2 的位置插入元素, 尾指针移动, 查看静态和动态数组.
+        4. 向五个元素数组索引为 3 的位置插入元素, 尾指针移动, 查看静态和动态数组.
+        5. 向五个元素数组索引为 1 的位置插入元素, 首指针移动, 查看静态和动态数组.
+        """
+        # 1
+        a = self._gen_array(4)
+        a.insert(2, 100)
+        assert a._head == 0
+        assert a._tail == 5
+        assert a._data == [0, 1, 100, 2, 3] + [None for _ in range(5)]
+        assert list(a) == [0, 1, 100, 2, 3]
+
+        # 2
+        a = self._gen_array(4)
+        a.insert(1, 100)
+        assert a._head == 9
+        assert a._tail == 4
+        assert a._data == [100, 1, 2, 3] + [None for _ in range(5)] + [0]
+        assert list(a) == [0, 100, 1, 2, 3]
+
+        # 3
+        a = self._gen_array(5)
+        a.insert(2, 100)
+        assert a._head == 0
+        assert a._tail == 6
+        assert a._data == [0, 1, 100, 2, 3, 4] + [None for _ in range(4)]
+        assert list(a) == [0, 1, 100, 2, 3, 4]
+
+        # 4
+        a = self._gen_array(5)
+        a.insert(3, 100)
+        assert a._head == 0
+        assert a._tail == 6
+        assert a._data == [0, 1, 2, 100, 3, 4] + [None for _ in range(4)]
+        assert list(a) == [0, 1, 2, 100, 3, 4]
+
+        # 5
+        a = self._gen_array(5)
+        a.insert(1, 100)
+        assert a._head == 9
+        assert a._tail == 5
+        assert a._data == [100, 1, 2, 3, 4] + [None for _ in range(4)] + [0]
+        assert list(a) == [0, 100, 1, 2, 3, 4]
+
+    def test_remove(self):
+        """测试在其他位置插入元素.
+
+        1. 删除四个元素数组索引为 2 位置的元素, 尾指针移动, 查看静态和动态数组.
+        2. 删除四个元素数组索引为 1 位置的元素, 首指针移动, 查看静态和动态数组.
+        3. 删除五个元素数组索引为 2 位置的元素, 尾指针移动, 查看静态和动态数组.
+        4. 删除五个元素数组索引为 3 位置的元素, 尾指针移动, 查看静态和动态数组.
+        5. 删除五个元素数组索引为 1 位置的元素, 首指针移动, 查看静态和动态数组.
+        """
+        # 1
+        a = self._gen_array(4)
+        a.remove(2)
+        assert a._head == 0
+        assert a._tail == 3
+        assert a._data == [0, 1, 3] + [None for _ in range(7)]
+        assert list(a) == [0, 1, 3]
+
+        # 2
+        a = self._gen_array(4)
+        a.remove(1)
+        assert a._head == 1
+        assert a._tail == 4
+        assert a._data == [None] + [0, 2, 3] + [None for _ in range(6)]
+        assert list(a) == [0, 2, 3]
+
+        # 3
+        a = self._gen_array(5)
+        a.remove(2)
+        assert a._head == 0
+        assert a._tail == 4
+        assert a._data == [0, 1, 3, 4] + [None for _ in range(6)]
+        assert list(a) == [0, 1, 3, 4]
+
+        # 4
+        a = self._gen_array(5)
+        a.remove(3)
+        assert a._head == 0
+        assert a._tail == 4
+        assert a._data == [0, 1, 2, 4] + [None for _ in range(6)]
+        assert list(a) == [0, 1, 2, 4]
+
+        # 5
+        a = self._gen_array(5)
+        a.remove(1)
+        assert a._head == 1
+        assert a._tail == 5
+        assert a._data == [None] + [0, 2, 3, 4] + [None for _ in range(5)]
+        assert list(a) == [0, 2, 3, 4]
+
+    @staticmethod
+    def _gen_array(n: int):
+        array = LoopArrayV3()
+        for i in range(n):
+            array.append(i)
+        return array
