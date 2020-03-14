@@ -2,7 +2,7 @@ import pytest
 
 from structure import (
     DynamicArrayV1, DynamicArrayV2, LoopArrayV1,
-    LoopArrayV2,
+    LoopArrayV2, LoopArrayV3,
 )
 
 
@@ -162,7 +162,7 @@ def test_LoopArrayV1():
 
 
 def test_LoopArrayV2():
-    """测试 `LoopArrayV1` 的所有方法
+    """测试 `LoopArrayV2` 的所有方法.
 
     1. 查看初始状态的静态数组和动态数组, 初始状态不能 `popleft`.
     2. `append` 2 个元素, 查看静态数组和动态数组, 再 `popleft` 2 个元素,
@@ -253,3 +253,99 @@ def test_LoopArrayV2():
     assert array._head == array._tail == 5
     assert array._data == [None for _ in range(10)]
     assert list(array) == []
+
+
+class TestLoopArrayV3:
+
+    def test_queue_related(self):
+        """测试 `LoopArrayV3` 队列相关的方法.
+
+        1. 查看初始状态的静态数组和动态数组, 初始状态不能 `popleft`.
+        2. `append` 2 个元素, 查看静态数组和动态数组, 再 `popleft` 2 个元素, 观察元素是否和 `append` 相同,
+           查看静态数组和动态数组, 此时不能 `popleft`, 并且两个指针都指向索引 1.
+        3. `append` 9 个元素, `popleft` 7 个元素, 查看静态数组和动态数组.
+        4. 此时头指针应该已经循环到开头, `append` 1 个元素, 查看头指针位置, 静态数组和动态数组.
+        5. `popleft` 三个元素, 头指针和尾指针重合, 动态数组大小为 0, 观察静态数组和动态数组, 此时不能 `popleft`.
+        6. `append` 10 个元素填满静态数组, 头指针和尾指针重合, 动态数组大小为 10, 观察静态数组和动态数组.
+        7. `append` 1 个元素应扩容, 头尾指针重置, 观察静态数组和动态数组.
+        8. `popleft` 6 个元素应缩容, 头尾指针重置, 观察静态数组和动态数组.
+        9. `appendleft` 5 个元素, 数组满, 头尾指针重合, 观察静态数组和动态数组.
+        10. `pop` 10 个元素, 数组空, 头尾指针重合, 观察静态数组和动态数组.
+        """
+        array = LoopArrayV3()
+
+        # 1
+        assert array._data == [None for _ in range(10)]
+        assert list(array) == []
+        with pytest.raises(IndexError):
+            array.popleft()
+
+        # 2
+        for i in range(2):
+            array.append(i)
+        assert array._data == list(range(2)) + [None for _ in range(8)]
+        assert list(array) == [0, 1]
+        for i in range(2):
+            assert i == array.popleft()
+        assert array._data == [None for _ in range(10)]
+        assert list(array) == []
+        with pytest.raises(IndexError):
+            array.popleft()
+        assert array._head == array._tail == 1
+
+        # 3
+        for i in range(9):
+            array.append(i)
+        for i in range(7):
+            assert i == array.popleft()
+        assert array._data == [None for _ in range(8)] + [7, 8]
+        assert list(array) == [7, 8]
+
+        # 4
+        assert array._tail == 0
+        array.append(9)
+        assert array._tail == 1
+        assert array._data == [9] + [None for _ in range(7)] + [7, 8]
+        assert list(array) == [7, 8, 9]
+
+        # 5
+        for i in range(7, 10):
+            assert i == array.popleft()
+        assert array._tail == array._head == 0
+        assert array._data == [None for _ in range(10)]
+        assert list(array) == []
+        with pytest.raises(IndexError):
+            array.popleft()
+
+        # 6
+        for i in range(10):
+            array.append(i)
+        assert array._tail == array._head == 0
+        assert array._data == list(array) == list(range(10))
+
+        # 7
+        array.append(10)
+        assert array._head == 0 and array._tail == len(array)
+        assert array._data == list(range(11)) + [None for _ in range(9)]
+        assert list(array) == list(range(11))
+
+        # 8
+        for i in range(6):
+            assert i == array.popleft()
+        assert array._head == 0 and array._tail == len(array)
+        assert array._data == list(range(6, 11)) + [None for _ in range(5)]
+        assert list(array) == list(range(6, 11))
+
+        # 9
+        for i in range(5, 0, -1):
+            array.appendleft(i)
+        assert array._head == array._tail == 5
+        assert array._data == list(range(6, 11)) + list(range(1, 6))
+        assert list(array) == list(range(1, 11))
+
+        # 10
+        for i in range(10, 0, -1):
+            assert i == array.pop()
+        assert array._head == array._tail == 5
+        assert array._data == [None for _ in range(10)]
+        assert list(array) == []

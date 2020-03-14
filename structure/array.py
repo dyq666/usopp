@@ -251,6 +251,8 @@ class LoopArrayV2:
     实际上 `_size` 这个变量就是用于解决上面的第三点问题. 如果头尾指针不重合, 那么动态数组的大小都是可以由
     `_head` 和 `_tail` 计算出来的, 但重合时只靠头尾指针就不够了. 当然这个问题还有很多的解决办法,
     只不过我认为记一个 `_size` 是最清晰的解决方式了.
+
+    本数据结构只实现左进, 左出, 右进, 右出.
     """
 
     MIN_SIZE = 10
@@ -319,6 +321,128 @@ class LoopArrayV2:
             self._resize(self._capacity // 2)
 
         return res
+
+    def _move(self, index: int, offset: int) -> int:
+        return (index + offset) % self._capacity
+
+    def _resize(self, capacity: int):
+        if capacity < self.MIN_SIZE:
+            return
+
+        new = [None for _ in range(capacity)]
+        new[:len(self)] = list(self)
+        self._head = 0
+        self._tail = len(self)
+        self._data = new
+
+    @property
+    def _capacity(self) -> int:
+        return len(self._data)
+
+
+class LoopArrayV3:
+    """循环数组.
+
+    在 `LoopArrayV2` 的基础上通用化插入和删除功能.
+
+    需要注意:
+
+      1. 所有方法中传入的 `index` 都是动态数组索引 (相对索引), 不是底层静态数组的索引.
+         公式: real_index = (head + relative_index) % capacity
+      2. 插入和删除元素前需要选择移动哪个指针, 选择指针的方式如下:
+         ```
+         [0, 1, 2], 3 // 2 == 1, 当索引 >= 1 时, 移动尾指针, 其余移动首指针.
+         [0, 1, 2, 3], 4 // 2 == 2, 当索引 >= 2 时, 移动尾指针, 其余移动首指针.
+         ```
+      3. 由于第二条注意事项, 当数组为空时插入元素, 无论调用 `popleft` 还是 `pop` 都是移动尾指针.
+         当数组只有一个元素时删除元素, 无论调用 `append` 还是 `appendleft` 都是移动尾指针.
+         举例说明下这个注意事项的意义, 假设先 `append` 2 个元素, 再 `popleft` 2 个元素,
+         可能第一反应是尾指针向右移动两位, 首指针也向右移动两位. 但实际情况是尾指针先向右移动两位,
+         首指针向右移动一位, 然后尾指针向左移动一位.
+    """
+
+    MIN_SIZE = 10
+
+    def __init__(self):
+        self._data = [None for _ in range(self.MIN_SIZE)]
+        self._tail = 0
+        self._head = 0
+        self._size = 0
+
+    def __len__(self) -> int:
+        return self._size
+
+    def __iter__(self) -> Iterable:
+        # 如果按照 `self._head` 和 `self._tail` 定位动态数组
+        # 的范围, 那么一定不要忘记当二者相等时可能动态数组是空的也可能是满的.
+        for i in range(len(self)):
+            yield self._data[self._move(self._head, i)]
+
+    @check_index(offset=1)
+    def insert(self, index: int, value: Any):
+        # 扩容
+        if len(self) == self._capacity:
+            self._resize(2 * self._capacity)
+
+        if index >= len(self) // 2:
+            # 尾指针右移, [index, len) -> [index + 1, len + 1)
+            for i in range(len(self), index, -1):
+                real_i = self._move(self._head, offset=i)
+                self._data[real_i] = self._data[self._move(real_i, offset=-1)]
+            self._tail = self._move(self._tail, offset=1)
+        else:
+            # 首指针左移, [0, index + 1) -> [-1, index)
+            for i in range(-1, index):
+                real_i = self._move(self._head, offset=i)
+                self._data[real_i] = self._data[self._move(real_i, offset=1)]
+            self._head = self._move(self._head, offset=-1)
+
+        self._data[self._move(self._head, offset=index)] = value
+        self._size += 1
+
+    def append(self, value: Any):
+        self.insert(len(self), value)
+
+    def appendleft(self, value: Any):
+        self.insert(0, value)
+
+    @check_index()
+    def remove(self, index: int) -> Any:
+        if len(self) == 0:
+            raise IndexError
+
+        res = self._data[self._move(self._head, offset=index)]
+
+        if index >= len(self) // 2:
+            # 尾指针左移 [index + 1, len) -> [index, len - 1)
+            for i in range(index, len(self) - 1):
+                real_i = self._move(self._head, offset=i)
+                self._data[real_i] = self._data[self._move(real_i, offset=1)]
+            self._tail = self._move(self._tail, offset=-1)
+            # 让垃圾回收机制可以回收此处的元素
+            self._data[self._move(self._head, offset=len(self) - 1)] = None
+        else:
+            # 首指针右移 [0, index) -> [1, index + 1)
+            for i in range(index, 0, -1):
+                real_i = self._move(self._head, offset=i)
+                self._data[real_i] = self._data[self._move(real_i, offset=-1)]
+            # 让垃圾回收机制可以回收此处的元素
+            self._data[self._move(self._head, offset=0)] = None
+            self._head = self._move(self._head, offset=1)
+
+        self._size -= 1
+
+        # 缩容
+        if len(self) == self._capacity // 4:
+            self._resize(self._capacity // 2)
+
+        return res
+
+    def pop(self) -> Any:
+        return self.remove(len(self) - 1)
+
+    def popleft(self) -> Any:
+        return self.remove(0)
 
     def _move(self, index: int, offset: int) -> int:
         return (index + offset) % self._capacity
