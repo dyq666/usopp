@@ -378,6 +378,14 @@ class LoopArrayV3:
         for i in range(len(self)):
             yield self._data[self._move(self._head, i)]
 
+    @check_index()
+    def __getitem__(self, index: int) -> Any:
+        return self._data[self._move(self._head, offset=index)]
+
+    @check_index()
+    def __setitem__(self, index: int, value: Any):
+        self._data[self._move(self._head, offset=index)] = value
+
     @check_index(offset=1)
     def insert(self, index: int, value: Any):
         # 扩容

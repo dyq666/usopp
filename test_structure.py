@@ -357,7 +357,9 @@ class TestLoopArrayV3:
         2. 向四个元素数组索引为 1 的位置插入元素, 首指针移动, 查看静态和动态数组.
         3. 向五个元素数组索引为 2 的位置插入元素, 尾指针移动, 查看静态和动态数组.
         4. 向五个元素数组索引为 3 的位置插入元素, 尾指针移动, 查看静态和动态数组.
-        5. 向五个元素数组索引为 1 的位置插入元素, 首指针移动, 查看静态和动态数组.
+        5. 向五个元素数组索引为 1 的位置插入元素, 首指针移动, 查看静态和动态数组,
+           修改此时索引为 1 和索引为 3 的元素, 查看静态和动态数组.
+           修改此时索引为 -1 和索引为 6 的元素, 应报错.
         """
         # 1
         a = self._gen_array(4)
@@ -398,6 +400,16 @@ class TestLoopArrayV3:
         assert a._tail == 5
         assert a._data == [100, 1, 2, 3, 4] + [None for _ in range(4)] + [0]
         assert list(a) == [0, 100, 1, 2, 3, 4]
+        a[0] = 'c'
+        assert a._data == [100, 1, 2, 3, 4] + [None for _ in range(4)] + ['c']
+        assert list(a) == ['c', 100, 1, 2, 3, 4]
+        a[3] = 'b'
+        assert a._data == [100, 1, 'b' ,3 , 4] + [None for _ in range(4)] + ['c']
+        assert list(a) == ['c', 100, 1, 'b', 3, 4]
+        with pytest.raises(IndexError):
+            a[-1] = 1000
+        with pytest.raises(IndexError):
+            a[6] = 1000
 
     def test_remove(self):
         """测试在其他位置插入元素.
