@@ -276,17 +276,26 @@ class LoopArrayV2:
             self._resize(2 * self._capacity)
 
         self._data[self._tail] = value
-        self._tail = self._move(self._tail)
+        self._tail = self._move(self._tail, offset=1)
         self._size += 1
 
-    def popleft(self) -> Any:
+    def appendleft(self, value: Any):
+        # 扩容
+        if len(self) == self._capacity:
+            self._resize(2 * self._capacity)
+
+        self._head = self._move(self._head, offset=-1)
+        self._data[self._head] = value
+        self._size += 1
+
+    def pop(self) -> Any:
         if len(self) == 0:
             raise IndexError
 
-        res = self._data[self._head]
+        self._tail = self._move(self._tail, offset=-1)
+        res = self._data[self._tail]
         # 让垃圾回收机制可以回收此处的元素
-        self._data[self._head] = None
-        self._head = self._move(self._head)
+        self._data[self._tail] = None
         self._size -= 1
 
         # 缩容
@@ -295,7 +304,23 @@ class LoopArrayV2:
 
         return res
 
-    def _move(self, index: int, offset: int = 1) -> int:
+    def popleft(self) -> Any:
+        if len(self) == 0:
+            raise IndexError
+
+        res = self._data[self._head]
+        # 让垃圾回收机制可以回收此处的元素
+        self._data[self._head] = None
+        self._head = self._move(self._head, offset=1)
+        self._size -= 1
+
+        # 缩容
+        if len(self) == self._capacity // 4:
+            self._resize(self._capacity // 2)
+
+        return res
+
+    def _move(self, index: int, offset: int) -> int:
         return (index + offset) % self._capacity
 
     def _resize(self, capacity: int):

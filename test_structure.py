@@ -173,6 +173,8 @@ def test_LoopArrayV2():
     6. `append` 10 个元素填满静态数组, 头指针和尾指针重合, 动态数组大小为 10, 观察静态数组和动态数组.
     7. `append` 1 个元素应扩容, 头尾指针重置, 观察静态数组和动态数组.
     8. `popleft` 6 个元素应缩容, 头尾指针重置, 观察静态数组和动态数组.
+    9. `appendleft` 5 个元素, 数组满, 头尾指针重合, 观察静态数组和动态数组.
+    10. `pop` 10 个元素, 数组空, 头尾指针重合, 观察静态数组和动态数组.
     """
     array = LoopArrayV2()
 
@@ -231,8 +233,23 @@ def test_LoopArrayV2():
     assert array._data == list(range(11)) + [None for _ in range(9)]
     assert list(array) == list(range(11))
 
+    # 8
     for i in range(6):
         assert i == array.popleft()
     assert array._head == 0 and array._tail == len(array)
     assert array._data == list(range(6, 11)) + [None for _ in range(5)]
     assert list(array) == list(range(6, 11))
+
+    # 9
+    for i in range(5, 0, -1):
+        array.appendleft(i)
+    assert array._head == array._tail == 5
+    assert array._data == list(range(6, 11)) + list(range(1, 6))
+    assert list(array) == list(range(1, 11))
+
+    # 10
+    for i in range(10, 0, -1):
+        assert i == array.pop()
+    assert array._head == array._tail == 5
+    assert array._data == [None for _ in range(10)]
+    assert list(array) == []
