@@ -6,7 +6,7 @@ __all__ = (
 )
 
 from functools import wraps
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Sized
 
 
 def check_index(offset: int = 0) -> Callable:
@@ -26,6 +26,17 @@ def check_index(offset: int = 0) -> Callable:
         return wrapper
 
     return deco
+
+
+def not_empty(f: Callable) -> Callable:
+    """在执行数据结构某个方法前检查数据结构是否为空."""
+    @wraps(f)
+    def wrapper(self: Sized, *args, **kwargs):
+        if len(self) == 0:
+            raise IndexError
+        return f(self, *args, **kwargs)
+
+    return wrapper
 
 
 class DynamicArrayV1:
@@ -69,10 +80,8 @@ class DynamicArrayV1:
         self._data[len(self)] = value
         self._size += 1
 
+    @not_empty
     def pop(self) -> Any:
-        if len(self) == 0:
-            raise IndexError
-
         res = self._data[len(self) - 1]
         # 让垃圾回收机制可以回收此处的元素
         self._data[len(self) - 1] = None
@@ -215,10 +224,8 @@ class LoopArrayV1:
         self._data[self._tail] = value
         self._tail += 1
 
+    @not_empty
     def popleft(self) -> Any:
-        if len(self) == 0:
-            raise IndexError
-
         res = self._data[self._head]
         # 让垃圾回收机制可以回收此处的元素
         self._data[self._head] = None
@@ -290,10 +297,8 @@ class LoopArrayV2:
         self._data[self._head] = value
         self._size += 1
 
+    @not_empty
     def pop(self) -> Any:
-        if len(self) == 0:
-            raise IndexError
-
         self._tail = self._move(self._tail, offset=-1)
         res = self._data[self._tail]
         # 让垃圾回收机制可以回收此处的元素
@@ -306,10 +311,8 @@ class LoopArrayV2:
 
         return res
 
+    @not_empty
     def popleft(self) -> Any:
-        if len(self) == 0:
-            raise IndexError
-
         res = self._data[self._head]
         # 让垃圾回收机制可以回收此处的元素
         self._data[self._head] = None
