@@ -323,6 +323,7 @@ class LoopArrayV2:
         return res
 
     def _move(self, index: int, offset: int) -> int:
+        # 在 Python 中 -1 % 10 == 9
         return (index + offset) % self._capacity
 
     def _resize(self, capacity: int):
