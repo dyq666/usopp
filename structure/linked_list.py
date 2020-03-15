@@ -33,10 +33,11 @@ class LinkedListV1:
         return self._size
 
     def __iter__(self) -> Iterable:
-        needle = self._head
+        # 相当于从索引为 0 的位置开始
+        needle = self._head.next
         for _ in range(self._size):
-            needle = needle.next
             yield needle.val
+            needle = needle.next
 
     def appendleft(self, value: Any):
         self._head.next = ListNode(value, self._head.next)
@@ -71,10 +72,11 @@ class LinkedListV2:
         return self._size
 
     def __iter__(self) -> Iterable:
-        needle = self._head
+        # 相当于从索引为 0 的位置开始
+        needle = self._head.next
         for _ in range(self._size):
-            needle = needle.next
             yield needle.val
+            needle = needle.next
 
     def append(self, value: Any):
         self._tail.next = ListNode(value, self._tail.next)
