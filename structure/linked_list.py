@@ -16,9 +16,9 @@ class ListNode:
 
 
 class LinkedListV1:
-    """单指针链表.
+    """头指针单向链表.
 
-    `self._head` 其实是 -1 索引.
+    `self._head` 其实相当于数组中的 -1 索引.
 
     只实现了两个 O(1) 的 `appendleft` 和 `popleft`.
 
@@ -53,13 +53,19 @@ class LinkedListV1:
 
 
 class LinkedListV2:
-    """双指针链表.
+    """头尾指针单向链表.
 
-    在 V1 的基础上增加了 `append`, 但 `pop` 方式只靠两个指针还无法实现,
-    因为在 `tail` 位置 `pop` 之后, `tail` 无法找到前一个元素.
+    在 V1 的基础上增加了 `append`, 但 `pop` 方式在单向链表中不好实现,
+    因为在 `tail` 位置 `pop` 之后, `tail` 指针无法向前移动.
 
-    此外需要注意的是当链表中只有一个元素并且执行 `popleft` 后需要重置 `tail`.
-    重置前的 `tail` 实际上指向被 `popleft` 出去的元素.
+    `self._head` 其实相当于数组中的 -1 索引, `self._tail` 相当于 `len - 1`.
+    也就是两个指针相对于动态数组都向前移动了一位, 原因是在链表中想要操作 index 位置
+    的元素, 通常需要找到 index - 1 位置的元素.
+
+    需要注意的是当链表中只有一个元素并且执行 `popleft` 后需要重置 `tail`.
+    重置前的 `tail` 实际上指向被 `popleft` 出去的元素. 而当空链表 `appendleft`
+    一个元素后需要移动 `tail`. 另外从这里也看出使用 dummy_head 的好处, `head`
+    永远指向 dummy_head, 不需要像 `tail` 一样处理特殊的情况.
 
     另外数据结构中关于栈相关的属性可以去 LeetCode 20 上测试.
     """
@@ -87,6 +93,9 @@ class LinkedListV2:
     def appendleft(self, value: Any):
         self._head.next = ListNode(value, self._head.next)
         self._size += 1
+
+        if len(self) == 1:
+            self._tail = self._head.next
 
     @not_empty
     def popleft(self) -> Any:
