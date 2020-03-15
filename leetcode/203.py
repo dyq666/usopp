@@ -1,8 +1,10 @@
+from typing import Optional
+
 from .util import ListNode
 
 
 class Solution:
-    """核心方法 - 链表.
+    """核心方法 - LinkedList.
 
     是一道非常典型的链表问题, 既要考虑头尾的问题, 又要处理 `prev`, `cur`
     两个指针移动的问题. 本题必须确保所有元素都被 `cur` 指针指向过, 而删除一个
@@ -14,7 +16,7 @@ class Solution:
     """
 
     @staticmethod
-    def removeElements(head: ListNode, val: int) -> ListNode:
+    def removeElements(head: Optional[ListNode], val: int) -> Optional[ListNode]:
         # 删除第一个元素和其他元素逻辑不同, 因此引入 dummy_head, 使第一个元素也有 `prev`.
         dummy = ListNode(None)
         dummy.next = head
@@ -33,7 +35,7 @@ class Solution:
         return dummy.next
 
     @staticmethod
-    def removeElements2(head: ListNode, val: int) -> ListNode:
+    def removeElements2(head: Optional[ListNode], val: int) -> Optional[ListNode]:
         # 删除第一个元素和其他元素逻辑不同, 因此引入 dummy_head, 使第一个元素也有 `prev`.
         dummy = ListNode(None)
         dummy.next = head
@@ -50,6 +52,20 @@ class Solution:
         return dummy.next
 
 
+class Solution2:
+    """核心方法 - Recursion."""
+
+    def removeElements(self, head: Optional[ListNode], val: int) -> Optional[ListNode]:
+        """删除所有 `head` 链表中值为 `val` 的节点."""
+        # 最小情况
+        if head is None:
+            return None
+
+        # 子问题: 是否移除当前节点
+        head.next = self.removeElements(head.next, val)
+        return head.next if head.val == val else head
+
+
 if __name__ == '__main__':
     """
     1. 头结点, 尾结点, 中间结点都有目标值.
@@ -57,7 +73,8 @@ if __name__ == '__main__':
     3. 连续两个目标节点, 主要是测试 `prev` 移动是否正确.
     """
     val = 1
-    fs = [Solution.removeElements, Solution.removeElements2]
+    fs = [Solution.removeElements, Solution.removeElements2,
+          Solution2().removeElements]
 
     for f in fs:
         # 1
