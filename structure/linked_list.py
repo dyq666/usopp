@@ -45,10 +45,11 @@ class LinkedListV1:
 
     @not_empty
     def popleft(self) -> Any:
-        res = self._head.next.val
-        self._head.next = self._head.next.next
+        res = self._head.next
+        self._head.next = res.next
+        res.next = None
         self._size -= 1
-        return res
+        return res.val
 
 
 class LinkedListV2:
@@ -89,11 +90,12 @@ class LinkedListV2:
 
     @not_empty
     def popleft(self) -> Any:
-        res = self._head.next.val
-        self._head.next = self._head.next.next
+        res = self._head.next
+        self._head.next = res.next
+        res.next = None
         self._size -= 1
 
         if len(self) == 0:
             self._tail = self._head
 
-        return res
+        return res.val
