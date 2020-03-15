@@ -8,6 +8,9 @@ class Solution:
     两个指针移动的问题. 本题必须确保所有元素都被 `cur` 指针指向过, 而删除一个
     元素又需要 `cur` 指针的前一个元素, 即 `prev` 指针. 假设本次没有删除元素,
     则 `prev` 向前移动一位, 删除了则不移动.
+
+    实际上可能 `removeElements2` 的思路更适合链表问题. 因为链表总是需要知道
+    前一个索引的元素, 因此遍历 [0, len) 有时候不如遍历 [-1, len - 1) 方便.
     """
 
     @staticmethod
@@ -21,8 +24,8 @@ class Solution:
 
         while cur is not None:
             if cur.val == val:
+                # 这里可以清理下 `cur`, 促进垃圾回收.
                 prev.next = cur.next
-                cur.next = None
             else:
                 prev = prev.next
             cur = prev.next
@@ -39,9 +42,8 @@ class Solution:
 
         while prev.next is not None:
             if prev.next.val == val:
-                cur = prev.next
-                prev.next = cur.next
-                cur.next = None
+                # 这里可以清理下 `prev.next`, 促进垃圾回收.
+                prev.next = prev.next.next
             else:
                 prev = prev.next
 
