@@ -7,7 +7,7 @@ __all__ = (
 
 from typing import Any, Iterable
 
-from .util import check_index, not_empty
+from util import check_index, not_empty
 
 
 class DynamicArrayV1:

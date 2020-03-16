@@ -1,9 +1,10 @@
 __all__ = (
-    'PrioQueue', 'merge_sorted_list',
+    'PrioQueue', 'check_index', 'merge_sorted_list', 'not_empty',
 )
 
 import heapq
-from typing import Any, Iterable, Tuple
+from functools import wraps
+from typing import Any, Callable, Iterable, Sized, Tuple
 
 
 class PrioQueue:
@@ -34,6 +35,25 @@ class PrioQueue:
         return q
 
 
+def check_index(offset: int = 0) -> Callable:
+    """在执行数据结构某个方法前检查索引是否有效.
+
+    方法必须满足第一个参数是 `self`, 第二是索引, 同时类必须实现 `__len__`.
+
+    索引的检查范围是 [0, len + offset).
+    """
+    def deco(f: Callable) -> Callable:
+        @wraps(f)
+        def wrapper(self: Any, index: int, *args, **kwargs):
+            if not (0 <= index < len(self) + offset):
+                raise IndexError
+            return f(self, index, *args, **kwargs)
+
+        return wrapper
+
+    return deco
+
+
 def merge_sorted_list(a1: list, a2: list) -> Iterable:
     """copy from https://github.com/dyq666/sanji"""
     idx1, idx2 = 0, 0
@@ -47,3 +67,14 @@ def merge_sorted_list(a1: list, a2: list) -> Iterable:
         else:
             idx2 += 1
         yield min(v1, v2)
+
+
+def not_empty(f: Callable) -> Callable:
+    """在执行数据结构某个方法前检查数据结构是否为空."""
+    @wraps(f)
+    def wrapper(self: Sized, *args, **kwargs):
+        if len(self) == 0:
+            raise IndexError
+        return f(self, *args, **kwargs)
+
+    return wrapper

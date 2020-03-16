@@ -5,7 +5,7 @@ __all__ = (
 
 from typing import Any, Iterable, Optional
 
-from .util import not_empty
+from util import not_empty
 
 
 class ListNode:
