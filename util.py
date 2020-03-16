@@ -1,4 +1,37 @@
-from typing import Iterable
+__all__ = (
+    'PrioQueue', 'merge_sorted_list',
+)
+
+import heapq
+from typing import Any, Iterable, Tuple
+
+
+class PrioQueue:
+    """copy from https://github.com/dyq666/sanji"""
+
+    def __init__(self, asc: bool = True):
+        self._queue = []
+        self._index = 0
+        self._asc = asc
+
+    def __len__(self) -> int:
+        return len(self._queue)
+
+    def put(self, priority: int, item: Any):
+        priority = priority if self._asc else -priority
+        heapq.heappush(self._queue, (priority, self._index, item))
+        self._index += 1
+
+    def get(self):
+        return heapq.heappop(self._queue)[-1]
+
+    @classmethod
+    def from_pairs(cls, pairs: Iterable[Tuple[int, Any]],
+                   asc: bool = True) -> 'PrioQueue':
+        q = cls(asc)
+        for priority, item in pairs:
+            q.put(priority, item)
+        return q
 
 
 def merge_sorted_list(a1: list, a2: list) -> Iterable:

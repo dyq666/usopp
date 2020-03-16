@@ -1,4 +1,6 @@
-from typing import List
+from typing import List, Optional
+
+from util import PrioQueue
 
 from .util import ListNode
 
@@ -11,7 +13,7 @@ class Solution:
     只有一个值被充分利用了, 其他 999 个值下轮还得再看一遍.
     """
 
-    def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
         dummy = ListNode(None)
         needle = dummy
 
@@ -26,21 +28,40 @@ class Solution:
         return dummy.next
 
 
+class Solution2:
+    """核心方法 - PriorityQueue."""
+
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        dummy = ListNode(None)
+        needle = dummy
+
+        pq = PrioQueue.from_pairs((node.val, node) for node in lists if node)
+        while pq:
+            node = pq.get()
+            if node.next:
+                pq.put(node.next.val, node.next)
+            needle.next = node
+            needle = needle.next
+
+        return dummy.next
+
+
 if __name__ == '__main__':
     """
     1. 合并三个按顺序的链表 (按顺序指的是头尾相连所有链表就可以得到最终结果).
     2. 合并三个普通的链表.
     """
-    f = Solution().mergeKLists
+    fs = [Solution().mergeKLists, Solution2().mergeKLists]
 
-    # 1
-    l1 = ListNode.from_iterable([1, 2, 3])
-    l2 = ListNode.from_iterable([4])
-    l3 = ListNode.from_iterable([5, 6, 7])
-    assert list(f([l1, l2, l3])) == list(range(1, 8))
+    for f in fs:
+        # 1
+        l1 = ListNode.from_iterable([1, 2, 3])
+        l2 = ListNode.from_iterable([4])
+        l3 = ListNode.from_iterable([5, 6, 7])
+        assert list(f([l1, l2, l3])) == list(range(1, 8))
 
-    # 2
-    l1 = ListNode.from_iterable([1, 4, 5])
-    l2 = ListNode.from_iterable([2, 3, 7])
-    l3 = ListNode.from_iterable([0, 6, 8, 9])
-    assert list(f([l1, l2, l3])) == list(range(10))
+        # 2
+        l1 = ListNode.from_iterable([1, 4, 5])
+        l2 = ListNode.from_iterable([2, 3, 7])
+        l3 = ListNode.from_iterable([0, 6, 8, 9])
+        assert list(f([l1, l2, l3])) == list(range(10))
