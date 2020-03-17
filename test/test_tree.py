@@ -33,7 +33,7 @@ def test_preorder(trees):
 
 
 def test_inorder(trees):
-    fs = [BinaryTree.inorder, BinaryTree._inorder]
+    fs = [BinaryTree.inorder]
     for f in fs:
         assert list(n.val for n in f(trees[0])) == [2, 5, 1, 3]
         assert list(n.val for n in f(trees[1])) == [9, 2, 1]

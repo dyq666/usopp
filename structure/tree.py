@@ -109,42 +109,19 @@ class BinaryTree:
                   ) -> Optional[Iterable[BinaryTreeNode]]:
         """模拟系统栈实现前序遍历.
 
-        实际上这种实现可以拓展到中序, 后序等其他实现. 只不过是需要按照
-        递归实现中的语句顺序改变 `_operators` 中不同操作的位置.
-        """
-        def _operators(n: Optional[BinaryTreeNode]) -> list:
-            # 空 list 代表没有任何语句.
-            if n is None:
-                return []
-            return [('preorder', n.right),
-                    ('preorder', n.left),
-                    ('yield', n)]
+        总共有两种操作: 0 代表继续遍历, 1 代表返回节点.
 
-        if not root:
-            return
-        nodes = _operators(root)
-        while nodes:
-            operator, node = nodes.pop()
-            if operator == 'yield':
-                yield node
-            else:
-                nodes.extend(_operators(node))
-
-    @classmethod
-    def _inorder(cls, root: Optional[BinaryTreeNode]
-                 ) -> Optional[Iterable[BinaryTreeNode]]:
-        """记录访问节点的次数实现中序遍历.
-
-        中序遍历再第二次访问到节点时才返回.
+        另外, 只要改变入栈顺序就可以换成中序遍历和后序遍历.
         """
         if not root:
             return
 
         nodes = [(0, root)]
         while nodes:
-            times, node = nodes.pop()
-            if times == 0:
-                nodes.extend((t, n) for t, n in ((0, node.right), (1, node), (0, node.left)) if n)
+            operator, node = nodes.pop()
+            if operator == 0:
+                nodes.extend((t, n) for t, n in
+                             ((0, node.right), (0, node.left), (1, node)) if n)
             else:
                 yield node
 
