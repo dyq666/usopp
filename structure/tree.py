@@ -3,26 +3,39 @@ from typing import Any, Generator, Iterable, Optional
 
 class BinaryTreeNode:
 
-    def __init__(self, val: Any, left: Optional['BinaryTreeNode'] = None,
+    def __init__(self, val: Any,
+                 left: Optional['BinaryTreeNode'] = None,
                  right: Optional['BinaryTreeNode'] = None):
         self.val = val
         self.left = left
         self.right = right
 
     @classmethod
-    def from_list(cls, data: list) -> Optional['BinaryTreeNode']:
-        data.insert(0, None)
-        return cls._from_list(data, 1)
+    def from_list(cls, data: Iterable) -> Optional['BinaryTreeNode']:
+        """根据数组生成一棵树.
+
+        数组和树的对应关系如下图. 树生成数组可以用层序遍历树. 数组生成树可以依照索引,
+        索引 0 的子节点: 1, 2, 1 的子节点: 3, 4, 2 的子节点: 5, 6, 类推 n 的
+        子节点: (n + 1) * 2 - 1, (n + 1) * 2.
+
+        ```
+             1          [1,
+          2    3     ->  2, 3,
+        4  5  6  7       4, 5, 6, 7]
+        ```
+        """
+        return cls._from_list(tuple(data), 0)
 
     @classmethod
-    def _from_list(cls, data: list, index: int) -> Optional['BinaryTreeNode']:
+    def _from_list(cls, data: tuple, index: int) -> Optional['BinaryTreeNode']:
+        """根据 `index` 生成节点 (`from_list` 的递归函数)."""
         if index >= len(data) or data[index] is None:
             return
 
-        root = cls(data[index])
-        root.left = cls._from_list(data, index * 2)
-        root.right = cls._from_list(data, index * 2 + 1)
-        return root
+        node = cls(data[index])
+        node.left = cls._from_list(data, (index + 1) * 2 - 1)
+        node.right = cls._from_list(data, (index + 1) * 2)
+        return node
 
 
 class BinaryTree:
