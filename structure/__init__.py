@@ -1,4 +1,5 @@
 __all__ = (
+    'BinaryTree', 'BinaryTreeNode', 'BinaryTreeRecursion',
     'DynamicArrayV1',
     'DynamicArrayV2',
     'LinkedListV1',
@@ -13,3 +14,4 @@ from .array import (
     LoopArrayV3,
 )
 from .linked_list import LinkedListV1, LinkedListV2
+from .tree import BinaryTree, BinaryTreeNode, BinaryTreeRecursion

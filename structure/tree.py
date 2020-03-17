@@ -1,4 +1,4 @@
-from typing import Any, Iterable, Optional
+from typing import Any, Generator, Iterable, Optional
 
 
 class BinaryTreeNode:
@@ -8,6 +8,21 @@ class BinaryTreeNode:
         self.val = val
         self.left = left
         self.right = right
+
+    @classmethod
+    def from_list(cls, data: list) -> Optional['BinaryTreeNode']:
+        data.insert(0, None)
+        return cls._from_list(data, 1)
+
+    @classmethod
+    def _from_list(cls, data: list, index: int) -> Optional['BinaryTreeNode']:
+        if index >= len(data) or data[index] is None:
+            return
+
+        root = cls(data[index])
+        root.left = cls._from_list(data, index * 2)
+        root.right = cls._from_list(data, index * 2 + 1)
+        return root
 
 
 class BinaryTree:
@@ -49,7 +64,7 @@ class BinaryTree:
 
     @classmethod
     def inorder(cls, root: Optional[BinaryTreeNode]
-                ) -> Optional[Iterable[BinaryTreeNode]]:
+                ) -> Generator:
         """中序遍历.
 
         中序遍历的验证可使用 LeetCode 538.
