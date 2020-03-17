@@ -40,3 +40,13 @@ def test_inorder(trees):
         assert list(n.val for n in f(trees[2])) == []
         assert list(n.val for n in f(trees[3])) == [1, 8, 9]
         assert list(n.val for n in f(trees[4])) == [2, 1, 3]
+
+
+def test_postorder(trees):
+    fs = []
+    for f in fs:
+        assert list(n.val for n in f(trees[0])) == [5, 2, 3, 1]
+        assert list(n.val for n in f(trees[1])) == [9, 2, 1]
+        assert list(n.val for n in f(trees[2])) == []
+        assert list(n.val for n in f(trees[3])) == [8, 9, 1]
+        assert list(n.val for n in f(trees[4])) == [2, 3, 1]
