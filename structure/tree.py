@@ -2,6 +2,7 @@ from typing import Any, Generator, Iterable, Optional
 
 
 class BinaryTreeNode:
+    """二叉树节点."""
 
     def __init__(self, val: Any,
                  left: Optional['BinaryTreeNode'] = None,
@@ -14,21 +15,24 @@ class BinaryTreeNode:
     def from_list(cls, data: Iterable) -> Optional['BinaryTreeNode']:
         """根据数组生成一棵树.
 
-        数组和树的对应关系如下图. 树生成数组可以用层序遍历树. 数组生成树可以依照索引,
-        索引 0 的子节点: 1, 2, 1 的子节点: 3, 4, 2 的子节点: 5, 6, 类推 n 的
-        子节点: (n + 1) * 2 - 1, (n + 1) * 2.
+        树生成数组可以用层序遍历, 如下图所示:
+        ```
+             10          [10,
+          20   30    ->   20, 30,
+        40 50 60 70       40, 50, 60, 70]
+        ```
 
-        ```
-             1          [1,
-          2    3     ->  2, 3,
-        4  5  6  7       4, 5, 6, 7]
-        ```
+        数组生成树依照索引, 父索引和子节点索引关系:
+          - 0: 1, 2
+          - 1: 3, 4
+          - 2: 5, 6
+          - n: (n + 1) * 2 - 1, (n + 1) * 2
         """
         return cls._from_list(tuple(data), 0)
 
     @classmethod
     def _from_list(cls, data: tuple, index: int) -> Optional['BinaryTreeNode']:
-        """根据 `index` 生成节点 (`from_list` 的递归函数)."""
+        """根据 `index` 从 `data` 中找到数据, 生成节点 (`from_list` 的递归函数)."""
         if index >= len(data) or data[index] is None:
             return
 
@@ -46,7 +50,7 @@ class BinaryTree:
                  ) -> Optional[Iterable[BinaryTreeNode]]:
         """前序遍历.
 
-        为什么会想到用栈而不是队列呢 ?
+        为什么前序遍历会想到用栈而不是队列呢 ?
 
         答: 因为栈可以插队, 而队列不行. 当遍历到某个节点时, 必须存储节点的左右节点,
         如果使用队列, 那么无论如何存储, 下两次 `pop` 肯定是这两个节点, 而前序遍历需要
@@ -57,15 +61,22 @@ class BinaryTree:
 
         答: 实际上二者逻辑类似. 假设每条语句存储到栈中依次执行, 那么最后一条语句
         一定在栈底, `_preorder` 中模拟系统栈实现了前序遍历. 下图展示了 `_preorder`
-        运行 `yield root` 和 `preorder root.l` 之后的系统栈. 而对于 `preorder`
-        来说没有记录具体的操作, 因而不能准确的对应到递归实现中的语句, 只不过思路类似,
-        依然是先入右节点再入左节点.
+        运行 `yield root` 和 `preorder root.l` 之后的系统栈 (在 `preorder`
+        中, 0 代表操作 preorder, 1 代表操作 yield). `_preorder` 中操作 0 的
+        入栈顺序和递归实现中的语句相对应, 递归实现中调换顺序就能实现中序和后序, `_preorder`
+        中调换操作 0 的入栈顺序也能实现中序和后序.
         ```
         yield root           preorder root.l      yield root.l
         preorder root.l  ->  preorder root.r  ->  preorder root.l.l
         preorder root.r                           preorder root.l.r
                                                   preorder root.r
         ```
+
+        `preorder` 和 `_preorder` 的区别 ?
+
+        答: `_preorder` 更容易理解, 因为可以和递归实现相对应, 也更容易转换成
+        中序和后序. 而 `preorder` 是只针对前序遍历的实现, 减少了入栈出栈的次数,
+        因而不能扩展到中序和后序, 当然中序和后序都有自己的优化实现.
         """
         if not root:
             return
@@ -81,13 +92,6 @@ class BinaryTree:
         """中序遍历.
 
         中序遍历的验证可使用 LeetCode 538.
-
-        跟 `preorder` 比较像的实现参考 `_inorder`, 在前序遍历中第一次遇见
-        节点就可以返回, 因此不需要记录访问次数, 中序遍历比前序遍历复杂,
-        节点需要第二次遇见才能返回,
-
-        本实现用其他方式简化了存储访问次数. `_left_side` 相当于第一次遇见节点,
-        `pop` 相当于第二次遇见节点. TODO 只不过还没想明白是怎么转到这个方法的 ...
         """
 
         def _left_side(n: BinaryTreeNode) -> Iterable:
@@ -111,7 +115,8 @@ class BinaryTree:
 
         总共有两种操作: 0 代表继续遍历, 1 代表返回节点.
 
-        另外, 只要改变入栈顺序就可以换成中序遍历和后序遍历.
+        另外, 只要改变入栈顺序就可以换成中序遍历和后序遍历, 所以用不用这种方式
+        再实现其他遍历顺序了.
         """
         if not root:
             return
@@ -132,6 +137,11 @@ class BinaryTreeRecursion:
     @classmethod
     def preorder(cls, root: Optional[BinaryTreeNode]
                  ) -> Optional[Iterable[BinaryTreeNode]]:
+        """前序遍历.
+
+        只要改变语句顺序就可以换成中序遍历和后序遍历, 所以就不用这种方式
+        再实现其他遍历顺序了.
+        """
         if root is None:
             return
 
