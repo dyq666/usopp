@@ -132,6 +132,23 @@ class BinaryTree:
                 yield node
 
     @classmethod
+    def levelorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
+        """层序遍历.
+
+        虽然这里用的是 list, 但实际上还是先进先出, 只不过这里先进先出的特性是由
+        遍历完成的而不是队列 (先放进 list 的先被访问).
+
+        每次都返回一层的节点.
+        """
+        if not root:
+            return
+        nodes = [root]
+        while nodes:
+            yield nodes
+            nodes = [child for n in nodes
+                     for child in (n.left, n.right) if child]
+
+    @classmethod
     def _preorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
         """模拟系统栈实现前序遍历.
 

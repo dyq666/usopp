@@ -48,3 +48,12 @@ def test_postorder(trees, f):
     assert list(n.val for n in f(trees[2])) == []
     assert list(n.val for n in f(trees[3])) == [8, 9, 1]
     assert list(n.val for n in f(trees[4])) == [2, 3, 1]
+
+
+@pytest.mark.parametrize('f', (BinaryTree.levelorder,))
+def test_levelorder(trees, f):
+    assert list(n.val for level in f(trees[0]) for n in level) == [1, 2, 3, 5]
+    assert list(n.val for level in f(trees[1]) for n in level) == [1, 2, 9]
+    assert list(n.val for level in f(trees[2]) for n in level) == []
+    assert list(n.val for level in f(trees[3]) for n in level) == [1, 9, 8]
+    assert list(n.val for level in f(trees[4]) for n in level) == [1, 2, 3]
