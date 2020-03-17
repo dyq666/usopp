@@ -46,8 +46,7 @@ class BinaryTree:
     """迭代实现各种二叉树的操作."""
 
     @classmethod
-    def preorder(cls, root: Optional[BinaryTreeNode]
-                 ) -> Optional[Iterable[BinaryTreeNode]]:
+    def preorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
         """前序遍历.
 
         为什么前序遍历会想到用栈而不是队列呢 ?
@@ -87,8 +86,7 @@ class BinaryTree:
             nodes.extend(n for n in (node.right, node.left) if n)
 
     @classmethod
-    def inorder(cls, root: Optional[BinaryTreeNode]
-                ) -> Generator:
+    def inorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
         """中序遍历.
 
         中序遍历的验证可使用 LeetCode 538.
@@ -111,8 +109,7 @@ class BinaryTree:
             nodes.extend(_left_side(node.right))
 
     @classmethod
-    def postorder(cls, root: Optional[BinaryTreeNode]
-                  ) -> Generator:
+    def postorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
         """后序遍历.
 
         TODO 研究为什么要这么做, 怎么从递归转换来的.
@@ -135,8 +132,7 @@ class BinaryTree:
                 yield node
 
     @classmethod
-    def _preorder(cls, root: Optional[BinaryTreeNode]
-                  ) -> Optional[Iterable[BinaryTreeNode]]:
+    def _preorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
         """模拟系统栈实现前序遍历.
 
         总共有两种操作: 0 代表继续遍历, 1 代表返回节点.
@@ -161,8 +157,7 @@ class BinaryTreeRecursion:
     """递归实现各种二叉树的操作."""
 
     @classmethod
-    def preorder(cls, root: Optional[BinaryTreeNode]
-                 ) -> Optional[Iterable[BinaryTreeNode]]:
+    def preorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
         """前序遍历.
 
         只要改变语句顺序就可以换成中序遍历和后序遍历, 所以就不用这种方式
