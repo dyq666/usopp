@@ -48,6 +48,35 @@ class BinaryTree:
             nodes.extend(n for n in (node.right, node.left) if n)
 
     @classmethod
+    def inorder(cls, root: Optional[BinaryTreeNode]
+                ) -> Optional[Iterable[BinaryTreeNode]]:
+        """中序遍历.
+
+        中序遍历的验证可使用 LeetCode 538.
+
+        跟 `preorder` 比较像的实现参考 `_inorder`, 在前序遍历中第一次遇见
+        节点就可以返回, 因此不需要记录访问次数, 中序遍历比前序遍历复杂,
+        节点需要第二次遇见才能返回,
+
+        本实现用其他方式简化了存储访问次数. `_left_side` 相当于第一次遇见节点,
+        `pop` 相当于第二次遇见节点. TODO 只不过还没想明白是怎么转到这个方法的 ...
+        """
+
+        def _left_side(n: BinaryTreeNode) -> Iterable:
+            """返回所有左侧的节点 (包括节点本身)."""
+            while n:
+                yield n
+                n = n.left
+
+        if not root:
+            return
+        nodes = list(_left_side(root))
+        while nodes:
+            node = nodes.pop()
+            yield node
+            nodes.extend(_left_side(node.right))
+
+    @classmethod
     def _preorder(cls, root: Optional[BinaryTreeNode]
                   ) -> Optional[Iterable[BinaryTreeNode]]:
         """模拟系统栈实现前序遍历.
@@ -72,6 +101,24 @@ class BinaryTree:
                 yield node
             else:
                 nodes.extend(_operators(node))
+
+    @classmethod
+    def _inorder(cls, root: Optional[BinaryTreeNode]
+                 ) -> Optional[Iterable[BinaryTreeNode]]:
+        """记录访问节点的次数实现中序遍历.
+
+        中序遍历再第二次访问到节点时才返回.
+        """
+        if not root:
+            return
+
+        nodes = [(0, root)]
+        while nodes:
+            times, node = nodes.pop()
+            if times == 0:
+                nodes.extend((t, n) for t, n in ((0, node.right), (1, node), (0, node.left)) if n)
+            else:
+                yield node
 
 
 class BinaryTreeRecursion:
