@@ -21,32 +21,30 @@ def trees():
     ]
 
 
-def test_preorder(trees):
-    fs = [BinaryTree.preorder, BinaryTree._preorder,
-          BinaryTreeRecursion.preorder]
-    for f in fs:
-        assert list(n.val for n in f(trees[0])) == [1, 2, 5, 3]
-        assert list(n.val for n in f(trees[1])) == [1, 2, 9]
-        assert list(n.val for n in f(trees[2])) == []
-        assert list(n.val for n in f(trees[3])) == [1, 9, 8]
-        assert list(n.val for n in f(trees[4])) == [1, 2, 3]
+@pytest.mark.parametrize('f', (BinaryTree.preorder,
+                               BinaryTree._preorder,
+                               BinaryTreeRecursion.preorder))
+def test_preorder(trees, f):
+    assert list(n.val for n in f(trees[0])) == [1, 2, 5, 3]
+    assert list(n.val for n in f(trees[1])) == [1, 2, 9]
+    assert list(n.val for n in f(trees[2])) == []
+    assert list(n.val for n in f(trees[3])) == [1, 9, 8]
+    assert list(n.val for n in f(trees[4])) == [1, 2, 3]
 
 
-def test_inorder(trees):
-    fs = [BinaryTree.inorder]
-    for f in fs:
-        assert list(n.val for n in f(trees[0])) == [2, 5, 1, 3]
-        assert list(n.val for n in f(trees[1])) == [9, 2, 1]
-        assert list(n.val for n in f(trees[2])) == []
-        assert list(n.val for n in f(trees[3])) == [1, 8, 9]
-        assert list(n.val for n in f(trees[4])) == [2, 1, 3]
+@pytest.mark.parametrize('f', (BinaryTree.inorder,))
+def test_inorder(trees, f):
+    assert list(n.val for n in f(trees[0])) == [2, 5, 1, 3]
+    assert list(n.val for n in f(trees[1])) == [9, 2, 1]
+    assert list(n.val for n in f(trees[2])) == []
+    assert list(n.val for n in f(trees[3])) == [1, 8, 9]
+    assert list(n.val for n in f(trees[4])) == [2, 1, 3]
 
 
-def test_postorder(trees):
-    fs = []
-    for f in fs:
-        assert list(n.val for n in f(trees[0])) == [5, 2, 3, 1]
-        assert list(n.val for n in f(trees[1])) == [9, 2, 1]
-        assert list(n.val for n in f(trees[2])) == []
-        assert list(n.val for n in f(trees[3])) == [8, 9, 1]
-        assert list(n.val for n in f(trees[4])) == [2, 3, 1]
+@pytest.mark.parametrize('f', ())
+def test_postorder(trees, f):
+    assert list(n.val for n in f(trees[0])) == [5, 2, 3, 1]
+    assert list(n.val for n in f(trees[1])) == [9, 2, 1]
+    assert list(n.val for n in f(trees[2])) == []
+    assert list(n.val for n in f(trees[3])) == [8, 9, 1]
+    assert list(n.val for n in f(trees[4])) == [2, 3, 1]
