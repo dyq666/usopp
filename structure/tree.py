@@ -92,6 +92,8 @@ class BinaryTree:
         """中序遍历.
 
         中序遍历的验证可使用 LeetCode 538.
+
+        TODO 研究为什么要这么做, 怎么从递归转换来的.
         """
 
         def _left_side(n: BinaryTreeNode) -> Iterable:
@@ -107,6 +109,30 @@ class BinaryTree:
             node = nodes.pop()
             yield node
             nodes.extend(_left_side(node.right))
+
+    @classmethod
+    def postorder(cls, root: Optional[BinaryTreeNode]
+                  ) -> Generator:
+        """后序遍历.
+
+        TODO 研究为什么要这么做, 怎么从递归转换来的.
+        """
+
+        def _left_traversal(n):
+            while n:
+                if n.right:
+                    yield n.right
+                yield n
+                n = n.left
+
+        unused = list(_left_traversal(root))
+        while unused:
+            node = unused.pop()
+            if unused and node.right is unused[-1]:
+                unused[-1] = node
+                unused.extend(_left_traversal(node.right))
+            else:
+                yield node
 
     @classmethod
     def _preorder(cls, root: Optional[BinaryTreeNode]

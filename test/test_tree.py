@@ -41,7 +41,7 @@ def test_inorder(trees, f):
     assert list(n.val for n in f(trees[4])) == [2, 1, 3]
 
 
-@pytest.mark.parametrize('f', ())
+@pytest.mark.parametrize('f', (BinaryTree.postorder,))
 def test_postorder(trees, f):
     assert list(n.val for n in f(trees[0])) == [5, 2, 3, 1]
     assert list(n.val for n in f(trees[1])) == [9, 2, 1]
