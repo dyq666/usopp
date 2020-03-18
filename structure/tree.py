@@ -169,10 +169,10 @@ class BT:
         return bool(node and node.left is None and node.right is None)
 
     @classmethod
-    def _preorder(cls, root: Optional[BTNode]) -> Generator:
+    def preorder_with_mocked_stack(cls, root: Optional[BTNode]) -> Generator:
         """模拟系统栈实现前序遍历.
 
-        总共有两种操作: 0 代表继续遍历, 1 代表返回节点.
+        `nodes` 中存储的结构为 (操作码, 节点), 操作码有 0, 1 两种, 其中 0 代表遍历, 1 代表返回.
 
         另外, 只要改变入栈顺序就可以换成中序遍历和后序遍历, 所以用不用这种方式
         再实现其他遍历顺序了.
@@ -184,7 +184,16 @@ class BT:
         while nodes:
             operator, node = nodes.pop()
             if operator == 0:
-                nodes.extend((t, n) for t, n in
-                             ((0, node.right), (0, node.left), (1, node)) if n)
+                operators = [(0, node.right), (0, node.left), (1, node)]
+                nodes.extend((o, n) for o, n in operators if n)
             else:
                 yield node
+
+    @classmethod
+    def preorder_with_recursion(cls, root: Optional[BTNode]) -> Generator:
+        """递归实现前序遍历."""
+        if not root:
+            return
+        yield root
+        yield from cls.preorder_with_recursion(root.left)
+        yield from cls.preorder_with_recursion(root.right)

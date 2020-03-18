@@ -23,7 +23,8 @@ def trees():
 
 
 @pytest.mark.parametrize('f', (BT.preorder,
-                               BT._preorder,))
+                               BT.preorder_with_mocked_stack,
+                               BT.preorder_with_recursion,))
 def test_preorder(trees, f):
     assert list(n.val for n in f(trees[0])) == [1, 2, 5, 3]
     assert list(n.val for n in f(trees[1])) == [1, 2, 9]
