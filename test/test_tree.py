@@ -1,3 +1,5 @@
+from functools import partial
+
 import pytest
 
 from structure import BTNode, BT
@@ -33,13 +35,16 @@ def test_preorder(trees, f):
     assert list(n.val for n in f(trees[4])) == [1, 2, 3]
     assert list(n.val for n in f(trees[5])) == [9, 8, 4, 7, 3]
 
-    if f is BT.preorder:
-        assert list(n and n.val for n in f(trees[0], False)) == [1, 2, None, 5, 3]
-        assert list(n and n.val for n in f(trees[1], False)) == [1, 2, 9, None, None]
-        assert list(n and n.val for n in f(trees[2], False)) == []
-        assert list(n and n.val for n in f(trees[3], False)) == [1, None, 9, 8, None]
-        assert list(n and n.val for n in f(trees[4], False)) == [1, 2, 3]
-        assert list(n and n.val for n in f(trees[5], False)) == [9, 8, None, 4, 7, 3, None]
+
+@pytest.mark.parametrize('f', (partial(BT.preorder, skip_none=False),
+                               BT.preorder_with_recursion_and_none))
+def test_preorder_with_none(trees, f):
+    assert list(n and n.val for n in f(trees[0])) == [1, 2, None, 5, 3]
+    assert list(n and n.val for n in f(trees[1])) == [1, 2, 9, None, None]
+    assert list(n and n.val for n in f(trees[2])) == []
+    assert list(n and n.val for n in f(trees[3])) == [1, None, 9, 8, None]
+    assert list(n and n.val for n in f(trees[4])) == [1, 2, 3]
+    assert list(n and n.val for n in f(trees[5])) == [9, 8, None, 4, 7, 3, None]
 
 
 @pytest.mark.parametrize('f', (BT.inorder,))

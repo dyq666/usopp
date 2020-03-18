@@ -206,6 +206,25 @@ class BT:
         """递归实现前序遍历."""
         if not root:
             return
+
         yield root
         yield from cls.preorder_with_recursion(root.left)
         yield from cls.preorder_with_recursion(root.right)
+
+    @classmethod
+    def preorder_with_recursion_and_none(cls, root: Optional[BTNode],
+                                         father_is_leaf: bool = True) -> Generator:
+        """递归实现前序遍历, 同时返回非叶子节点的空节点.
+
+        `father_is_leaf`: 实际上这个函数拆成两个函数, 一个面向使用者, 一个用于递归. 因为 `father_is_leaf`
+                          并不需要提供给使用者. 默认值为 `True` 是因为当根节点为 None 时, 希望返回一个空
+                          的迭代器.
+        """
+        if not root:
+            if not father_is_leaf:
+                yield
+            return
+
+        yield root
+        yield from cls.preorder_with_recursion_and_none(root.left, cls.isleaf(root))
+        yield from cls.preorder_with_recursion_and_none(root.right, cls.isleaf(root))
