@@ -1,3 +1,7 @@
+__all__ = (
+    'BinaryTree', 'BinaryTreeNode',
+)
+
 from itertools import chain
 from typing import Any, Generator, Iterable, Optional
 
@@ -183,21 +187,3 @@ class BinaryTree:
                              ((0, node.right), (0, node.left), (1, node)) if n)
             else:
                 yield node
-
-
-class BinaryTreeRecursion:
-    """递归实现各种二叉树的操作."""
-
-    @classmethod
-    def preorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
-        """前序遍历.
-
-        只要改变语句顺序就可以换成中序遍历和后序遍历, 所以就不用这种方式
-        再实现其他遍历顺序了.
-        """
-        if root is None:
-            return
-
-        yield root
-        yield from cls.preorder(root.left)
-        yield from cls.preorder(root.right)

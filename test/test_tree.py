@@ -1,6 +1,6 @@
 import pytest
 
-from structure import BinaryTreeNode, BinaryTree, BinaryTreeRecursion
+from structure import BinaryTreeNode, BinaryTree
 
 
 @pytest.fixture
@@ -23,8 +23,7 @@ def trees():
 
 
 @pytest.mark.parametrize('f', (BinaryTree.preorder,
-                               BinaryTree._preorder,
-                               BinaryTreeRecursion.preorder))
+                               BinaryTree._preorder,))
 def test_preorder(trees, f):
     assert list(n.val for n in f(trees[0])) == [1, 2, 5, 3]
     assert list(n.val for n in f(trees[1])) == [1, 2, 9]
