@@ -7,9 +7,9 @@ from structure import BinaryTreeNode, BinaryTree, BinaryTreeRecursion
 def trees():
     """返回如下的五棵树 (最大层数: 3).
     ```
-        1         1      N      1        1
-      2   3     2   N         N   9    2   3
-     N 5 N N   9 N               8 N
+        1         1      N      1        1       9
+      2   3     2   N         N   9    2   3   8   7
+     N 5       9 N               8 N          N 4 3 N
     ```
     """
     return [
@@ -18,6 +18,7 @@ def trees():
         BinaryTreeNode.from_list([None]),
         BinaryTreeNode.from_list([1, None, 9, None, None, 8, None]),
         BinaryTreeNode.from_list([1, 2, 3]),
+        BinaryTreeNode.from_list([9, 8, 7, None, 4, 3, None])
     ]
 
 
@@ -57,3 +58,11 @@ def test_levelorder(trees, f):
     assert list(n.val for level in f(trees[2]) for n in level) == []
     assert list(n.val for level in f(trees[3]) for n in level) == [1, 9, 8]
     assert list(n.val for level in f(trees[4]) for n in level) == [1, 2, 3]
+    assert list(n.val for level in f(trees[5]) for n in level) == [9, 8, 7, 4, 3]
+
+    assert list(n and n.val for level in f(trees[0], False) for n in level) == [1, 2, 3, None, 5]
+    assert list(n and n.val for level in f(trees[1], False) for n in level) == [1, 2, None, 9, None]
+    assert list(n and n.val for level in f(trees[2], False) for n in level) == []
+    assert list(n and n.val for level in f(trees[3], False) for n in level) == [1, None, 9, 8, None]
+    assert list(n and n.val for level in f(trees[4], False) for n in level) == [1, 2, 3]
+    assert list(n and n.val for level in f(trees[5], False) for n in level) == [9, 8, 7, None, 4, 3, None]

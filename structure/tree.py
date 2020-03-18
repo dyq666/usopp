@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import Any, Generator, Iterable, Optional
 
 
@@ -132,21 +133,35 @@ class BinaryTree:
                 yield node
 
     @classmethod
-    def levelorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
-        """层序遍历.
+    def levelorder(cls, root: Optional[BinaryTreeNode],
+                   skip_none: bool = True) -> Generator:
+        """层序遍历 (每次都返回一层的节点).
 
-        虽然这里用的是 list, 但实际上还是先进先出, 只不过这里先进先出的特性是由
-        遍历完成的而不是队列 (先放进 list 的先被访问).
+        `skip_none`: 非叶子节点是否返回空子节点.
 
-        每次都返回一层的节点.
+        层序遍历通常使用队列, 为什么这里用的是 list, list 应该只能用做栈 ?
+
+        答: 虽然这里用的是 list, 但实际上还是先进先出, 只不过这里先进先出的特性是由
+        遍历完成的 (先放进 list 的先被访问).
         """
         if not root:
             return
         nodes = [root]
-        while nodes:
-            yield nodes
-            nodes = [child for n in nodes
-                     for child in (n.left, n.right) if child]
+
+        if skip_none:
+            while nodes:
+                yield nodes
+                nodes = [child for n in nodes
+                         for child in (n.left, n.right) if child]
+        else:
+            while nodes:
+                yield nodes
+                nodes = (n for n in nodes if n and not cls.isleaf(n))
+                nodes = list(chain.from_iterable((n.left, n.right) for n in nodes))
+
+    @classmethod
+    def isleaf(cls, node):
+        return node and node.left is None and node.right is None
 
     @classmethod
     def _preorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
