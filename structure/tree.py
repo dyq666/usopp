@@ -165,7 +165,8 @@ class BinaryTree:
 
     @classmethod
     def isleaf(cls, node):
-        return node and node.left is None and node.right is None
+        """是否为叶子节点."""
+        return bool(node and node.left is None and node.right is None)
 
     @classmethod
     def _preorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
