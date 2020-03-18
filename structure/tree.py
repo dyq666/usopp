@@ -1,5 +1,5 @@
 __all__ = (
-    'BT', 'BTNode',
+    'BTNode', 'BTUtil'
 )
 
 from itertools import chain
@@ -9,7 +9,7 @@ from util import no_value
 
 
 class BTNode:
-    """二叉树节点."""
+    """二叉树节点. (BT -> BinaryTree)"""
 
     def __init__(self, val: Any,
                  left: Optional['BTNode'] = None,
@@ -73,8 +73,8 @@ class BTNode:
         return node
 
 
-class BT:
-    """Binary Tree 常用操作."""
+class BTUtil:
+    """二叉树常用操作. (BT -> BinaryTree)"""
 
     @classmethod
     def preorder(cls, root: Optional[BTNode], skip_none: bool = True

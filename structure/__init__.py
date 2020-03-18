@@ -1,5 +1,5 @@
 __all__ = (
-    'BT', 'BTNode',
+    'BTNode', 'BTUtil',
     'DynamicArrayV1',
     'DynamicArrayV2',
     'LinkedListV1',
@@ -14,4 +14,4 @@ from .array import (
     LoopArrayV3,
 )
 from .linked_list import LinkedListV1, LinkedListV2
-from .tree import BT, BTNode
+from .tree import BTNode, BTUtil
