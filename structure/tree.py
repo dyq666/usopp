@@ -5,6 +5,8 @@ __all__ = (
 from itertools import chain
 from typing import Any, Generator, Iterable, Optional
 
+from util import no_value
+
 
 class BTNode:
     """二叉树节点."""
@@ -39,13 +41,21 @@ class BTNode:
           - 1: 3, 4
           - 2: 5, 6
           - n: (n + 1) * 2 - 1, (n + 1) * 2
+
+        另外需要注意区分空节点和值为 None 的节点. 例如下面两个数组, `no_value` 代表
+        是空节点, `None` 代表节点的值为 `None`.
+        ```
+        [10,                      10         [10                       10
+         20, 30           ->    20  30        20, 30        ->     20     30
+         `no_value`, 40]       N 40           None, 40]         None 40
+        ```
         """
         return cls._from_list(tuple(data), 0)
 
     @classmethod
     def _from_list(cls, data: tuple, index: int) -> Optional['BTNode']:
         """根据 `index` 从 `data` 中找到数据, 生成节点 (`from_list` 的递归函数)."""
-        if index >= len(data) or data[index] is None:
+        if index >= len(data) or data[index] is no_value:
             return
 
         node = cls(data[index])

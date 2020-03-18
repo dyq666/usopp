@@ -3,6 +3,7 @@ from functools import partial
 import pytest
 
 from structure import BTNode, BT
+from util import no_value
 
 
 @pytest.fixture
@@ -15,12 +16,12 @@ def trees():
     ```
     """
     return [
-        BTNode.from_list([1, 2, 3, None, 5]),
-        BTNode.from_list([1, 2, None, 9, None]),
-        BTNode.from_list([None]),
-        BTNode.from_list([1, None, 9, None, None, 8, None]),
+        BTNode.from_list([1, 2, 3, no_value, 5]),
+        BTNode.from_list([1, 2, no_value, 9, no_value]),
+        BTNode.from_list([no_value]),
+        BTNode.from_list([1, no_value, 9, no_value, no_value, 8, no_value]),
         BTNode.from_list([1, 2, 3]),
-        BTNode.from_list([9, 8, 7, None, 4, 3, None])
+        BTNode.from_list([9, 8, 7, no_value, 4, 3, no_value])
     ]
 
 

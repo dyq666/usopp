@@ -1,10 +1,13 @@
 __all__ = (
-    'PrioQueue', 'check_index', 'merge_sorted_list', 'not_empty',
+    'PrioQueue', 'check_index', 'merge_sorted_list', 'no_value',
+    'not_empty',
 )
 
 import heapq
 from functools import wraps
 from typing import Any, Callable, Iterable, Sized, Tuple
+
+no_value = object()
 
 
 class PrioQueue:
