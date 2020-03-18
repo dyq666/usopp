@@ -150,16 +150,15 @@ class BT:
         """
         if not root:
             return
-        nodes = [root]
 
-        if skip_none:
-            while nodes:
-                yield nodes
-                nodes = [child for n in nodes
+        nodes = [root]
+        while nodes:
+            yield nodes
+            if skip_none:
+                nodes = [child
+                         for n in nodes
                          for child in (n.left, n.right) if child]
-        else:
-            while nodes:
-                yield nodes
+            else:
                 nodes = (n for n in nodes if n and not cls.isleaf(n))
                 nodes = list(chain.from_iterable((n.left, n.right) for n in nodes))
 
