@@ -31,6 +31,15 @@ def test_preorder(trees, f):
     assert list(n.val for n in f(trees[2])) == []
     assert list(n.val for n in f(trees[3])) == [1, 9, 8]
     assert list(n.val for n in f(trees[4])) == [1, 2, 3]
+    assert list(n.val for n in f(trees[5])) == [9, 8, 4, 7, 3]
+
+    if f is BT.preorder:
+        assert list(n and n.val for n in f(trees[0], False)) == [1, 2, None, 5, 3]
+        assert list(n and n.val for n in f(trees[1], False)) == [1, 2, 9, None, None]
+        assert list(n and n.val for n in f(trees[2], False)) == []
+        assert list(n and n.val for n in f(trees[3], False)) == [1, None, 9, 8, None]
+        assert list(n and n.val for n in f(trees[4], False)) == [1, 2, 3]
+        assert list(n and n.val for n in f(trees[5], False)) == [9, 8, None, 4, 7, 3, None]
 
 
 @pytest.mark.parametrize('f', (BT.inorder,))

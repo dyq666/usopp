@@ -16,6 +16,13 @@ class BTNode:
         self.left = left
         self.right = right
 
+    def __repr__(self) -> str:
+        return (
+            f'<{self.__class__.__name__}'
+            f' val={self.val!r}'
+            f'>'
+        )
+
     @classmethod
     def from_list(cls, data: Iterable) -> Optional['BTNode']:
         """根据数组生成一棵树.
@@ -51,8 +58,10 @@ class BT:
     """Binary Tree 常用操作."""
 
     @classmethod
-    def preorder(cls, root: Optional[BTNode]) -> Generator:
+    def preorder(cls, root: Optional[BTNode], skip_none: bool = True) -> Generator:
         """前序遍历.
+
+        `skip_none`: 非叶子节点是否返回空子节点.
 
         为什么前序遍历会想到用栈而不是队列呢 ?
 
@@ -84,11 +93,16 @@ class BT:
         """
         if not root:
             return
+
         nodes = [root]
         while nodes:
             node = nodes.pop()
             yield node
-            nodes.extend(n for n in (node.right, node.left) if n)
+            if skip_none:
+                nodes.extend(n for n in (node.right, node.left) if n)
+            else:
+                if node and not cls.isleaf(node):
+                    nodes.extend(n for n in (node.right, node.left))
 
     @classmethod
     def inorder(cls, root: Optional[BTNode]) -> Generator:
@@ -137,8 +151,7 @@ class BT:
                 yield node
 
     @classmethod
-    def levelorder(cls, root: Optional[BTNode],
-                   skip_none: bool = True) -> Generator:
+    def levelorder(cls, root: Optional[BTNode], skip_none: bool = True) -> Generator:
         """层序遍历 (每次都返回一层的节点).
 
         `skip_none`: 非叶子节点是否返回空子节点.
@@ -163,7 +176,7 @@ class BT:
                 nodes = list(chain.from_iterable((n.left, n.right) for n in nodes))
 
     @classmethod
-    def isleaf(cls, node):
+    def isleaf(cls, node: Optional[BTNode]):
         """是否为叶子节点."""
         return bool(node and node.left is None and node.right is None)
 
