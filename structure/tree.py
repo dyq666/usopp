@@ -1,23 +1,23 @@
 __all__ = (
-    'BinaryTree', 'BinaryTreeNode',
+    'BT', 'BTNode',
 )
 
 from itertools import chain
 from typing import Any, Generator, Iterable, Optional
 
 
-class BinaryTreeNode:
+class BTNode:
     """二叉树节点."""
 
     def __init__(self, val: Any,
-                 left: Optional['BinaryTreeNode'] = None,
-                 right: Optional['BinaryTreeNode'] = None):
+                 left: Optional['BTNode'] = None,
+                 right: Optional['BTNode'] = None):
         self.val = val
         self.left = left
         self.right = right
 
     @classmethod
-    def from_list(cls, data: Iterable) -> Optional['BinaryTreeNode']:
+    def from_list(cls, data: Iterable) -> Optional['BTNode']:
         """根据数组生成一棵树.
 
         树生成数组可以用层序遍历, 如下图所示:
@@ -36,7 +36,7 @@ class BinaryTreeNode:
         return cls._from_list(tuple(data), 0)
 
     @classmethod
-    def _from_list(cls, data: tuple, index: int) -> Optional['BinaryTreeNode']:
+    def _from_list(cls, data: tuple, index: int) -> Optional['BTNode']:
         """根据 `index` 从 `data` 中找到数据, 生成节点 (`from_list` 的递归函数)."""
         if index >= len(data) or data[index] is None:
             return
@@ -47,11 +47,11 @@ class BinaryTreeNode:
         return node
 
 
-class BinaryTree:
-    """迭代实现各种二叉树的操作."""
+class BT:
+    """Binary Tree 常用操作."""
 
     @classmethod
-    def preorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
+    def preorder(cls, root: Optional[BTNode]) -> Generator:
         """前序遍历.
 
         为什么前序遍历会想到用栈而不是队列呢 ?
@@ -91,7 +91,7 @@ class BinaryTree:
             nodes.extend(n for n in (node.right, node.left) if n)
 
     @classmethod
-    def inorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
+    def inorder(cls, root: Optional[BTNode]) -> Generator:
         """中序遍历.
 
         中序遍历的验证可使用 LeetCode 538.
@@ -99,7 +99,7 @@ class BinaryTree:
         TODO 研究为什么要这么做, 怎么从递归转换来的.
         """
 
-        def _left_side(n: BinaryTreeNode) -> Iterable:
+        def _left_side(n: BTNode) -> Iterable:
             """返回所有左侧的节点 (包括节点本身)."""
             while n:
                 yield n
@@ -114,7 +114,7 @@ class BinaryTree:
             nodes.extend(_left_side(node.right))
 
     @classmethod
-    def postorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
+    def postorder(cls, root: Optional[BTNode]) -> Generator:
         """后序遍历.
 
         TODO 研究为什么要这么做, 怎么从递归转换来的.
@@ -137,7 +137,7 @@ class BinaryTree:
                 yield node
 
     @classmethod
-    def levelorder(cls, root: Optional[BinaryTreeNode],
+    def levelorder(cls, root: Optional[BTNode],
                    skip_none: bool = True) -> Generator:
         """层序遍历 (每次都返回一层的节点).
 
@@ -169,7 +169,7 @@ class BinaryTree:
         return bool(node and node.left is None and node.right is None)
 
     @classmethod
-    def _preorder(cls, root: Optional[BinaryTreeNode]) -> Generator:
+    def _preorder(cls, root: Optional[BTNode]) -> Generator:
         """模拟系统栈实现前序遍历.
 
         总共有两种操作: 0 代表继续遍历, 1 代表返回节点.
