@@ -3,7 +3,7 @@ __all__ = (
 )
 
 from itertools import chain
-from typing import Any, Generator, Iterable, Optional
+from typing import Any, Generator, List, Iterable, Optional
 
 from util import no_value
 
@@ -78,38 +78,31 @@ class BTUtil:
 
     @classmethod
     def preorder(cls, root: Optional[BTNode], skip_none: bool = True
-                 ) -> Generator['BTNode', None, None]:
+                 ) -> Generator[BTNode, None, None]:
         """前序遍历.
 
-        `skip_none`: 非叶子节点是否返回空子节点.
+        `skip_none`: 非叶子节点的空子节点是否返回.
 
         为什么前序遍历会想到用栈而不是队列呢 ?
 
-        答: 因为栈可以插队, 而队列不行. 当遍历到某个节点时, 必须存储节点的左右节点,
-        如果使用队列, 那么无论如何存储, 下两次 `pop` 肯定是这两个节点, 而前序遍历需要
-        先遍历左节点的所有子节点再遍历右节点. 使用栈时, 可以右节点先入栈, 左节点再入栈,
-        取出左节点, 将左节点的子节点入栈, 这时子节点就插到了右节点的前面, 符合前序遍历.
+        答: 因为栈可以插队, 而队列不行. 当遍历到某个节点时, 需要存储节点的左右节点,
+        如果使用队列, 下两次出队肯定是这两个节点, 而前序遍历需要先遍历左子树再遍历右子树.
+        使用栈时, 可以右节点先入栈, 左节点再入栈, 取出左节点, 将左节点的子节点入栈,
+        这时左子节点就插到了右节点的前面.
 
         如何看待迭代实现和递归实现二者的异同 ?
 
-        答: 实际上二者逻辑类似. 假设每条语句存储到栈中依次执行, 那么最后一条语句
-        一定在栈底, `_preorder` 中模拟系统栈实现了前序遍历. 下图展示了 `_preorder`
-        运行 `yield root` 和 `preorder root.l` 之后的系统栈 (在 `preorder`
-        中, 0 代表操作 preorder, 1 代表操作 yield). `_preorder` 中操作 0 的
-        入栈顺序和递归实现中的语句相对应, 递归实现中调换顺序就能实现中序和后序, `_preorder`
-        中调换操作 0 的入栈顺序也能实现中序和后序.
-        ```
-        yield root           preorder root.l      yield root.l
-        preorder root.l  ->  preorder root.r  ->  preorder root.l.l
-        preorder root.r                           preorder root.l.r
-                                                  preorder root.r
-        ```
+        答: 实际上二者逻辑类似. 假设函数的每条语句存储到栈中执行, 那么最后一条语句
+        一定在栈底. `preorder_with_mocked_stack` 中模拟系统栈实现了前序遍历,
+        栈中的顺序和 `preorder_with_recursion` 的语句是对应的, 1 代表 `yield xx`
+        0 代表 `yield from cls.preorder_with_recursion_and_none`.
+        而 `node and node.right` 实际上就是递归中的终止条件 `if not root: return`.
 
-        `preorder` 和 `_preorder` 的区别 ?
+        `preorder` 和 `preorder_with_mocked_stack` 的区别 ?
 
-        答: `_preorder` 更容易理解, 因为可以和递归实现相对应, 也更容易转换成
-        中序和后序. 而 `preorder` 是只针对前序遍历的实现, 减少了入栈出栈的次数,
-        因而不能扩展到中序和后序, 当然中序和后序都有自己的优化实现.
+        答: `preorder_with_mocked_stack` 更容易理解, 更容易转换成中序和后序遍历.
+        而 `preorder` 只针对前序遍历的优化实现, 减少了入栈出栈的次数, 因而不能扩展到中序和后序,
+        当然, 中序和后序都有自己的优化实现.
         """
         if not root:
             return
@@ -125,7 +118,7 @@ class BTUtil:
                     nodes.extend(n for n in (node.right, node.left))
 
     @classmethod
-    def inorder(cls, root: Optional[BTNode]) -> Generator['BTNode', None, None]:
+    def inorder(cls, root: Optional[BTNode]) -> Generator[BTNode, None, None]:
         """中序遍历.
 
         中序遍历的验证可使用 LeetCode 538.
@@ -148,7 +141,7 @@ class BTUtil:
             nodes.extend(_left_side(node.right))
 
     @classmethod
-    def postorder(cls, root: Optional[BTNode]) -> Generator['BTNode', None, None]:
+    def postorder(cls, root: Optional[BTNode]) -> Generator[BTNode, None, None]:
         """后序遍历.
 
         TODO 研究为什么要这么做, 怎么从递归转换来的.
@@ -172,10 +165,10 @@ class BTUtil:
 
     @classmethod
     def levelorder(cls, root: Optional[BTNode], skip_none: bool = True
-                   ) -> Generator['BTNode', None, None]:
+                   ) -> Generator[List[BTNode], None, None]:
         """层序遍历 (每次都返回一层的节点).
 
-        `skip_none`: 非叶子节点是否返回空子节点.
+        `skip_none`: 非叶子节点的空子节点是否返回.
 
         层序遍历通常使用队列, 为什么这里用的是 list, list 应该只能用做栈 ?
 
@@ -194,22 +187,23 @@ class BTUtil:
                          for child in (n.left, n.right) if child]
             else:
                 nodes = (n for n in nodes if n and not cls.isleaf(n))
-                nodes = list(chain.from_iterable((n.left, n.right) for n in nodes))
+                nodes = list(chain.from_iterable((n.left, n.right)
+                                                 for n in nodes
+                                                 if n and not cls.isleaf(n)))
 
     @classmethod
-    def isleaf(cls, node: Optional[BTNode]):
+    def isleaf(cls, node: Optional[BTNode]) -> bool:
         """是否为叶子节点."""
         return bool(node and node.left is None and node.right is None)
 
     @classmethod
     def preorder_with_mocked_stack(cls, root: Optional[BTNode]
-                                   ) -> Generator['BTNode', None, None]:
+                                   ) -> Generator[BTNode, None, None]:
         """模拟系统栈实现前序遍历.
 
         `nodes` 中存储的结构为 (操作码, 节点), 操作码有 0, 1 两种, 其中 0 代表遍历, 1 代表返回.
 
-        另外, 只要改变入栈顺序就可以换成中序遍历和后序遍历, 所以用不用这种方式
-        再实现其他遍历顺序了.
+        另外, 只要改变入栈顺序就可以换成中序和后序.
         """
         if not root:
             return
@@ -218,15 +212,20 @@ class BTUtil:
         while nodes:
             operator, node = nodes.pop()
             if operator == 0:
-                operators = [(0, node.right), (0, node.left), (1, node)]
+                operators = []
+                if node and node.right:
+                    operators.append((0, node.right))
+                if node and node.left:
+                    operators.append((0, node.left))
+                operators.append((1, node))
                 nodes.extend((o, n) for o, n in operators if n)
             else:
                 yield node
 
     @classmethod
     def preorder_with_mocked_stack_and_none(cls, root: Optional[BTNode]
-                                            ) -> Generator['BTNode', None, None]:
-        """模拟系统栈实现前序遍历, 同时返回非叶子节点的空节点."""
+                                            ) -> Generator[BTNode, None, None]:
+        """模拟系统栈实现前序遍历 (返回非叶子节点的空节点)."""
         if not root:
             return
 
@@ -246,8 +245,11 @@ class BTUtil:
 
     @classmethod
     def preorder_with_recursion(cls, root: Optional[BTNode]
-                                ) -> Generator['BTNode', None, None]:
-        """递归实现前序遍历."""
+                                ) -> Generator[BTNode, None, None]:
+        """递归实现前序遍历.
+
+        另外, 只要改变语句顺序就可以换成中序和后序.
+        """
         if not root:
             return
 
@@ -258,7 +260,7 @@ class BTUtil:
     @classmethod
     def preorder_with_recursion_and_none(cls, root: Optional[BTNode],
                                          father_is_leaf: bool = True
-                                         ) -> Generator['BTNode', None, None]:
+                                         ) -> Generator[BTNode, None, None]:
         """递归实现前序遍历, 同时返回非叶子节点的空节点.
 
         `father_is_leaf`: 实际上这个函数拆成两个函数, 一个面向使用者, 一个用于递归. 因为 `father_is_leaf`
@@ -267,7 +269,7 @@ class BTUtil:
         """
         if not root:
             if not father_is_leaf:
-                yield
+                yield root
             return
 
         yield root
