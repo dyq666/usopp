@@ -16,12 +16,12 @@ def trees():
     ```
     """
     return [
-        BTNode.from_list([1, 2, 3, no_value, 5]),
-        BTNode.from_list([1, 2, no_value, 9, no_value]),
-        BTNode.from_list([no_value]),
-        BTNode.from_list([1, no_value, 9, no_value, no_value, 8, no_value]),
-        BTNode.from_list([1, 2, 3]),
-        BTNode.from_list([9, 8, 7, no_value, 4, 3, no_value])
+        BTNode.from_iterable([1, 2, 3, no_value, 5]),
+        BTNode.from_iterable([1, 2, no_value, 9, no_value]),
+        BTNode.from_iterable([no_value]),
+        BTNode.from_iterable([1, no_value, 9, no_value, no_value, 8, no_value]),
+        BTNode.from_iterable([1, 2, 3]),
+        BTNode.from_iterable([9, 8, 7, no_value, 4, 3, no_value])
     ]
 
 

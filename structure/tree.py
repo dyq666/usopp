@@ -26,41 +26,50 @@ class BTNode:
         )
 
     @classmethod
-    def from_list(cls, data: Iterable) -> Optional['BTNode']:
+    def from_iterable(cls, data: Iterable) -> Optional['BTNode']:
         """根据数组生成一棵树.
 
-        树生成数组可以用层序遍历, 如下图所示:
+        如下图所示, 层序遍历树生成数组. 其中 `no_value` 代表空节点.
         ```
-             10          [10,
-          20   30    ->   20, 30,
-        40 50 60 70       40, 50, 60, 70]
+            1          [1,
+          2   3    ->   2, 3,
+         4 5 空 6       4, 5, no_value, 40]
         ```
 
-        数组生成树依照索引, 父索引和子节点索引关系:
+        数组依照索引生成树, 由上图可知父索引和子索引关系:
           - 0: 1, 2
           - 1: 3, 4
           - 2: 5, 6
+            ...
           - n: (n + 1) * 2 - 1, (n + 1) * 2
 
-        另外需要注意区分空节点和值为 None 的节点. 例如下面两个数组, `no_value` 代表
-        是空节点, `None` 代表节点的值为 `None`.
+        由于索引是连续的, 所以数组中只有最后一层的空节点可以省略.
+        ```
+             1           [1,
+           2   3     ->   2, 3
+         4  5             4, 5, no_value, no_value,
+           6              no_value, no_value, 6]
+        ```
+
+        另外, 需要注意区分空节点和值为 `None` 的节点 (`no_value` 是空节点, `None` 代表值为 `None` 的节点).
+        如下图所示, 两个数组生成的树是不一样的.
         ```
         [10,                      10         [10                       10
          20, 30           ->    20  30        20, 30        ->     20     30
-         `no_value`, 40]       N 40           None, 40]         None 40
+         `no_value`, 40]       空 40          None, 40]         None 40
         ```
         """
-        return cls._from_list(tuple(data), 0)
+        return cls._gen_tree(tuple(data), 0)
 
     @classmethod
-    def _from_list(cls, data: tuple, index: int) -> Optional['BTNode']:
-        """根据 `index` 从 `data` 中找到数据, 生成节点 (`from_list` 的递归函数)."""
+    def _gen_tree(cls, data: tuple, index: int) -> Optional['BTNode']:
+        """以 `index` 索引作为根节点生成一棵树 (`cls.from_list` 的递归函数)."""
         if index >= len(data) or data[index] is no_value:
             return
 
         node = cls(data[index])
-        node.left = cls._from_list(data, (index + 1) * 2 - 1)
-        node.right = cls._from_list(data, (index + 1) * 2)
+        node.left = cls._gen_tree(data, (index + 1) * 2 - 1)
+        node.right = cls._gen_tree(data, (index + 1) * 2)
         return node
 
 
