@@ -202,6 +202,26 @@ class BT:
                 yield node
 
     @classmethod
+    def preorder_with_mocked_stack_and_none(cls, root: Optional[BTNode]) -> Generator:
+        """模拟系统栈实现前序遍历, 同时返回非叶子节点的空节点."""
+        if not root:
+            return
+
+        nodes = [(0, root)]
+        while nodes:
+            operator, node = nodes.pop()
+            if operator == 0:
+                operators = []
+                if node and (node.right or not cls.isleaf(node)):
+                    operators.append((0, node.right))
+                if node and (node.left or not cls.isleaf(node)):
+                    operators.append((0, node.left))
+                operators.append((1, node))
+                nodes.extend(operators)
+            else:
+                yield node
+
+    @classmethod
     def preorder_with_recursion(cls, root: Optional[BTNode]) -> Generator:
         """递归实现前序遍历."""
         if not root:
