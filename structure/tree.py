@@ -5,8 +5,6 @@ __all__ = (
 from itertools import chain
 from typing import Any, Generator, List, Iterable, Optional
 
-from util import no_value
-
 
 class BTNode:
     """二叉树节点. (BT -> BinaryTree)"""
@@ -29,11 +27,11 @@ class BTNode:
     def from_iterable(cls, data: Iterable) -> Optional['BTNode']:
         """根据数组生成一棵树.
 
-        如下图所示, 层序遍历树生成数组. 其中 `no_value` 代表空节点.
+        如下图所示, 层序遍历树生成数组.
         ```
             1          [1,
           2   3    ->   2, 3,
-         4 5 空 6       4, 5, no_value, 40]
+         4 5 空 6       4, 5, None, 40]
         ```
 
         数组依照索引生成树, 由上图可知父索引和子索引关系:
@@ -45,18 +43,10 @@ class BTNode:
 
         由于索引是连续的, 所以数组中只有最后一层的空节点可以省略.
         ```
-             1           [1,
-           2   3     ->   2, 3
-         4  5             4, 5, no_value, no_value,
-           6              no_value, no_value, 6]
-        ```
-
-        另外, 需要注意区分空节点和值为 `None` 的节点 (`no_value` 是空节点, `None` 代表值为 `None` 的节点).
-        如下图所示, 两个数组生成的树是不一样的.
-        ```
-        [10,                      10         [10                       10
-         20, 30           ->    20  30        20, 30        ->     20     30
-         `no_value`, 40]       空 40          None, 40]         None 40
+              1           [1,
+            2   3     ->   2, 3
+          4  5             4, 5, None, None,
+        空空 空6            None, None, 6]
         ```
         """
         return cls._gen_tree(tuple(data), 0)
@@ -64,7 +54,7 @@ class BTNode:
     @classmethod
     def _gen_tree(cls, data: tuple, index: int) -> Optional['BTNode']:
         """以 `index` 索引作为根节点生成一棵树 (`cls.from_list` 的递归函数)."""
-        if index >= len(data) or data[index] is no_value:
+        if index >= len(data) or data[index] is None:
             return
 
         node = cls(data[index])

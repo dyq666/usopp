@@ -4,7 +4,6 @@ from typing import Callable, List
 import pytest
 
 from structure import BTNode, BTUtil
-from util import no_value
 
 
 @pytest.fixture
@@ -17,12 +16,12 @@ def trees() -> List[BTNode]:
     ```
     """
     return [
-        BTNode.from_iterable([1, 2, 3, no_value, 5]),
-        BTNode.from_iterable([1, 2, no_value, 9, no_value]),
-        BTNode.from_iterable([no_value]),
-        BTNode.from_iterable([1, no_value, 9, no_value, no_value, 8, no_value]),
+        BTNode.from_iterable([1, 2, 3, None, 5]),
+        BTNode.from_iterable([1, 2, None, 9, None]),
+        BTNode.from_iterable([None]),
+        BTNode.from_iterable([1, None, 9, None, None, 8, None]),
         BTNode.from_iterable([1, 2, 3]),
-        BTNode.from_iterable([9, 8, 7, no_value, 4, 3, no_value])
+        BTNode.from_iterable([9, 8, 7, None, 4, 3, None])
     ]
 
 
