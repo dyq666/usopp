@@ -342,3 +342,17 @@ class BST:
                 self._size += 1
                 return
             self._add(node.right, value)
+
+    def add_with_recursion2(self, value: Any):
+        self.root = self._add2(self.root, value)
+
+    def _add2(self, node: Optional[BTNode], value: Any) -> BTNode:
+        if node is None:
+            self._size += 1
+            return BTNode(value)
+
+        if value < node.val:
+            node.left = self._add2(node.left, value)
+        else:
+            node.right = self._add2(node.right, value)
+        return node

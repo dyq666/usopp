@@ -24,6 +24,7 @@ def trees() -> List[BTNode]:
         BTNode.from_iterable([9, 8, 7, None, 4, 3, None]),
     ]
 
+
 @pytest.fixture
 def bst_arrays() -> List[List]:
     """返回如下的一些平衡二叉树 (最大层数: 3).
@@ -45,7 +46,8 @@ def bst_arrays() -> List[List]:
 
 class TestBST:
 
-    @pytest.mark.parametrize('f', (BST.add, BST.add_with_recursion))
+    @pytest.mark.parametrize('f', (BST.add, BST.add_with_recursion,
+                                   BST.add_with_recursion2))
     def test_add(self, f: Callable, bst_arrays: List[List]):
         for array in bst_arrays:
             tree = BST()
