@@ -7,7 +7,7 @@ from structure import BST, BTNode, BTUtil
 
 
 @pytest.fixture
-def bt_arrays() -> List:
+def bt_arrays() -> List[List]:
     """由 fixture `trees` 中的树层序遍历后生成的数组."""
     return [
         [1, 2, 3, None, 5],
@@ -20,7 +20,7 @@ def bt_arrays() -> List:
 
 
 @pytest.fixture
-def trees(bt_arrays: List) -> List[BTNode]:
+def trees(bt_arrays: List[List]) -> List[BTNode]:
     """返回如下的一些树 (最大层数: 3).
     ```
         1         1      N      1        1       9
@@ -32,7 +32,7 @@ def trees(bt_arrays: List) -> List[BTNode]:
 
 
 @pytest.fixture
-def bst_arrays() -> List:
+def bst_arrays() -> List[List]:
     """返回如下的一些平衡二叉树 (最大层数: 3).
     ```
         3         9      N     1        2       7
@@ -52,7 +52,7 @@ def bst_arrays() -> List:
 
 class TestBST:
 
-    def test_add(self, bst_arrays):
+    def test_add(self, bst_arrays: List[List]):
         for array in bst_arrays:
             tree = BST()
             for val in array:
