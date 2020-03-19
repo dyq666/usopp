@@ -63,6 +63,18 @@ class TestBST:
             assert res == array
             assert len(tree) == sum(1 for i in array if i is not None)
 
+        # 重复元素应该被忽略
+        array = bst_arrays[0]
+        tree = BST()
+        for val in array:
+            if val is not None:
+                tree.add(val)
+                tree.add(val)
+        res = [n and n.val for level in BTUtil.levelorder(tree.root, skip_none=False)
+               for n in level]
+        assert res == array
+        assert len(tree) == sum(1 for i in array if i is not None)
+
 
 class TestBTUtil:
 
