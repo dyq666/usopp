@@ -319,3 +319,26 @@ class BST:
                 needle = needle.right
             else:  # value == needle.val
                 break
+
+    def add_with_recursion(self, value: Any):
+        if self.root is None:
+            self.root = BTNode(value)
+            self._size += 1
+            return
+        return self._add(self.root, value)
+
+    def _add(self, node: BTNode, value: Any):
+        if value == node.val:
+            return
+        if value < node.val:
+            if node.left is None:
+                node.left = BTNode(value)
+                self._size += 1
+                return
+            self._add(node.left, value)
+        else:
+            if node.right is None:
+                node.right = BTNode(value)
+                self._size += 1
+                return
+            self._add(node.right, value)
