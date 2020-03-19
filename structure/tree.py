@@ -274,9 +274,13 @@ class BST:
         self._size: int = 0
         self.root: Optional[BTNode] = None
 
+    def __len__(self) -> int:
+        return self._size
+
     def add(self, value: Any):
         if self.root is None:
             self.root = BTNode(value)
+            self._size += 1
             return
 
         needle = self.root
@@ -289,3 +293,4 @@ class BST:
                 needle = needle.right
                 order = 'right'
         setattr(prev, order, BTNode(value))
+        self._size += 1

@@ -61,6 +61,7 @@ class TestBST:
             res = [n and n.val for level in BTUtil.levelorder(tree.root, skip_none=False)
                    for n in level]
             assert res == array
+            assert len(tree) == sum(1 for i in array if i is not None)
 
 
 class TestBTUtil:
