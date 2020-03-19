@@ -284,13 +284,18 @@ class BST:
             return
 
         needle = self.root
-        while needle:
-            prev = needle
-            if value <= needle.val:
+        while True:
+            if value < needle.val:
+                if needle.left is None:
+                    needle.left = BTNode(value)
+                    self._size += 1
+                    break
                 needle = needle.left
-                order = 'left'
-            else:
+            elif value > needle.val:
+                if needle.right is None:
+                    needle.right = BTNode(value)
+                    self._size += 1
+                    break
                 needle = needle.right
-                order = 'right'
-        setattr(prev, order, BTNode(value))
-        self._size += 1
+            else:  # value == needle.val
+                break
