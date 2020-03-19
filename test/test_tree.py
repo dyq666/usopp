@@ -3,24 +3,24 @@ from typing import Callable, List
 
 import pytest
 
-from structure import BTNode, BTUtil
+from structure import BST, BTNode, BTUtil
 
 
 @pytest.fixture
-def tree_arrays() -> List:
+def bt_arrays() -> List:
     """由 fixture `trees` 中的树层序遍历后生成的数组."""
     return [
         [1, 2, 3, None, 5],
         [1, 2, None, 9, None],
-        [None],
+        [],
         [1, None, 9, None, None, 8, None],
         [1, 2, 3],
-        [9, 8, 7, None, 4, 3, None]
+        [9, 8, 7, None, 4, 3, None],
     ]
 
 
 @pytest.fixture
-def trees(tree_arrays: List) -> List[BTNode]:
+def trees(bt_arrays: List) -> List[BTNode]:
     """返回如下的一些树 (最大层数: 3).
     ```
         1         1      N      1        1       9
@@ -28,7 +28,39 @@ def trees(tree_arrays: List) -> List[BTNode]:
      N 5       9 N               8 N          N 4 3 N
     ```
     """
-    return [BTNode.from_iterable(a) for a in tree_arrays]
+    return [BTNode.from_iterable(a) for a in bt_arrays]
+
+
+@pytest.fixture
+def bst_arrays() -> List:
+    """返回如下的一些平衡二叉树 (最大层数: 3).
+    ```
+        3         9      N     1        2       7
+      1   5     2  N         N   9    1   3   3   9
+     N 2       1 N              8 N          N 4 8 N
+    ```
+    """
+    return [
+        [3, 1, 5, None, 2],
+        [9, 2, None, 1, None],
+        [],
+        [1, None, 9, 8, None],
+        [2, 1, 3],
+        [7, 3, 9, None, 4, 8, None],
+    ]
+
+
+class TestBST:
+
+    def test_add(self, bst_arrays):
+        for array in bst_arrays:
+            tree = BST()
+            for val in array:
+                if val is not None:
+                    tree.add(val)
+            res = [n and n.val for level in BTUtil.levelorder(tree.root, skip_none=False)
+                               for n in level]
+            assert res == array
 
 
 class TestBTUtil:

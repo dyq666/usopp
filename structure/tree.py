@@ -1,5 +1,5 @@
 __all__ = (
-    'BTNode', 'BTUtil'
+    'BST', 'BTNode', 'BTUtil'
 )
 
 from itertools import chain
@@ -68,7 +68,7 @@ class BTUtil:
 
     @classmethod
     def preorder(cls, root: Optional[BTNode], skip_none: bool = True
-                 ) -> Generator[BTNode, None, None]:
+                 ) -> Generator[Optional[BTNode], None, None]:
         """前序遍历.
 
         `skip_none`: 非叶子节点的空子节点是否返回.
@@ -155,7 +155,7 @@ class BTUtil:
 
     @classmethod
     def levelorder(cls, root: Optional[BTNode], skip_none: bool = True
-                   ) -> Generator[List[BTNode], None, None]:
+                   ) -> Generator[List[Optional[BTNode]], None, None]:
         """层序遍历 (每次都返回一层的节点).
 
         `skip_none`: 非叶子节点的空子节点是否返回.
@@ -214,7 +214,7 @@ class BTUtil:
 
     @classmethod
     def preorder_with_mocked_stack_and_none(cls, root: Optional[BTNode]
-                                            ) -> Generator[BTNode, None, None]:
+                                            ) -> Generator[Optional[BTNode], None, None]:
         """模拟系统栈实现前序遍历 (返回非叶子节点的空节点)."""
         if not root:
             return
@@ -250,7 +250,7 @@ class BTUtil:
     @classmethod
     def preorder_with_recursion_and_none(cls, root: Optional[BTNode],
                                          father_is_leaf: bool = True
-                                         ) -> Generator[BTNode, None, None]:
+                                         ) -> Generator[Optional[BTNode], None, None]:
         """递归实现前序遍历, 同时返回非叶子节点的空节点.
 
         `father_is_leaf`: 实际上这个函数拆成两个函数, 一个面向使用者, 一个用于递归. 因为 `father_is_leaf`
@@ -265,3 +265,27 @@ class BTUtil:
         yield root
         yield from cls.preorder_with_recursion_and_none(root.left, cls.isleaf(root))
         yield from cls.preorder_with_recursion_and_none(root.right, cls.isleaf(root))
+
+
+class BST:
+    """二分搜索树. (BST -> BinarySearchTree)"""
+
+    def __init__(self):
+        self._size: int = 0
+        self.root: Optional[BTNode] = None
+
+    def add(self, value: Any):
+        if self.root is None:
+            self.root = BTNode(value)
+            return
+
+        needle = self.root
+        while needle:
+            prev = needle
+            if value <= needle.val:
+                needle = needle.left
+                order = 'left'
+            else:
+                needle = needle.right
+                order = 'right'
+        setattr(prev, order, BTNode(value))
