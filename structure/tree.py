@@ -222,12 +222,13 @@ class BTUtil:
             operator, node = nodes.pop()
             if operator == 0:
                 operators = []
-                if node and node.right:
+                # 这个方法中 `node` 只会是 `BTNode`, 因此可以不检查空.
+                if node.right:
                     operators.append((0, node.right))
-                if node and node.left:
+                if node.left:
                     operators.append((0, node.left))
                 operators.append((1, node))
-                nodes.extend((o, n) for o, n in operators if n)
+                nodes.extend(operators)
             else:
                 yield node
 
