@@ -44,7 +44,7 @@ def bst_arrays() -> List[List]:
         [3, 1, 5, None, 2],
         [9, 2, None, 1, None],
         [],
-        [1, None, 9, 8, None],
+        [1, None, 9, None, None, 8, None],
         [2, 1, 3],
         [7, 3, 9, None, 4, 8, None],
     ]
@@ -58,9 +58,7 @@ class TestBST:
             for val in array:
                 if val is not None:
                     tree.add(val)
-            res = [n and n.val for level in BTUtil.levelorder(tree.root, skip_none=False)
-                   for n in level]
-            assert res == array
+            assert BTUtil.is_equal(tree.root, BTNode.from_iterable(array))
             assert len(tree) == sum(1 for i in array if i is not None)
 
         # 重复元素应该被忽略
