@@ -2,7 +2,7 @@ __all__ = (
     'BST', 'BTNode', 'BTUtil'
 )
 
-from itertools import chain
+from itertools import chain, zip_longest
 from typing import Any, Generator, List, Iterable, Optional
 
 
@@ -180,6 +180,25 @@ class BTUtil:
                 nodes = list(chain.from_iterable((n.left, n.right)
                                                  for n in nodes
                                                  if n and not cls.isleaf(n)))
+
+    @classmethod
+    def is_equal(cls, one: Optional[BTNode],
+                 other: Optional[BTNode]) -> bool:
+        """判断两棵树是否相同.
+
+        这里可用任意遍历方式, 但无论哪种都必须返回非叶子节点的空子节点 (实际上返回包括
+        叶子节点的空子节点也是可以的, 只不过如果一棵树所有叶子节点相同, 那么这些叶子节
+        点的子节点也肯定是相同的).
+
+        此外, 可以用 LeetCode 100 测试.
+        """
+        for n1, n2 in zip_longest(cls.preorder(one, skip_none=False),
+                                  cls.preorder(other, skip_none=False)):
+            v1 = n1 and n1.val
+            v2 = n2 and n2.val
+            if v1 != v2:
+                return False
+        return True
 
     @classmethod
     def isleaf(cls, node: Optional[BTNode]) -> bool:
