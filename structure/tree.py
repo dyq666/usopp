@@ -221,6 +221,8 @@ class BTUtil:
         while nodes:
             operator, node = nodes.pop()
             if operator == 0:
+                # 这里可以改为 nodes.extend((o, n) for o, n in ((0, node.right), (0, node.left), (1, node)) if n)
+                # 不过为了和 `preorder_with_mocked_stack_and_none` 对比, 选择了分别 append 的方式.
                 operators = []
                 # 这个方法中 `node` 只会是 `BTNode`, 因此可以不检查空.
                 if node.right:
