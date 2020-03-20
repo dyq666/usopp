@@ -358,11 +358,17 @@ class BST:
     def pop_max(self) -> Any:
         """删除最大值.
 
-        检查顺序:
-          1. 树为空不能删.
-          2. 被删除节点是叶子节点, 将父节点的右指向空 (被删除节点只可能是右叶子节点).
-          3. 被删除节点不是叶子节点, 将父节点的右指向删除节点的左节点 (被删除节点不是叶子节点, 那么有且仅有左子树).
-        其中 2, 3 被删除的节点可能是根节点, 需要特殊处理.
+        实际上会遇到四种情况:
+
+          1. 被删除节点是根节点, 且树中只有一个节点, 因而也是叶子节点. 应将根节点指向空.
+          2. 被删除节点不是根节点是叶子节点. 应将父节点的右指向空 (因为最大值永远在右边, 所以被删除节点只可能是右叶子节点).
+          3. 被删除节点是根节点, 根节点有左子树. 应将根节点指向左子树 (因为最大值永远在右边, 所以当删除根节点时, 根节点有且仅有左子树).
+          4. 被删除节点不是根节点不是叶子节点. 应将父节点的右指向删除节点的左节点 (因为最大值永远在右边, 被删除节点有且仅有左子树).
+
+        其中 1, 3 可以合并, 因为叶子的节点的左节点是空, 所以 *应将根节点指向空* 等价于 *应将根节点指向根节点的左节点*.
+        同理 2, 4 也可以合并.
+
+        :) 如果树能像链表一样使用 dummy_root, 这四种情况就可以合成一种了.
         """
         # 找到最右边的节点
         prev = self.root
@@ -371,19 +377,10 @@ class BST:
             prev = delete
             delete = prev.right
 
-        # 2
-        if BTUtil.isleaf(delete):
-            if self.is_root(delete):
-                self.root = None
-            else:
-                prev.right = None
-        # 3
+        if self.is_root(delete):
+            self.root = delete.left
         else:
-            if self.is_root(delete):
-                self.root = delete.left
-            else:
-                prev.right = delete.left
-
+            prev.right = delete.left
         self._size -= 1
         return delete.val
 
