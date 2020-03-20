@@ -4,12 +4,11 @@ DATE: 2018.7.24
 1. 最大堆 - MaxHeap
 """
 
-from helper import swap_two_ele, closed_reversed_range, closed_range
+from .helper import swap_two_ele, closed_reversed_range, closed_range
 
 
 class MaxHeap:
-    """
-    最大堆
+    """最大堆
     概述
     1. 最大堆有多种实现方式, 这里采用数组的方式实现
        - 最大堆需要满足父亲比两个孩子都大
@@ -25,13 +24,13 @@ class MaxHeap:
     def __len__(self):
         """元素个数等于底层数组个数-1, 当然也可以选择维护一个size变量"""
         return len(self.__data) - 1
-    
+
     def __str__(self):
         r"""
         功能: 构建一个三层的树, 使用16进制标识了每个位置对应数组中索引
               67
-            /    \        
-          23      AB 
+            /    \
+          23      AB
          /  \    /  \
         01  45  89  CD
         限制: 只能显示7个数据, 而且每个数据必须是占两位的数字
@@ -50,7 +49,7 @@ class MaxHeap:
         # 2. 构建三层树
         trees = []
         for i in range(3):
-            trees.append([' ']*14)
+            trees.append([' '] * 14)
 
         # 3. 构建每层的关系
         tree_map = {
@@ -61,14 +60,14 @@ class MaxHeap:
 
         # 4. 获得每层的数据
         one_values = [data[i] for i in closed_range(1, 1) if i <= size]
-        two_values = [data[i] for i in closed_range(2, 3) if i <= size]              
-        three_values = [data[i] for i in closed_range(4, 7) if i <= size]              
+        two_values = [data[i] for i in closed_range(2, 3) if i <= size]
+        three_values = [data[i] for i in closed_range(4, 7) if i <= size]
 
         # 5. 将每层数据写入
         for level_i, level in enumerate([one_values, two_values, three_values]):
             for i, v in enumerate(level):
                 tree_maps = tree_map[level_i]
-                trees[level_i][tree_maps[i*2]], trees[level_i][tree_maps[i*2+1]] = str(v)[0], str(v)[1]
+                trees[level_i][tree_maps[i * 2]], trees[level_i][tree_maps[i * 2 + 1]] = str(v)[0], str(v)[1]
 
         # 6. 写入树枝
         intervals1 = [' '] * 14
@@ -77,9 +76,9 @@ class MaxHeap:
         intervals2[1], intervals2[4], intervals2[9], intervals2[12] = '/', '\\', '/', '\\'
         trees.insert(1, intervals1)
         trees.insert(3, intervals2)
-        
+
         # 7. 拼接字符串
-        str_tree = '\n'.join(''.join(tree)for tree in trees)
+        str_tree = '\n'.join(''.join(tree) for tree in trees)
         return str(f'data: {data[1:]}\ntree:\n{str_tree}')
 
     def heapyfy(self, nums):
@@ -93,7 +92,7 @@ class MaxHeap:
         """
         self.__data.extend(nums)
 
-        for i in closed_reversed_range(len(self)//2, 1):
+        for i in closed_reversed_range(len(self) // 2, 1):
             self.__shift_down(i)
 
     def insert(self, ele):
@@ -127,8 +126,8 @@ class MaxHeap:
         2. 最后一次的情况是父索引为1
         3. 如果父值小于子值就交换
         """
-        while (k > 1 and self.__data[k//2] < self.__data[k]):
-            swap_two_ele(self.__data, k//2, k)
+        while (k > 1 and self.__data[k // 2] < self.__data[k]):
+            swap_two_ele(self.__data, k // 2, k)
             k //= 2
 
     def __shift_down(self, father):
@@ -137,7 +136,7 @@ class MaxHeap:
         公式: 子的左index = 父index * 2, 子的右index = 父index * 2 + 1
         1. 只要当前节点还有左节点就继续, 也就是左节点的index要小于等于堆的大小
         2. 找到左右中最大的, 如果有右而且比左大, 则为右, 否则为左
-        3. 如果父大于子, 则结束。否则交换父子, 重置父索引。       
+        3. 如果父大于子, 则结束。否则交换父子, 重置父索引。
         """
         # 1. 还有左节点
         while father * 2 <= len(self):

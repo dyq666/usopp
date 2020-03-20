@@ -1,11 +1,13 @@
 from libs.tree import BT
 
+
 class Solution:
     """
     Date: 2018-10-10
     Method: 递归
     Solution: 前序 + 后序
     """
+
     def binaryTreePaths(self, root):
         self.cur_path = []
         return list(self.preorder(root))
@@ -22,6 +24,7 @@ class Solution:
         yield from self.preorder(node.right)
         self.cur_path.pop()
 
+
 class Solution02:
     """
     Date: 2018-10-13
@@ -29,6 +32,7 @@ class Solution02:
     Method: 迭代
     Solution: 后序
     """
+
     def binaryTreePaths(self, root):
         self.paths = []
         self.cur_path = []
@@ -54,4 +58,3 @@ class Solution02:
                 yield node.right
             yield node
             node = node.left
-

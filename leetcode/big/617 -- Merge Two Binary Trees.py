@@ -5,6 +5,7 @@ class Solution:
     Solution: 两棵树相应位置的节点都存在时, 执行合并.
               其余情况终止递归.
     """
+
     def mergeTrees(self, t1, t2):
         if not (t1 and t2):
             return t1 or t2
@@ -14,6 +15,7 @@ class Solution:
         t1.right = self.mergeTrees(t1.right, t2.right)
         return t1
 
+
 class Solution02:
     """
     Date: 2018-10-07
@@ -22,6 +24,7 @@ class Solution02:
               处理子节点时有三种情况, 都存在则放入栈之后处理, 其余三种情况只用解决 n1 的子节点不存在的情况.
               因为 n2 不存在不影响 n1, n1 n2 都不存在可以融合到 n1 不存在的情况.
     """
+
     def mergeTrees(self, t1, t2):
         if not (t1 and t2):
             return t1 or t2

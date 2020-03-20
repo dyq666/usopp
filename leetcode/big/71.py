@@ -11,7 +11,7 @@ class Solution:
 
             if i != '..':
                 r.append(i)
-            elif r: # c == '..' and r
+            elif r:  # c == '..' and r
                 r.pop()
 
         return '/' + '/'.join(r)

@@ -20,18 +20,18 @@ class Solution:
                     zero_index += 1
 
     def moveZeroes02(self, nums):
-            """
-            1. 使用队列记录0的位置
-            """
-            from collections import deque
+        """
+        1. 使用队列记录0的位置
+        """
+        from collections import deque
 
-            zero_indexes = deque()
+        zero_indexes = deque()
 
-            for i, num in enumerate(nums):
-                if num == 0:
+        for i, num in enumerate(nums):
+            if num == 0:
+                zero_indexes.append(i)
+            else:
+                if zero_indexes:
+                    zero_index = zero_indexes.popleft()
+                    nums[zero_index], nums[i] = num, nums[zero_index]
                     zero_indexes.append(i)
-                else:
-                    if zero_indexes:
-                        zero_index = zero_indexes.popleft()
-                        nums[zero_index], nums[i] = num, nums[zero_index]
-                        zero_indexes.append(i)

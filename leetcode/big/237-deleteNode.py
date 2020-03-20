@@ -11,7 +11,7 @@ class Solution:
         if node is None:
             return
 
-        if node.next == None:
+        if node.next is None:
             node = None
             return
 

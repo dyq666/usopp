@@ -2,12 +2,14 @@ from itertools import zip_longest
 
 from libs.tree import BT
 
+
 class Solution:
     """
     Date: 2018-10-25
     Method: 迭代
     Solution: 后序遍历所有节点, 找出与目标根节点的值并且后序值相同的点.
     """
+
     def isSubtree(self, s, t):
         nodes = []
         target = [node.val for node in BT.iterpostorder(t)]

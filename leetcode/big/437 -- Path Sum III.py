@@ -16,12 +16,14 @@ class Solution:
         return [v + node.val for v in left] + \
                [v + node.val for v in right] + [node.val]
 
+
 class Solution02:
     """
     Date: 2018-10-14
     Method: 迭代
     Solution: dfs, 每次计算出的路径都需要 yield 出
     """
+
     def pathSum(self, root, sum_):
         return sum(paths.count(sum_) for paths in self.iterdfs(root))
 

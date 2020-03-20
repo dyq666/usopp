@@ -8,14 +8,15 @@ DATE: 2018.7.24
 4. 交换数组中两个索引位置
 """
 
+
 def closed_range(l, r, step=1):
     """提供左闭右闭合的range"""
-    return range(l, r+1, step)
+    return range(l, r + 1, step)
 
 
 def closed_reversed_range(r, l, step=-1):
     """提供左闭右闭的逆向range"""
-    return range(r, l-1, step)
+    return range(r, l - 1, step)
 
 
 def swap_two_ele(nums, ele1, ele2):

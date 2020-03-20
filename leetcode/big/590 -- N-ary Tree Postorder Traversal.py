@@ -17,11 +17,13 @@ class Solution(object):
             self._post(child)
         self.res.append(node.val)
 
+
 class Solution02(object):
     """
     Date: 2018-10-02
     思路: 后序遍历 = 前序遍历从右向左 + 翻转
     """
+
     def postorder(self, root):
         if not root:
             return []

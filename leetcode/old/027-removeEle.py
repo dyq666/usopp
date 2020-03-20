@@ -16,7 +16,7 @@ class Solution:
             return len(nums)
         else:
             new_len = val_index
-            for i in range(val_index+1, len(nums)):
+            for i in range(val_index + 1, len(nums)):
                 if nums[i] != val:
                     nums[i], nums[val_index] = nums[val_index], nums[i]
                     val_index += 1

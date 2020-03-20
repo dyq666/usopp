@@ -4,6 +4,7 @@ class Solution:
     Method: 递归
     Solution: 从 [自身|左|右] 中选择一个(不如思路二)
     """
+
     def trimBST(self, node, L, R):
         if not node:
             return
@@ -18,12 +19,14 @@ class Solution:
         else:
             return node
 
+
 class Solution02:
     """
     Date: 2018-10-09
     Method: 递归
     Solution: 与解决一思考角度不同, 解决一先保证了左右两边是修整好的, 所以解决一中会遍历所有节点.
     """
+
     def trimBST(self, root, L, R):
         if not root:
             return
@@ -35,6 +38,7 @@ class Solution02:
         root.left = self.trimBST(root.left, L, R)
         root.right = self.trimBST(root.right, L, R)
         return root
+
 
 class Solution03:
     """

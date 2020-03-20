@@ -1,10 +1,12 @@
 from libs.tree import BT
 
+
 class Solution:
     """
     Date: 2018-10-05
     Method: 迭代
     """
+
     def findTilt(self, root):
         self.tilt = 0
         self._sum(root)
@@ -19,12 +21,14 @@ class Solution:
         self.tilt += abs(left - right)
         return left + right + node.val
 
+
 class Solution02:
     """
     Date: 2018-10-25
     Method: 迭代
     Solution: 后序遍历, dict 存储以节点为根的所有节点的和
     """
+
     def findTilt(self, root):
         sums = {None: 0}
         tilt = 0

@@ -3,6 +3,7 @@ class Solution(object):
     Date: 2018-10-02
     思路: 根层 = 1 + 前一层的最大值
     """
+
     def maxDepth(self, root):
         if not root:
             return 0
@@ -13,10 +14,12 @@ class Solution(object):
 
         return 1 + max(self.maxDepth(child) for child in root.children)
 
+
 class Solution02(object):
     """
     Date: 2018-10-02
     """
+
     def maxDepth(self, root):
         if not root:
             return 0
@@ -26,7 +29,7 @@ class Solution02(object):
 
         while unused:
             node, depth = unused.pop()
-            unused.extend((child, depth+1) for child in node.children)
+            unused.extend((child, depth + 1) for child in node.children)
             max_depth = max(max_depth, depth)
 
         return max_depth

@@ -3,6 +3,7 @@ class Solution(object):
     Date: 2018-10-09
     Method: 递归
     """
+
     def levelOrder(self, root):
         self.levels = []
         self._dfs(root, 0)
@@ -20,11 +21,13 @@ class Solution(object):
         for child in node.children:
             self._dfs(child, level + 1)
 
+
 class Solution02(object):
     """
     Date: 2018-10-09
     Method: 迭代
     """
+
     def levelOrder(self, root):
         level = [root] if root else []
         levels = []

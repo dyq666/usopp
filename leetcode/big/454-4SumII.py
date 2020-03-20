@@ -43,7 +43,7 @@ class Solution:
         target_dict = {}
         for a in A:
             for b in B:
-                target_dict[a+b] = target_dict.setdefault(a+b, 0) + 1
+                target_dict[a + b] = target_dict.setdefault(a + b, 0) + 1
 
         for d in D:
             for c in C:
@@ -62,12 +62,12 @@ class Solution:
         """
         import collections
 
-        target_dict = collections.Counter(a+b for a in A
-                                              for b in B)
+        target_dict = collections.Counter(a + b for a in A
+                                          for b in B)
 
         return sum(target_dict[-(c + d)] for c in C
-                                         for d in D
-                                         if -(c + d) in target_dict)
+                   for d in D
+                   if -(c + d) in target_dict)
 
 
 if __name__ == '__main__':

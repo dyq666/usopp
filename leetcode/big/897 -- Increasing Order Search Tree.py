@@ -8,11 +8,13 @@ class TreeNode:
         self.left = None
         self.right = None
 
+
 class Solution:
     """
     Date: 2018-10-09
     Method: 递归?
     """
+
     def increasingBST(self, root):
         dummy_head = TreeNode(None)
         needle = dummy_head
@@ -24,11 +26,12 @@ class Solution:
 
     def _in(self, node):
         if not node:
-            return # It is used to stop generator. using `return 1000` also Accepted.
+            return  # It is used to stop generator. using `return 1000` also Accepted.
 
         yield from self._in(node.left)
         yield node.val
         yield from self._in(node.right)
+
 
 class Solution02:
     """
@@ -36,6 +39,7 @@ class Solution02:
     Method: 迭代
     Solution: 中序遍历
     """
+
     def increasingBST(self, root):
         dummy = TreeNode(None)
         needle = dummy

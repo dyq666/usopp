@@ -10,7 +10,7 @@ from typing import Callable
 
 import pytest
 
-from util import swap_two_ele
+from .util import swap_two_ele
 
 
 def selection_sort(array: list) -> None:
@@ -37,14 +37,14 @@ def insertion_sort(array: list) -> None:
     for start_i in range(1, len(array)):
         # 找到插入位置
         insertion_i = 0
-        for finding_i in range(start_i-1, -1, -1):
+        for finding_i in range(start_i - 1, -1, -1):
             if array[start_i] > array[finding_i]:
                 insertion_i = finding_i + 1
                 break
 
         # 后移一部分元素后插入
         insertion_value = array[start_i]
-        array[insertion_i+1:start_i+1] = array[insertion_i:start_i]
+        array[insertion_i + 1:start_i + 1] = array[insertion_i:start_i]
         array[insertion_i] = insertion_value
 
 
@@ -57,8 +57,8 @@ def bubble_sort(array: list) -> None:
     len_ = len(array)
     for time in range(1, len_):
         for i in range(1, len_ - time + 1):
-            if array[i-1] > array[i]:
-                swap_two_ele(array, i-1, i)
+            if array[i - 1] > array[i]:
+                swap_two_ele(array, i - 1, i)
 
 
 def bubble_sort_optimization_1(array: list) -> None:
@@ -70,9 +70,9 @@ def bubble_sort_optimization_1(array: list) -> None:
     for time in range(1, len_):
         swaped = False
         for i in range(1, len_ - time + 1):
-            if array[i-1] > array[i]:
+            if array[i - 1] > array[i]:
                 swaped = True
-                swap_two_ele(array, i-1, i)
+                swap_two_ele(array, i - 1, i)
         if not swaped:
             break
 
@@ -90,8 +90,8 @@ def merge_sort(array: list) -> list:
     # 分
     l, r = 0, len(array) - 1
     mid = (l + r) // 2
-    l_array = merge_sort(array[l:mid+1])
-    r_array = merge_sort(array[mid+1:r+1])
+    l_array = merge_sort(array[l:mid + 1])
+    r_array = merge_sort(array[mid + 1:r + 1])
 
     # 合
     new_array = []

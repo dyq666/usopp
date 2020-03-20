@@ -1,11 +1,13 @@
 from libs.tree import BT
 
+
 class Solution:
     """
     Date: 2018-10-25
     Method: 迭代
     Solution: dfs
     """
+
     def findMode(self, root):
         if not root:
             return []

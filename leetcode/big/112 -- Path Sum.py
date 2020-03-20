@@ -1,5 +1,5 @@
-# pylint: disable=redefined-builtin
 from libs.tree import BT
+
 
 class Solution:
     """
@@ -8,6 +8,7 @@ class Solution:
     Method: 递归
     Solution: 前序遍历 + 后序
     """
+
     def hasPathSum(self, root, sum):
         self.cur_sum = 0
         return sum in self.preorder(root)
@@ -24,12 +25,14 @@ class Solution:
         yield from self.preorder(node.right)
         self.cur_sum -= node.val
 
+
 class Solution02:
     """
     Date: 2018-10-24
     Method: 迭代
     Solution: 后序
     """
+
     def hasPathSum(self, root, sum):
         unused = []
         self.cur_sum = 0

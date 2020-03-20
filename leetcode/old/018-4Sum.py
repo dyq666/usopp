@@ -18,18 +18,18 @@ class Solution:
         # 外层由遍历一轮变成遍历两轮
         for i in range(len_nums - 3):
 
-            if i >= 1 and nums[i] == nums[i-1]:
+            if i >= 1 and nums[i] == nums[i - 1]:
                 continue
 
-            for j in range(i+1, len_nums - 2):
+            for j in range(i + 1, len_nums - 2):
 
-                if j >= i + 2 and nums[j] == nums[j-1]:
+                if j >= i + 2 and nums[j] == nums[j - 1]:
                     continue
 
                 seen_set = set()
 
                 # 一样的双数的HashSet
-                for v_k in nums[j+1:]:
+                for v_k in nums[j + 1:]:
                     search = target - nums[i] - nums[j] - v_k
 
                     if search in seen_set:
@@ -38,4 +38,3 @@ class Solution:
                         seen_set.add(v_k)
 
         return list(res)
-

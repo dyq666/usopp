@@ -1,11 +1,13 @@
 from libs.tree import BT
 
+
 class Solution:
     """
     Date: 2018-10-10
     Method: 递归
     Solution: dfs
     """
+
     def sumOfLeftLeaves(self, root):
         return sum(self._left_leaves(root))
 
@@ -19,12 +21,14 @@ class Solution:
             yield from self._left_leaves(node.left)
         yield from self._left_leaves(node.right)
 
+
 class Solution02:
     """
     Date: 2018-10-10
     Method: 递归
     Solution: dfs
     """
+
     def sumOfLeftLeaves(self, root):
         sum_ = 0
         for node in BT.iterdfs(root):
