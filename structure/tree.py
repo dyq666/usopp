@@ -292,7 +292,10 @@ class BTUtil:
 
 
 class BST:
-    """二分搜索树. (BST -> BinarySearchTree)"""
+    """二分搜索树. (BST -> BinarySearchTree)
+
+    树中不存在重复元素.
+    """
 
     def __init__(self):
         self._size: int = 0
@@ -361,6 +364,7 @@ class BST:
           3. 被删除节点不是叶子节点, 将父节点的右指向删除节点的左节点 (被删除节点不是叶子节点, 那么有且仅有左子树).
         其中 2, 3 被删除的节点可能是根节点, 需要特殊处理.
         """
+        # 找到最右边的节点
         prev = self.root
         delete = self.root
         while delete.right:
@@ -369,16 +373,20 @@ class BST:
 
         # 2
         if BTUtil.isleaf(delete):
-            if delete.val == self.root.val:
+            if self.is_root(delete):
                 self.root = None
             else:
                 prev.right = None
         # 3
         else:
-            if delete.val == self.root.val:
+            if self.is_root(delete):
                 self.root = delete.left
             else:
                 prev.right = delete.left
 
         self._size -= 1
         return delete.val
+
+    def is_root(self, node: Optional[BTNode]) -> bool:
+        """判断节点是否为根节点."""
+        return bool(node and self.root and node.val == self.root.val)
