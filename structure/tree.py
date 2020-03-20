@@ -298,6 +298,7 @@ class BST:
         return self._size
 
     def add(self, value: Any):
+        """添加元素, 如果 `value` 已经在树中则忽略."""
         if self.root is None:
             self.root = BTNode(value)
             self._size += 1
@@ -321,38 +322,24 @@ class BST:
                 break
 
     def add_with_recursion(self, value: Any):
-        if self.root is None:
-            self.root = BTNode(value)
-            self._size += 1
-            return
-        return self._add(self.root, value)
+        """递归添加元素, 如果 `value` 已经在树中则忽略."""
+        self.root = self._add(self.root, value)
 
-    def _add(self, node: BTNode, value: Any):
-        if value == node.val:
-            return
-        if value < node.val:
-            if node.left is None:
-                node.left = BTNode(value)
-                self._size += 1
-                return
-            self._add(node.left, value)
-        else:
-            if node.right is None:
-                node.right = BTNode(value)
-                self._size += 1
-                return
-            self._add(node.right, value)
+    def _add(self, node: Optional[BTNode], value: Any) -> BTNode:
+        """`add_with_recursion` 的递归函数.
 
-    def add_with_recursion2(self, value: Any):
-        self.root = self._add2(self.root, value)
+        为什么要返回节点呢 ?
 
-    def _add2(self, node: Optional[BTNode], value: Any) -> BTNode:
+        答: 当 `node is None`, 说明找到了插入位置, 但连接新节点需要
+        知道父节点. 每次都传入父节点比较麻烦, 且需要处理树中无节点的特殊情况.
+        而每次都返回节点, 就可以由调用方连接节点, 被调用方就无需知道父节点了.
+        """
         if node is None:
             self._size += 1
             return BTNode(value)
 
         if value < node.val:
-            node.left = self._add2(node.left, value)
+            node.left = self._add(node.left, value)
         else:
-            node.right = self._add2(node.right, value)
+            node.right = self._add(node.right, value)
         return node
