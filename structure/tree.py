@@ -385,6 +385,30 @@ class BST:
         return delete.val
 
     @not_empty
+    def pop_max_with_recursion(self) -> Any:
+        """递归的删除最大值.
+
+        递归函数的思路 `_add` 中的 doc 类似.
+
+        此外, 由于递归需要拼接节点, 所以不容易返回被删除节点的值, 因而这里会
+        先去找到最大值.
+        """
+        needle = self.root
+        while needle.right:
+            needle = needle.right
+
+        self.root = self._pop_max_with_recursion(self.root)
+        return needle.val
+
+    def _pop_max_with_recursion(self, node: BTNode) -> Optional[BTNode]:
+        if node.right is None:
+            self._size -= 1
+            return node.left
+
+        node.right = self._pop_max_with_recursion(node.right)
+        return node
+
+    @not_empty
     def pop_min(self) -> Any:
         """删除最小值.
 
@@ -402,6 +426,24 @@ class BST:
             prev.left = delete.right
         self._size -= 1
         return delete.val
+
+    @not_empty
+    def pop_min_with_recursion(self) -> Any:
+        """递归的删除最小值, 和 `pop_max_with_recursion` 类似."""
+        needle = self.root
+        while needle.left:
+            needle = needle.left
+
+        self.root = self._pop_min_with_recursion(self.root)
+        return needle.val
+
+    def _pop_min_with_recursion(self, node: BTNode) -> Optional[BTNode]:
+        if node.left is None:
+            self._size -= 1
+            return node.right
+
+        node.left = self._pop_min_with_recursion(node.left)
+        return node
 
     def is_root(self, node: Optional[BTNode]) -> bool:
         """判断节点是否为根节点."""

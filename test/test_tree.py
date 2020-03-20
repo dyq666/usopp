@@ -68,7 +68,8 @@ class TestBST:
         assert res == array
         assert len(tree) == sum(1 for i in array if i is not None)
 
-    def test_pop_max(self):
+    @pytest.mark.parametrize('f', (BST.pop_max, BST.pop_max_with_recursion))
+    def test_pop_max(self, f: Callable):
         """
         1. 从空树中删除.
 
@@ -89,47 +90,48 @@ class TestBST:
         # 1
         tree = BST()
         with pytest.raises(IndexError):
-            tree.pop_max()
+            f(tree)
 
         # 2
         tree = BST()
         for i in range(3):
             tree.add(i)
-        assert 2 == tree.pop_max()
+        assert 2 == f(tree)
         assert len(tree) == 2
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([0, None, 1]))
-        assert 1 == tree.pop_max()
+        assert 1 == f(tree)
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([0]))
-        assert 0 == tree.pop_max()
+        assert 0 == f(tree)
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
 
         # 3
         tree = BST()
         for i in [3, 1, 5, 0, 2, 4, 6]:
             tree.add(i)
-        assert 6 == tree.pop_max()
+        assert 6 == f(tree)
         assert len(tree) == 6
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, 5, 0, 2, 4]))
-        assert 5 == tree.pop_max()
+        assert 5 == f(tree)
         assert len(tree) == 5
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, 4, 0, 2]))
-        assert 4 == tree.pop_max()
+        assert 4 == f(tree)
         assert len(tree) == 4
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, None, 0, 2]))
-        assert 3 == tree.pop_max()
+        assert 3 == f(tree)
         assert len(tree) == 3
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([1, 0, 2]))
-        assert 2 == tree.pop_max()
+        assert 2 == f(tree)
         assert len(tree) == 2
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([1, 0]))
-        assert 1 == tree.pop_max()
+        assert 1 == f(tree)
         assert len(tree) == 1
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([0]))
-        assert 0 == tree.pop_max()
+        assert 0 == f(tree)
         assert len(tree) == 0
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
 
-    def test_pop_min(self):
+    @pytest.mark.parametrize('f', (BST.pop_min, BST.pop_min_with_recursion))
+    def test_pop_min(self, f: Callable):
         """
         1. 从空树中删除.
 
@@ -156,37 +158,37 @@ class TestBST:
         tree = BST()
         for i in range(3):
             tree.add(i)
-        assert 0 == tree.pop_min()
+        assert 0 == f(tree)
         assert len(tree) == 2
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([1, None, 2]))
-        assert 1 == tree.pop_min()
+        assert 1 == f(tree)
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([2]))
-        assert 2 == tree.pop_min()
+        assert 2 == f(tree)
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
 
         # 3
         tree = BST()
         for i in [3, 1, 5, 0, 2, 4, 6]:
             tree.add(i)
-        assert 0 == tree.pop_min()
+        assert 0 == f(tree)
         assert len(tree) == 6
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, 5, None, 2, 4, 6]))
-        assert 1 == tree.pop_min()
+        assert 1 == f(tree)
         assert len(tree) == 5
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 2, 5, None, None, 4, 6]))
-        assert 2 == tree.pop_min()
+        assert 2 == f(tree)
         assert len(tree) == 4
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, None, 5, None, None, 4, 6]))
-        assert 3 == tree.pop_min()
+        assert 3 == f(tree)
         assert len(tree) == 3
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([5, 4, 6]))
-        assert 4 == tree.pop_min()
+        assert 4 == f(tree)
         assert len(tree) == 2
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([5, None, 6]))
-        assert 5 == tree.pop_min()
+        assert 5 == f(tree)
         assert len(tree) == 1
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([6]))
-        assert 6 == tree.pop_min()
+        assert 6 == f(tree)
         assert len(tree) == 0
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
 
