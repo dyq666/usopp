@@ -5,6 +5,8 @@ __all__ = (
 from itertools import chain, zip_longest
 from typing import Any, Generator, List, Iterable, Optional
 
+from util import not_empty
+
 
 class BTNode:
     """二叉树节点. (BT -> BinaryTree)"""
@@ -299,6 +301,9 @@ class BST:
     def __len__(self) -> int:
         return self._size
 
+    def __iter__(self) -> Iterable:
+        return BTUtil.preorder(self.root, skip_none=False)
+
     def add(self, value: Any):
         """添加元素, 如果 `value` 已经在树中则忽略."""
         if self.root is None:
@@ -345,3 +350,35 @@ class BST:
         else:
             node.right = self._add(node.right, value)
         return node
+
+    @not_empty
+    def pop_max(self) -> Any:
+        """删除最大值.
+
+        检查顺序:
+          1. 树为空不能删.
+          2. 被删除节点是叶子节点, 将父节点的右指向空 (被删除节点只可能是右叶子节点).
+          3. 被删除节点不是叶子节点, 将父节点的右指向删除节点的左节点 (被删除节点不是叶子节点, 那么有且仅有左子树).
+        其中 2, 3 被删除的节点可能是根节点, 需要特殊处理.
+        """
+        prev = self.root
+        delete = self.root
+        while delete.right:
+            prev = delete
+            delete = prev.right
+
+        # 2
+        if BTUtil.isleaf(delete):
+            if delete.val == self.root.val:
+                self.root = None
+            else:
+                prev.right = None
+        # 3
+        else:
+            if delete.val == self.root.val:
+                self.root = delete.left
+            else:
+                prev.right = delete.left
+
+        self._size -= 1
+        return delete.val

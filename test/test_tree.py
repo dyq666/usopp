@@ -68,6 +68,67 @@ class TestBST:
         assert res == array
         assert len(tree) == sum(1 for i in array if i is not None)
 
+    def test_pop_max(self):
+        """
+        1. 从空树中删除.
+
+        2. 删除只有右节点的树.
+        ```
+           0
+          N  1
+            N 2
+        ```
+
+        3. 删除三层满二叉树.
+        ```
+            3
+          1   5
+         0 2 4 6
+        ```
+        """
+        # 1
+        tree = BST()
+        with pytest.raises(IndexError):
+            tree.pop_max()
+
+        # 2
+        tree = BST()
+        for i in range(3):
+            tree.add(i)
+        assert 2 == tree.pop_max()
+        assert len(tree) == 2
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([0, None, 1]))
+        assert 1 == tree.pop_max()
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([0]))
+        assert 0 == tree.pop_max()
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
+
+        # 3
+        tree = BST()
+        for i in [3, 1, 5, 0, 2, 4, 6]:
+            tree.add(i)
+        assert 6 == tree.pop_max()
+        assert len(tree) == 6
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, 5, 0, 2, 4]))
+        assert 5 == tree.pop_max()
+        assert len(tree) == 5
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, 4, 0, 2]))
+        assert 4 == tree.pop_max()
+        assert len(tree) == 4
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, None, 0, 2]))
+        assert 3 == tree.pop_max()
+        assert len(tree) == 3
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([1, 0, 2]))
+        assert 2 == tree.pop_max()
+        assert len(tree) == 2
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([1, 0]))
+        assert 1 == tree.pop_max()
+        assert len(tree) == 1
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([0]))
+        assert 0 == tree.pop_max()
+        assert len(tree) == 0
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
+
 
 class TestBTUtil:
 
