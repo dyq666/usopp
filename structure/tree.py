@@ -384,6 +384,25 @@ class BST:
         self._size -= 1
         return delete.val
 
+    @not_empty
+    def pop_min(self) -> Any:
+        """删除最小值.
+
+        基本原理和 `pop_max` 相同.
+        """
+        prev = self.root
+        delete = self.root
+        while delete.left:
+            prev = delete
+            delete = prev.left
+
+        if self.is_root(delete):
+            self.root = delete.right
+        else:
+            prev.left = delete.right
+        self._size -= 1
+        return delete.val
+
     def is_root(self, node: Optional[BTNode]) -> bool:
         """判断节点是否为根节点."""
         return bool(node and self.root and node.val == self.root.val)
