@@ -374,39 +374,6 @@ class BST:
         return node
 
     @not_empty
-    def pop_max_with_recursion(self) -> Any:
-        """递归的删除最大值.
-
-        递归函数的思路和 `_add_with_recursion` 类似.
-
-        此外, 由于递归需要拼接节点, 所以不容易返回被删除节点的值, 因而这里会
-        先去找到最大值.
-        """
-        needle = self.root
-        while needle.right:
-            needle = needle.right
-
-        self.root = self._pop_max_with_recursion(self.root)
-        return needle.val
-
-    def pop_max_with_recursion2(self, node: BTNode) -> Any:
-        """递归的删除最大值, 和 `pop_max_with_recursion` 类似."""
-        needle = node
-        while needle.right:
-            needle = needle.right
-
-        node = self._pop_max_with_recursion(node)
-        return node, needle.val
-
-    def _pop_max_with_recursion(self, node: BTNode) -> Optional[BTNode]:
-        if node.right is None:
-            self._size -= 1
-            return node.left
-
-        node.right = self._pop_max_with_recursion(node.right)
-        return node
-
-    @not_empty
     def remove(self, value: Any):
         """删除值为 `value` 的节点.
 
@@ -492,6 +459,23 @@ class BST:
             return max_.val, max_.left
         prev.right = max_.left
         return max_.val, node
+
+    @staticmethod
+    def _pop_max_from_with_recursion(node: BTNode) -> Tuple[Any, Optional[BTNode]]:
+        """删除以 `node` 为根的树中的最大节点, 返回最大值和删除之后的树.
+
+        `_pop_max_from` 的递归实现.
+
+        `_pop_max_from_with_recursion`, `_pop_max_from` 之间的联系和
+        `add_with_recursion`, `add` 之间的联系类似.
+        """
+        # 找到最大值了
+        if node.right is None:
+            return node.val, node.left
+
+        v, n = BST._pop_max_from_with_recursion(node.right)
+        node.right = n
+        return v, n
 
     @staticmethod
     def _pop_min_from(node: BTNode) -> Tuple[Any, Optional[BTNode]]:
