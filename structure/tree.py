@@ -308,7 +308,7 @@ class BST:
         return BTUtil.preorder(self.root, skip_none=False)
 
     def add(self, value: Any):
-        """添加元素, 如果 `value` 已经在树中则忽略."""
+        """添加元素."""
         if self.root is None:
             self.root = BTNode(value)
             self._size += 1
@@ -332,26 +332,32 @@ class BST:
                 break
 
     def add_with_recursion(self, value: Any):
-        """递归添加元素, 如果 `value` 已经在树中则忽略."""
-        self.root = self._add(self.root, value)
+        """递归添加元素."""
+        self.root = self._add_with_recursion(self.root, value)
 
-    def _add(self, node: Optional[BTNode], value: Any) -> BTNode:
-        """`add_with_recursion` 的递归函数.
+    def _add_with_recursion(self, node: Optional[BTNode], value: Any) -> BTNode:
+        """向以 `node` 为根的树中插入 `value`, 返回插入后的根.
+        (`add_with_recursion` 的递归函数)
+
+        怎么理解递归终止条件 ?
+
+        答: 当 `node is None` 时, 说明找到了插入位置. 而空也是一棵树,
+        向空树中插入值就等于创建一个新节点, 因而符合本递归函数定义.
 
         为什么要返回节点呢 ?
 
-        答: 当 `node is None`, 说明找到了插入位置, 但连接新节点需要
-        知道父节点. 每次都传入父节点比较麻烦, 且需要处理树中无节点的特殊情况.
-        而每次都返回节点, 就可以由调用方连接节点, 被调用方就无需知道父节点了.
+        答: 当 `node is None` 时, 说明找到了插入位置. 但连接新节点需要
+        使用父节点, 如果传入父节点, 那么还需要传入插到左还是右. 而每次都返回节点,
+        就可以由调用方连接节点, 被调用方就无需知道父节点了.
         """
         if node is None:
             self._size += 1
             return BTNode(value)
 
         if value < node.val:
-            node.left = self._add(node.left, value)
+            node.left = self._add_with_recursion(node.left, value)
         else:
-            node.right = self._add(node.right, value)
+            node.right = self._add_with_recursion(node.right, value)
         return node
 
     @not_empty
