@@ -272,14 +272,11 @@ class TestBST:
         assert len(tree) == 3
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 0, 4]))
 
-        # 删除只有右子树的节点.
+        # 删除有左右子树的节点.
         # ```
         #    3
         #  1   5
         # 0 2 4 6
-        #    4
-        #  1   5
-        # 0 2 N 6
         # ```
         tree = BST()
         for i in [3, 1, 5, 0, 2, 4, 6]:

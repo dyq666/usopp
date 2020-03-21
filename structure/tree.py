@@ -470,6 +470,15 @@ class BST:
         self.root = self._pop_min_with_recursion(self.root)
         return needle.val
 
+    def pop_min_with_recursion2(self, node: BTNode) -> Any:
+        """递归的删除最小值, 和 `pop_max_with_recursion` 类似."""
+        needle = node
+        while needle.left:
+            needle = needle.left
+
+        node = self._pop_min_with_recursion(node)
+        return node, needle.val
+
     def _pop_min_with_recursion(self, node: BTNode) -> Optional[BTNode]:
         if node.left is None:
             self._size -= 1
@@ -535,15 +544,7 @@ class BST:
             return
         # 到这里肯定 `delete.right` 和 `delete.left` 都不是 `None` 了.
         # 从右子树中找到最小值
-
-        prev = delete
-        right_delete = prev.right
-        while right_delete.left:
-            prev = right_delete
-            right_delete = prev.left
-        val = right_delete.val
-        self.remove(val)
-        delete.val = val
+        delete.right, delete.val = self.pop_min_with_recursion2(delete.right)
 
     def is_root(self, node: Optional[BTNode]) -> bool:
         """判断节点是否为根节点."""
