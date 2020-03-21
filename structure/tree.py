@@ -346,9 +346,11 @@ class BST:
 
         为什么要返回节点呢 ?
 
-        答: 当 `node is None` 时, 说明找到了插入位置. 但连接新节点需要
-        使用父节点, 如果传入父节点, 那么还需要传入插到左还是右. 而每次都返回节点,
-        就可以由调用方连接节点, 被调用方就无需知道父节点了.
+        答: 当 `node is None` 时, 说明找到了插入位置, 但连接新节点需要
+        使用父节点. 如果传入父节点, 那么还需要传入插到左还是右. 而每次都返回节点,
+        就可以由调用方连接节点, 被调用方就无需知道父节点了. 另外, 还有一种方法是
+        使递归终止于被插入值的父节点, 但这种办法需要频繁的检查空. `add_with_recursion2`
+        实现了这种方法.
         """
         if node is None:
             self._size += 1
@@ -359,6 +361,31 @@ class BST:
         elif value > node.val:
             node.right = self._add_with_recursion(node.right, value)
         return node
+
+    def add_with_recursion2(self, value: Any):
+        if self.root is None:
+            self.root = BTNode(value)
+            self._size += 1
+            return
+        self._add_with_recursion2(self.root, value)
+
+    def _add_with_recursion2(self, node: BTNode, value: Any):
+        """向以 `node` 为根的树中插入 `value`, 树不能为空."""
+        if value < node.val and node.left is None:
+            node.left = BTNode(value)
+            self._size += 1
+            return
+        if value > node.val and node.right is None:
+            node.right = BTNode(value)
+            self._size += 1
+            return
+        if value == node.val:
+            return
+
+        if value < node.val:
+            self._add_with_recursion2(node.left, value)
+        elif value > node.val:
+            self._add_with_recursion2(node.right, value)
 
     @not_empty
     def pop_max(self) -> Any:
@@ -394,7 +421,7 @@ class BST:
     def pop_max_with_recursion(self) -> Any:
         """递归的删除最大值.
 
-        递归函数的思路 `_add` 中的 doc 类似.
+        递归函数的思路和 `_add_with_recursion` 类似.
 
         此外, 由于递归需要拼接节点, 所以不容易返回被删除节点的值, 因而这里会
         先去找到最大值.
