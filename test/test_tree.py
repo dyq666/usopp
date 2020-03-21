@@ -120,69 +120,6 @@ class TestBST:
         assert len(tree) == 0
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
 
-    @pytest.mark.parametrize('f', (BST.pop_min,
-                                   BST.pop_min_with_recursion,))
-    def test_pop_min(self, f: Callable):
-        """
-        1. 从空树中删除.
-
-        2. 删除只有右节点的树.
-        ```
-           0
-          N  1
-            N 2
-        ```
-
-        3. 删除三层满二叉树.
-        ```
-            3
-          1   5
-         0 2 4 6
-        ```
-        """
-        # 1
-        tree = BST()
-        with pytest.raises(IndexError):
-            tree.pop_min()
-
-        # 2
-        tree = BST()
-        for i in range(3):
-            tree.add(i)
-        assert 0 == f(tree)
-        assert len(tree) == 2
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([1, None, 2]))
-        assert 1 == f(tree)
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([2]))
-        assert 2 == f(tree)
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
-
-        # 3
-        tree = BST()
-        for i in [3, 1, 5, 0, 2, 4, 6]:
-            tree.add(i)
-        assert 0 == f(tree)
-        assert len(tree) == 6
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, 5, None, 2, 4, 6]))
-        assert 1 == f(tree)
-        assert len(tree) == 5
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 2, 5, None, None, 4, 6]))
-        assert 2 == f(tree)
-        assert len(tree) == 4
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, None, 5, None, None, 4, 6]))
-        assert 3 == f(tree)
-        assert len(tree) == 3
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([5, 4, 6]))
-        assert 4 == f(tree)
-        assert len(tree) == 2
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([5, None, 6]))
-        assert 5 == f(tree)
-        assert len(tree) == 1
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([6]))
-        assert 6 == f(tree)
-        assert len(tree) == 0
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
-
     def test_remove(self):
         # 从空树中删除.
         # ```

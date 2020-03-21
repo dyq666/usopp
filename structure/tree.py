@@ -407,52 +407,6 @@ class BST:
         return node
 
     @not_empty
-    def pop_min(self) -> Any:
-        """删除最小值.
-
-        基本原理和 `pop_max` 相同.
-        """
-        prev = self.root
-        delete = self.root
-        while delete.left:
-            prev = delete
-            delete = prev.left
-
-        if self.is_root(delete):
-            self.root = delete.right
-        else:
-            prev.left = delete.right
-        self._size -= 1
-        return delete.val
-
-    @not_empty
-    def pop_min_with_recursion(self) -> Any:
-        """递归的删除最小值, 和 `pop_max_with_recursion` 类似."""
-        needle = self.root
-        while needle.left:
-            needle = needle.left
-
-        self.root = self._pop_min_with_recursion(self.root)
-        return needle.val
-
-    def pop_min_with_recursion2(self, node: BTNode) -> Any:
-        """递归的删除最小值, 和 `pop_max_with_recursion` 类似."""
-        needle = node
-        while needle.left:
-            needle = needle.left
-
-        node = self._pop_min_with_recursion(node)
-        return node, needle.val
-
-    def _pop_min_with_recursion(self, node: BTNode) -> Optional[BTNode]:
-        if node.left is None:
-            self._size -= 1
-            return node.right
-
-        node.left = self._pop_min_with_recursion(node.left)
-        return node
-
-    @not_empty
     def remove(self, value: Any):
         """删除值为 `value` 的节点.
 
@@ -496,10 +450,10 @@ class BST:
                 prev.right = None
             return
         if delete.right:
-            delete.right, delete.val = self.pop_min_with_recursion2(delete.right)
+            delete.val, delete.right = self._pop_min_from(delete.right)
         else:
             delete.val, delete.left = self._pop_max_from(delete.left)
-            self._size -= 1
+        self._size -= 1
 
     def _pop_max_from(self, node: BTNode) -> Tuple[Any, Optional[BTNode]]:
         """删除以 `node` 为根的树中的最大节点, 返回最大值和删除之后的树.
@@ -521,11 +475,29 @@ class BST:
             prev = max_
             max_ = max_.right
 
-        # `max_` 值没有改变, 证明是根节点
+        # `max_` 的值没有变, 证明被删除节点是根节点
         if max_.val == node.val:
             return max_.val, max_.left
         prev.right = max_.left
         return max_.val, node
+
+    def _pop_min_from(self, node: BTNode) -> Tuple[Any, Optional[BTNode]]:
+        """删除以 `node` 为根的树中的最小节点, 返回最小值和删除之后的树.
+
+        基本原理和 `_pop_max_from` 相同.
+        """
+        # 找到最小节点
+        min_ = node
+        prev = node
+        while min_.left:
+            prev = min_
+            min_ = min_.left
+
+        # `min_` 的值没有变, 证明被删除节点是根节点
+        if min_.val == node.val:
+            return min_.val, node.right
+        prev.left = min_.right
+        return min_.val, node
 
     def is_root(self, node: Optional[BTNode]) -> bool:
         """判断节点是否为根节点."""
