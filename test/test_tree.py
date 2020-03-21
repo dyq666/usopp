@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Callable, List
+from typing import Callable, List, Optional
 
 import pytest
 
@@ -26,28 +26,37 @@ def trees() -> List[BTNode]:
 
 
 @pytest.fixture
-def bst_arrays() -> List[List]:
-    """返回如下的一些平衡二叉树 (最大层数: 3).
+def bst_arrays() -> List[List[Optional[int]]]:
+    """返回一些由平衡二叉树层序遍历的结果 (最大层数: 3).
+    1. 空树
+    2. 只有根节点
+    3. 只有左
+    4. 只有右
+    5. 第二层只有左
+    6. 第二层只有右
+    7. 满树
     ```
-        3         9      N     1        2       7
-      1   5     2  N         N   9    1   3   3   9
-     N 2       1 N              8 N          N 4 8 N
+    N     3      3       3         3           3           3
+               1  N    N  5      1   5       1   5       1   5
+              0 N        N 6    0 N 4 N     N 2 N 6     0 2 4 6
     ```
     """
     return [
-        [3, 1, 5, None, 2],
-        [9, 2, None, 1, None],
         [],
-        [1, None, 9, None, None, 8, None],
-        [2, 1, 3],
-        [7, 3, 9, None, 4, 8, None],
+        [3],
+        [3, 1, None, 0],
+        [3, None, 5, None, None, None, 6],
+        [3, 1, 5, 0, None, None, 6],
+        [3, 1, 5, None, 2, 4, None],
+        [3, 1, 5, 0, 2, 4, 6],
     ]
 
 
 class TestBST:
 
-    @pytest.mark.parametrize('f', (BST.add, BST.add_with_recursion,
-                                   BST.add_with_recursion2))
+    @pytest.mark.parametrize('f', (BST.add,
+                                   BST.add_with_recursion,
+                                   BST.add_with_recursion2,))
     def test_add(self, f: Callable, bst_arrays: List[List]):
         for array in bst_arrays:
             tree = BST()
@@ -58,7 +67,7 @@ class TestBST:
             assert len(tree) == sum(1 for i in array if i is not None)
 
         # 重复元素应该被忽略
-        array = bst_arrays[0]
+        array = bst_arrays[6]
         tree = BST()
         for val in array:
             if val is not None:
@@ -228,7 +237,7 @@ class TestBST:
         # ```
         # 3           3
         #   5       1   5
-        #     6    2 N N 6
+        #     6    N 2 N 6
         # ```
         # 根节点
         tree = BST()

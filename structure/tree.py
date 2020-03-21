@@ -294,7 +294,7 @@ class BTUtil:
 class BST:
     """二分搜索树. (BST -> BinarySearchTree)
 
-    树中不存在重复元素.
+    树中不允许存在重复元素.
     """
 
     def __init__(self):
@@ -310,28 +310,30 @@ class BST:
                 for node in level)
 
     def add(self, value: Any):
-        """添加元素."""
-        if self.root is None:
-            self.root = BTNode(value)
-            self._size += 1
-            return
+        """添加元素.
 
-        needle = self.root
-        while True:
-            if value < needle.val:
-                if needle.left is None:
-                    needle.left = BTNode(value)
-                    self._size += 1
-                    break
-                needle = needle.left
-            elif value > needle.val:
-                if needle.right is None:
-                    needle.right = BTNode(value)
-                    self._size += 1
-                    break
-                needle = needle.right
-            else:  # value == needle.val
-                break
+        :) 如果能用 dummy_root 就能简化一些代码了 !
+        """
+        prev = self.root
+        added = self.root
+        direction = None
+        while added:
+            prev = added
+            if value == added.val:
+                return
+            if value < added.val:
+                added = added.left
+                direction = 'left'
+            else:
+                added = added.right
+                direction = 'right'
+
+        # 代表根节点为空
+        if direction is None:
+            self.root = BTNode(value)
+        else:
+            setattr(prev, direction, BTNode(value))
+        self._size += 1
 
     def add_with_recursion(self, value: Any):
         """递归添加元素."""
@@ -510,7 +512,7 @@ class BST:
         2, 3, 4 还能整合一下. 4 实际上有两种办法删除节点, 找右子树的最小值或
         找左子树的最大值. 而 2 实际上可以等价于找右子树的最小值, 3 实际上
         可以等价于找左子树的最大值. 因此将规则合并为如下:
-        
+
         1. 如果是叶子节点, 父节点的右或者左指向空 (需要考虑根节点).
         2. 如果被删除节点有右子树, 删除右子树中的最小值, 将最小值赋给被删除节点.
         3. 如果被删除节点有左子树, 删除左子树中的最大值, 将最大值赋给被删除节点.
@@ -549,3 +551,10 @@ class BST:
     def is_root(self, node: Optional[BTNode]) -> bool:
         """判断节点是否为根节点."""
         return bool(node and self.root and node.val == self.root.val)
+
+    @classmethod
+    def from_iteralbe(cls, values: Iterable) -> 'BST':
+        tree = cls()
+        for v in values:
+            tree.add(v)
+        return tree
