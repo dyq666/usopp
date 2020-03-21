@@ -3,7 +3,7 @@ __all__ = (
 )
 
 from itertools import chain, zip_longest
-from typing import Any, Generator, List, Iterable, Optional
+from typing import Any, Generator, List, Iterable, Optional, Tuple
 
 from util import not_empty
 
@@ -374,36 +374,6 @@ class BST:
         return node
 
     @not_empty
-    def pop_max(self) -> Any:
-        """删除最大值.
-
-        实际上会遇到四种情况:
-
-          1. 被删除节点是根节点, 且树中只有一个节点, 因而也是叶子节点. 应将根节点指向空.
-          2. 被删除节点不是根节点是叶子节点. 应将父节点的右指向空 (因为最大值永远在右边, 所以被删除节点只可能是右叶子节点).
-          3. 被删除节点是根节点, 根节点有左子树. 应将根节点指向左子树 (因为最大值永远在右边, 所以当删除根节点时, 根节点有且仅有左子树).
-          4. 被删除节点不是根节点不是叶子节点. 应将父节点的右指向删除节点的左节点 (因为最大值永远在右边, 被删除节点有且仅有左子树).
-
-        其中 1, 3 可以合并, 因为叶子的节点的左节点是空, 所以 *应将根节点指向空* 等价于 *应将根节点指向根节点的左节点*.
-        同理 2, 4 也可以合并.
-
-        :) 如果树能像链表一样使用 dummy_root, 这四种情况就可以合成一种了.
-        """
-        # 找到最右边的节点
-        prev = self.root
-        delete = self.root
-        while delete.right:
-            prev = delete
-            delete = prev.right
-
-        if self.is_root(delete):
-            self.root = delete.left
-        else:
-            prev.right = delete.left
-        self._size -= 1
-        return delete.val
-
-    @not_empty
     def pop_max_with_recursion(self) -> Any:
         """递归的删除最大值.
 
@@ -528,7 +498,34 @@ class BST:
         if delete.right:
             delete.right, delete.val = self.pop_min_with_recursion2(delete.right)
         else:
-            delete.left, delete.val = self.pop_max_with_recursion2(delete.left)
+            delete.val, delete.left = self._pop_max_from(delete.left)
+            self._size -= 1
+
+    def _pop_max_from(self, node: BTNode) -> Tuple[Any, Optional[BTNode]]:
+        """删除以 `node` 为根的树中的最大节点, 返回最大值和删除之后的树.
+
+        最大值只可能出现于以下情况:
+
+          1. 右叶子节点. 此时, 应将父节点的右指向空 (根节点也可以被理解为右叶子节点).
+          2. 只有左子树的节点. 此时, 应将父节点的右指向被删除节点的左子树 (根节点也可能只有左子树).
+
+        又因为右叶子节点的左子树必为空, 将父节点的右指向空等于指向右叶子节点的左子树,
+        所以上面两条可以合并成如下情况:
+
+          1. 找到最大节点, 将父节点的右指向该节点的左子树 (根节点也可能是最大节点).
+        """
+        # 找到最大节点
+        max_ = node
+        prev = node
+        while max_.right:
+            prev = max_
+            max_ = max_.right
+
+        # `max_` 值没有改变, 证明是根节点
+        if max_.val == node.val:
+            return max_.val, max_.left
+        prev.right = max_.left
+        return max_.val, node
 
     def is_root(self, node: Optional[BTNode]) -> bool:
         """判断节点是否为根节点."""

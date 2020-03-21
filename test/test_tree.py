@@ -56,7 +56,7 @@ class TestBST:
 
     @pytest.mark.parametrize('f', (BST.add,
                                    BST.add_with_recursion,))
-    def test_add(self, f: Callable, bst_arrays: List[List]):
+    def test_add(self, f: Callable, bst_arrays: List[List[Optional[int]]]):
         for array in bst_arrays:
             tree = BST()
             for val in array:
@@ -75,25 +75,8 @@ class TestBST:
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable(array))
         assert len(tree) == sum(1 for i in array if i is not None)
 
-    @pytest.mark.parametrize('f', (BST.pop_max, BST.pop_max_with_recursion))
+    @pytest.mark.parametrize('f', (BST.pop_max_with_recursion,))
     def test_pop_max(self, f: Callable):
-        """
-        1. 从空树中删除.
-
-        2. 删除只有右节点的树.
-        ```
-           0
-          N  1
-            N 2
-        ```
-
-        3. 删除三层满二叉树.
-        ```
-            3
-          1   5
-         0 2 4 6
-        ```
-        """
         # 1
         tree = BST()
         with pytest.raises(IndexError):
@@ -137,7 +120,8 @@ class TestBST:
         assert len(tree) == 0
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
 
-    @pytest.mark.parametrize('f', (BST.pop_min, BST.pop_min_with_recursion))
+    @pytest.mark.parametrize('f', (BST.pop_min,
+                                   BST.pop_min_with_recursion,))
     def test_pop_min(self, f: Callable):
         """
         1. 从空树中删除.
