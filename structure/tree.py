@@ -455,7 +455,19 @@ class BST:
             delete.val, delete.left = self._pop_max_from(delete.left)
         self._size -= 1
 
-    def _pop_max_from(self, node: BTNode) -> Tuple[Any, Optional[BTNode]]:
+    def is_root(self, node: Optional[BTNode]) -> bool:
+        """判断节点是否为根节点."""
+        return bool(node and self.root and node.val == self.root.val)
+
+    @classmethod
+    def from_iteralbe(cls, values: Iterable) -> 'BST':
+        tree = cls()
+        for v in values:
+            tree.add(v)
+        return tree
+
+    @staticmethod
+    def _pop_max_from(node: BTNode) -> Tuple[Any, Optional[BTNode]]:
         """删除以 `node` 为根的树中的最大节点, 返回最大值和删除之后的树.
 
         最大值只可能出现于以下情况:
@@ -481,7 +493,8 @@ class BST:
         prev.right = max_.left
         return max_.val, node
 
-    def _pop_min_from(self, node: BTNode) -> Tuple[Any, Optional[BTNode]]:
+    @staticmethod
+    def _pop_min_from(node: BTNode) -> Tuple[Any, Optional[BTNode]]:
         """删除以 `node` 为根的树中的最小节点, 返回最小值和删除之后的树.
 
         基本原理和 `_pop_max_from` 相同.
@@ -498,14 +511,3 @@ class BST:
             return min_.val, node.right
         prev.left = min_.right
         return min_.val, node
-
-    def is_root(self, node: Optional[BTNode]) -> bool:
-        """判断节点是否为根节点."""
-        return bool(node and self.root and node.val == self.root.val)
-
-    @classmethod
-    def from_iteralbe(cls, values: Iterable) -> 'BST':
-        tree = cls()
-        for v in values:
-            tree.add(v)
-        return tree
