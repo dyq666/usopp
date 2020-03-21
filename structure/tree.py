@@ -305,7 +305,9 @@ class BST:
         return self._size
 
     def __iter__(self) -> Iterable:
-        return BTUtil.preorder(self.root, skip_none=False)
+        return (node and node.val
+                for level in BTUtil.levelorder(self.root, skip_none=False)
+                for node in level)
 
     def add(self, value: Any):
         """添加元素."""
@@ -433,6 +435,15 @@ class BST:
         self.root = self._pop_max_with_recursion(self.root)
         return needle.val
 
+    def pop_max_with_recursion2(self, node: BTNode) -> Any:
+        """递归的删除最大值, 和 `pop_max_with_recursion` 类似."""
+        needle = node
+        while needle.right:
+            needle = needle.right
+
+        node = self._pop_max_with_recursion(node)
+        return node, needle.val
+
     def _pop_max_with_recursion(self, node: BTNode) -> Optional[BTNode]:
         if node.right is None:
             self._size -= 1
@@ -496,12 +507,13 @@ class BST:
         3. 如果只有左子树, 父节点的右或者左指向左子树 (需要考虑根节点).
         4. 如果左右子树都有, 那么找到右子树最小的值, 将此值覆盖到删除节点, 然后删除这个最小的值 (不需要考虑根节点).
 
-        叶子节点的判断可以合并到只有右子树或只有左子树任意一条中, 实现中
-        是合并了 1, 2 条, 因而判断条件变为:
-
-        1. 如果没有左子树, 父节点的右或者左指向右子树 (需要考虑根节点).
-        2. 和上面第 3 条一样
-        3. 和上面第 4 条一样
+        2, 3, 4 还能整合一下. 4 实际上有两种办法删除节点, 找右子树的最小值或
+        找左子树的最大值. 而 2 实际上可以等价于找右子树的最小值, 3 实际上
+        可以等价于找左子树的最大值. 因此将规则合并为如下:
+        
+        1. 如果是叶子节点, 父节点的右或者左指向空 (需要考虑根节点).
+        2. 如果被删除节点有右子树, 删除右子树中的最小值, 将最小值赋给被删除节点.
+        3. 如果被删除节点有左子树, 删除左子树中的最大值, 将最大值赋给被删除节点.
         """
         prev = self.root
         delete = self.root
@@ -519,29 +531,20 @@ class BST:
         if delete is None:
             raise ValueError
 
-        if delete.left is None:
+        if BTUtil.isleaf(delete):
             self._size -= 1
             if self.is_root(delete):
-                self.root = delete.right
+                self.root = None
                 return
             if is_left:
-                prev.left = delete.right
+                prev.left = None
             else:
-                prev.right = delete.right
+                prev.right = None
             return
-        if delete.right is None and delete.left is not None:
-            self._size -= 1
-            if self.is_root(delete):
-                self.root = delete.left
-                return
-            if is_left:
-                prev.left = delete.left
-            else:
-                prev.right = delete.left
-            return
-        # 到这里肯定 `delete.right` 和 `delete.left` 都不是 `None` 了.
-        # 从右子树中找到最小值
-        delete.right, delete.val = self.pop_min_with_recursion2(delete.right)
+        if delete.right:
+            delete.right, delete.val = self.pop_min_with_recursion2(delete.right)
+        else:
+            delete.left, delete.val = self.pop_max_with_recursion2(delete.left)
 
     def is_root(self, node: Optional[BTNode]) -> bool:
         """判断节点是否为根节点."""
