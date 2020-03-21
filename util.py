@@ -45,7 +45,7 @@ def check_index(offset: int = 0) -> Callable:
     """
     def deco(f: Callable) -> Callable:
         @wraps(f)
-        def wrapper(self: Any, index: int, *args, **kwargs):
+        def wrapper(self: Any, index: int, *args, **kwargs) -> Any:
             if not (0 <= index < len(self) + offset):
                 raise IndexError
             return f(self, index, *args, **kwargs)
@@ -73,7 +73,7 @@ def merge_sorted_list(a1: list, a2: list) -> Iterable:
 def not_empty(f: Callable) -> Callable:
     """在执行数据结构某个方法前检查数据结构是否为空."""
     @wraps(f)
-    def wrapper(self: Sized, *args, **kwargs):
+    def wrapper(self: Sized, *args, **kwargs) -> Any:
         if len(self) == 0:
             raise IndexError
         return f(self, *args, **kwargs)
