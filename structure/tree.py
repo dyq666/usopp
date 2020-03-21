@@ -314,13 +314,16 @@ class BST:
 
         :) 如果能用 dummy_root 就能简化一些代码了 !
         """
+        # 找到插入位置
         prev = self.root
         added = self.root
         direction = None
         while added:
-            prev = added
+            # 不允许存在重复元素
             if value == added.val:
                 return
+
+            prev = added
             if value < added.val:
                 added = added.left
                 direction = 'left'
@@ -336,12 +339,12 @@ class BST:
         self._size += 1
 
     def add_with_recursion(self, value: Any):
-        """递归添加元素."""
+        """`add` 方法的递归实现."""
         self.root = self._add_with_recursion(self.root, value)
 
-    def _add_with_recursion(self, node: Optional[BTNode], value: Any) -> BTNode:
-        """向以 `node` 为根的树中插入 `value`, 返回插入后的根.
-        (`add_with_recursion` 的递归函数)
+    def _add_with_recursion(self, node: Optional[BTNode],
+                            value: Any) -> BTNode:
+        """向以 `node` 为根的树中添加 `value`, 返回添加完成的树.
 
         怎么理解递归终止条件 ?
 
@@ -352,10 +355,14 @@ class BST:
 
         答: 当 `node is None` 时, 说明找到了插入位置, 但连接新节点需要
         使用父节点. 如果传入父节点, 那么还需要传入插到左还是右. 而每次都返回节点,
-        就可以由调用方连接节点, 被调用方就无需知道父节点了. 另外, 还有一种方法是
-        使递归终止于被插入值的父节点, 但这种办法需要频繁的检查空. `add_with_recursion2`
-        实现了这种方法.
+        就可以由调用方连接节点, 被调用方就无需知道父节点了.
+
+        与 `self.add` 之间有什么联系 ?
+
+        答: 终止条件和 `self.add` 中 `while added` 是等价的. 而添加的节点具体接到哪里是
+        由调用方决定的, 因而不需要 `self.add` 中的变量 `direction`.
         """
+        # 空代表找到了插入位置
         if node is None:
             self._size += 1
             return BTNode(value)
@@ -365,31 +372,6 @@ class BST:
         elif value > node.val:
             node.right = self._add_with_recursion(node.right, value)
         return node
-
-    def add_with_recursion2(self, value: Any):
-        if self.root is None:
-            self.root = BTNode(value)
-            self._size += 1
-            return
-        self._add_with_recursion2(self.root, value)
-
-    def _add_with_recursion2(self, node: BTNode, value: Any):
-        """向以 `node` 为根的树中插入 `value`, 树不能为空."""
-        if value < node.val and node.left is None:
-            node.left = BTNode(value)
-            self._size += 1
-            return
-        if value > node.val and node.right is None:
-            node.right = BTNode(value)
-            self._size += 1
-            return
-        if value == node.val:
-            return
-
-        if value < node.val:
-            self._add_with_recursion2(node.left, value)
-        elif value > node.val:
-            self._add_with_recursion2(node.right, value)
 
     @not_empty
     def pop_max(self) -> Any:
