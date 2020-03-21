@@ -478,6 +478,73 @@ class BST:
         node.left = self._pop_min_with_recursion(node.left)
         return node
 
+    @not_empty
+    def remove(self, value: Any):
+        """删除值为 `value` 的节点.
+
+        1. 如果是叶子节点, 父节点的右或者左指向空 (需要考虑根节点).
+        2. 如果只有右子树, 父节点的右或者左指向右子树 (需要考虑根节点).
+        3. 如果只有左子树, 父节点的右或者左指向左子树 (需要考虑根节点).
+        4. 如果左右子树都有, 那么找到右子树最小的值, 将此值覆盖到删除节点, 然后删除这个最小的值 (不需要考虑根节点).
+        """
+        prev = self.root
+        delete = self.root
+        is_left = None
+        while delete and value != delete.val:
+            if value < delete.val:
+                is_left = True
+                prev = delete
+                delete = prev.left
+            else:
+                is_left = False
+                prev = delete
+                delete = prev.right
+        # 没有 `value`
+        if delete is None:
+            raise ValueError
+
+        if BTUtil.isleaf(delete):
+            self._size -= 1
+            if self.is_root(delete):
+                self.root = None
+                return
+            if is_left:
+                prev.left = None
+            else:
+                prev.right = None
+            return
+        if delete.left is None and delete.right is not None:
+            self._size -= 1
+            if self.is_root(delete):
+                self.root = delete.right
+                return
+            if is_left:
+                prev.left = delete.right
+            else:
+                prev.right = delete.right
+            return
+        if delete.right is None and delete.left is not None:
+            self._size -= 1
+            if self.is_root(delete):
+                self.root = delete.left
+                return
+            if is_left:
+                prev.left = delete.left
+            else:
+                prev.right = delete.left
+            return
+        # 到这里肯定 `delete.right` 和 `delete.left` 都不是 `None` 了.
+        # 从右子树中找到最小值
+
+        prev = delete
+        right_delete = prev.right
+        while right_delete.left:
+            prev = right_delete
+            right_delete = prev.left
+        val = right_delete.val
+        self.remove(val)
+        delete.val = val
+
     def is_root(self, node: Optional[BTNode]) -> bool:
         """判断节点是否为根节点."""
         return bool(node and self.root and node.val == self.root.val)
