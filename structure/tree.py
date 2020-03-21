@@ -390,41 +390,37 @@ class BST:
         2. 如果被删除节点有右子树, 删除右子树中的最小值, 将最小值赋给被删除节点.
         3. 如果被删除节点有左子树, 删除左子树中的最大值, 将最大值赋给被删除节点.
         """
+        # 找到被删除的节点
         prev = self.root
         delete = self.root
-        is_left = None
+        direction = None
         while delete and value != delete.val:
             if value < delete.val:
-                is_left = True
+                direction = 'left'
                 prev = delete
                 delete = prev.left
             else:
-                is_left = False
+                direction = 'right'
                 prev = delete
                 delete = prev.right
-        # 没有 `value`
+
+        # `value` 不在树中
         if delete is None:
             raise ValueError
 
+        # 如果是叶子节点, 则直接删除此节点
         if BTUtil.isleaf(delete):
-            self._size -= 1
-            if self.is_root(delete):
+            if direction is None:
                 self.root = None
-                return
-            if is_left:
-                prev.left = None
             else:
-                prev.right = None
-            return
-        if delete.right:
+                setattr(prev, direction, None)
+        # 如果有右子树, 则删除右子树中的最小值, 并且将最小值覆盖到节点中.
+        elif delete.right:
             delete.val, delete.right = self._pop_min_from(delete.right)
+        # 如果有左子树, 则删除左子树中的最大值, 并且将最大值覆盖到节点中.
         else:
             delete.val, delete.left = self._pop_max_from(delete.left)
         self._size -= 1
-
-    def is_root(self, node: Optional[BTNode]) -> bool:
-        """判断节点是否为根节点."""
-        return bool(node and self.root and node.val == self.root.val)
 
     @classmethod
     def from_iteralbe(cls, values: Iterable) -> 'BST':
