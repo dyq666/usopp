@@ -495,6 +495,13 @@ class BST:
         2. 如果只有右子树, 父节点的右或者左指向右子树 (需要考虑根节点).
         3. 如果只有左子树, 父节点的右或者左指向左子树 (需要考虑根节点).
         4. 如果左右子树都有, 那么找到右子树最小的值, 将此值覆盖到删除节点, 然后删除这个最小的值 (不需要考虑根节点).
+
+        叶子节点的判断可以合并到只有右子树或只有左子树任意一条中, 实现中
+        是合并了 1, 2 条, 因而判断条件变为:
+
+        1. 如果没有左子树, 父节点的右或者左指向右子树 (需要考虑根节点).
+        2. 和上面第 3 条一样
+        3. 和上面第 4 条一样
         """
         prev = self.root
         delete = self.root
@@ -512,17 +519,7 @@ class BST:
         if delete is None:
             raise ValueError
 
-        if BTUtil.isleaf(delete):
-            self._size -= 1
-            if self.is_root(delete):
-                self.root = None
-                return
-            if is_left:
-                prev.left = None
-            else:
-                prev.right = None
-            return
-        if delete.left is None and delete.right is not None:
+        if delete.left is None:
             self._size -= 1
             if self.is_root(delete):
                 self.root = delete.right
