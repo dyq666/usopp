@@ -61,11 +61,9 @@ class TestBST:
         tree = BST()
         for val in array:
             if val is not None:
-                tree.add(val)
-                tree.add(val)
-        res = [n and n.val for level in BTUtil.levelorder(tree.root, skip_none=False)
-               for n in level]
-        assert res == array
+                f(tree, val)
+                f(tree, val)
+        assert BTUtil.is_equal(tree.root, BTNode.from_iterable(array))
         assert len(tree) == sum(1 for i in array if i is not None)
 
     @pytest.mark.parametrize('f', (BST.pop_max, BST.pop_max_with_recursion))

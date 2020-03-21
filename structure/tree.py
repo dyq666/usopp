@@ -356,7 +356,7 @@ class BST:
 
         if value < node.val:
             node.left = self._add_with_recursion(node.left, value)
-        else:
+        elif value > node.val:
             node.right = self._add_with_recursion(node.right, value)
         return node
 
