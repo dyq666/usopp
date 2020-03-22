@@ -7,22 +7,9 @@ from structure import BST, BTNode, BTUtil
 
 
 @pytest.fixture
-def trees() -> List[BTNode]:
-    """返回如下的一些树 (最大层数: 3).
-    ```
-        1         1      N      1        1       9
-      2   3     2   N         N   9    2   3   8   7
-     N 5       9 N               8 N          N 4 3 N
-    ```
-    """
-    return [
-        BTNode.from_iterable([1, 2, 3, None, 5]),
-        BTNode.from_iterable([1, 2, None, 9, None]),
-        BTNode.from_iterable([]),
-        BTNode.from_iterable([1, None, 9, None, None, 8, None]),
-        BTNode.from_iterable([1, 2, 3]),
-        BTNode.from_iterable([9, 8, 7, None, 4, 3, None]),
-    ]
+def trees(bst_arrays: List[List[Optional[int]]]) -> List[BTNode]:
+    """返回一些树 (最大层数: 3)."""
+    return [BTNode.from_iterable(a) for a in bst_arrays]
 
 
 @pytest.fixture
@@ -150,59 +137,65 @@ class TestBTUtil:
                                    BTUtil.preorder_with_mocked_stack,
                                    BTUtil.preorder_with_recursion,))
     def test_preorder(self, f: Callable, trees: List[BTNode]):
-        assert list(n.val for n in f(trees[0])) == [1, 2, 5, 3]
-        assert list(n.val for n in f(trees[1])) == [1, 2, 9]
-        assert list(n.val for n in f(trees[2])) == []
-        assert list(n.val for n in f(trees[3])) == [1, 9, 8]
-        assert list(n.val for n in f(trees[4])) == [1, 2, 3]
-        assert list(n.val for n in f(trees[5])) == [9, 8, 4, 7, 3]
+        assert list(n.val for n in f(trees[0])) == []
+        assert list(n.val for n in f(trees[1])) == [3]
+        assert list(n.val for n in f(trees[2])) == [3, 1, 0]
+        assert list(n.val for n in f(trees[3])) == [3, 5, 6]
+        assert list(n.val for n in f(trees[4])) == [3, 1, 0, 5, 4]
+        assert list(n.val for n in f(trees[5])) == [3, 1, 2, 5, 6]
+        assert list(n.val for n in f(trees[6])) == [3, 1, 0, 2, 5, 4, 6]
 
     @pytest.mark.parametrize('f', (partial(BTUtil.preorder, skip_none=False),
                                    BTUtil.preorder_with_mocked_stack_and_none,
-                                   BTUtil.preorder_with_recursion_and_none))
+                                   BTUtil.preorder_with_recursion_and_none,))
     def test_preorder_with_none(self, f: Callable, trees: List[BTNode]):
-        assert list(n and n.val for n in f(trees[0])) == [1, 2, None, 5, 3]
-        assert list(n and n.val for n in f(trees[1])) == [1, 2, 9, None, None]
-        assert list(n and n.val for n in f(trees[2])) == []
-        assert list(n and n.val for n in f(trees[3])) == [1, None, 9, 8, None]
-        assert list(n and n.val for n in f(trees[4])) == [1, 2, 3]
-        assert list(n and n.val for n in f(trees[5])) == [9, 8, None, 4, 7, 3, None]
+        assert list(n and n.val for n in f(trees[0])) == []
+        assert list(n and n.val for n in f(trees[1])) == [3]
+        assert list(n and n.val for n in f(trees[2])) == [3, 1, 0, None, None]
+        assert list(n and n.val for n in f(trees[3])) == [3, None, 5, None, 6]
+        assert list(n and n.val for n in f(trees[4])) == [3, 1, 0, None, 5, 4, None]
+        assert list(n and n.val for n in f(trees[5])) == [3, 1, None, 2, 5, None, 6]
+        assert list(n and n.val for n in f(trees[6])) == [3, 1, 0, 2, 5, 4, 6]
 
     @pytest.mark.parametrize('f', (BTUtil.inorder,))
     def test_inorder(self, f: Callable, trees: List[BTNode]):
-        assert list(n.val for n in f(trees[0])) == [2, 5, 1, 3]
-        assert list(n.val for n in f(trees[1])) == [9, 2, 1]
-        assert list(n.val for n in f(trees[2])) == []
-        assert list(n.val for n in f(trees[3])) == [1, 8, 9]
-        assert list(n.val for n in f(trees[4])) == [2, 1, 3]
-        assert list(n.val for n in f(trees[5])) == [8, 4, 9, 3, 7]
+        assert list(n and n.val for n in f(trees[0])) == []
+        assert list(n and n.val for n in f(trees[1])) == [3]
+        assert list(n and n.val for n in f(trees[2])) == [0, 1, 3]
+        assert list(n and n.val for n in f(trees[3])) == [3, 5, 6]
+        assert list(n and n.val for n in f(trees[4])) == [0, 1, 3, 4, 5]
+        assert list(n and n.val for n in f(trees[5])) == [1, 2, 3, 5, 6]
+        assert list(n and n.val for n in f(trees[6])) == [0, 1, 2, 3, 4, 5, 6]
 
     @pytest.mark.parametrize('f', (BTUtil.postorder,))
     def test_postorder(self, f: Callable, trees: List[BTNode]):
-        assert list(n.val for n in f(trees[0])) == [5, 2, 3, 1]
-        assert list(n.val for n in f(trees[1])) == [9, 2, 1]
-        assert list(n.val for n in f(trees[2])) == []
-        assert list(n.val for n in f(trees[3])) == [8, 9, 1]
-        assert list(n.val for n in f(trees[4])) == [2, 3, 1]
-        assert list(n.val for n in f(trees[5])) == [4, 8, 3, 7, 9]
+        assert list(n and n.val for n in f(trees[0])) == []
+        assert list(n and n.val for n in f(trees[1])) == [3]
+        assert list(n and n.val for n in f(trees[2])) == [0, 1, 3]
+        assert list(n and n.val for n in f(trees[3])) == [6, 5, 3]
+        assert list(n and n.val for n in f(trees[4])) == [0, 1, 4, 5 , 3]
+        assert list(n and n.val for n in f(trees[5])) == [2, 1, 6, 5, 3]
+        assert list(n and n.val for n in f(trees[6])) == [0, 2, 1, 4, 6, 5, 3]
 
     @pytest.mark.parametrize('f', (BTUtil.levelorder,))
     def test_levelorder(self, f: Callable, trees: List[BTNode]):
-        assert list(n.val for level in f(trees[0]) for n in level) == [1, 2, 3, 5]
-        assert list(n.val for level in f(trees[1]) for n in level) == [1, 2, 9]
-        assert list(n.val for level in f(trees[2]) for n in level) == []
-        assert list(n.val for level in f(trees[3]) for n in level) == [1, 9, 8]
-        assert list(n.val for level in f(trees[4]) for n in level) == [1, 2, 3]
-        assert list(n.val for level in f(trees[5]) for n in level) == [9, 8, 7, 4, 3]
+        assert list(n.val for level in f(trees[0]) for n in level) == []
+        assert list(n.val for level in f(trees[1]) for n in level) == [3]
+        assert list(n.val for level in f(trees[2]) for n in level) == [3, 1, 0]
+        assert list(n.val for level in f(trees[3]) for n in level) == [3, 5, 6]
+        assert list(n.val for level in f(trees[4]) for n in level) == [3, 1, 5, 0, 4]
+        assert list(n.val for level in f(trees[5]) for n in level) == [3, 1, 5, 2, 6]
+        assert list(n.val for level in f(trees[6]) for n in level) == [3, 1, 5, 0, 2, 4, 6]
 
     @pytest.mark.parametrize('f', (partial(BTUtil.levelorder, skip_none=False),))
     def test_levelorder_with_none(self, f: Callable, trees: List[BTNode]):
-        assert list(n and n.val for level in f(trees[0]) for n in level) == [1, 2, 3, None, 5]
-        assert list(n and n.val for level in f(trees[1]) for n in level) == [1, 2, None, 9, None]
-        assert list(n and n.val for level in f(trees[2]) for n in level) == []
-        assert list(n and n.val for level in f(trees[3]) for n in level) == [1, None, 9, 8, None]
-        assert list(n and n.val for level in f(trees[4]) for n in level) == [1, 2, 3]
-        assert list(n and n.val for level in f(trees[5]) for n in level) == [9, 8, 7, None, 4, 3, None]
+        assert list(n and n.val for level in f(trees[0]) for n in level) == []
+        assert list(n and n.val for level in f(trees[1]) for n in level) == [3]
+        assert list(n and n.val for level in f(trees[2]) for n in level) == [3, 1, None, 0, None]
+        assert list(n and n.val for level in f(trees[3]) for n in level) == [3, None, 5, None, 6]
+        assert list(n and n.val for level in f(trees[4]) for n in level) == [3, 1, 5, 0, None, 4, None]
+        assert list(n and n.val for level in f(trees[5]) for n in level) == [3, 1, 5, None, 2, None, 6]
+        assert list(n and n.val for level in f(trees[6]) for n in level) == [3, 1, 5, 0, 2, 4, 6]
 
     def test_is_equal(self):
         f = BTUtil.is_equal
