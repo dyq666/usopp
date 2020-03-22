@@ -6,7 +6,7 @@ from functools import total_ordering
 from itertools import chain, zip_longest
 from typing import Any, Generator, List, Iterable, Optional, Tuple
 
-from util import not_empty
+from .util import not_empty
 
 
 class BTNode:
