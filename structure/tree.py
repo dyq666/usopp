@@ -320,8 +320,10 @@ class BST:
         added = self.root
         direction = None
         while added:
-            # 不允许存在重复元素
+            # 重复元素时, 用新值覆盖旧值, 具体原因是为字典服务.
+            # 当 `value` 是一个类实例, 相等不代表他们真的都一样, 例如类 `Pair`.
             if value == added.val:
+                added.val = value
                 return
 
             prev = added
@@ -371,6 +373,8 @@ class BST:
             node.left = self._add_with_recursion(node.left, value)
         elif value > node.val:
             node.right = self._add_with_recursion(node.right, value)
+        else:  # value == node.val
+            node.val = value
         return node
 
     @not_empty
@@ -530,9 +534,9 @@ class BST:
 
 @total_ordering
 class Pair:
-    """二分搜索树从集合转为映射的辅助类.
+    """二分搜索树从集合转为字典的辅助类.
 
-    由于 `BST` 中只能存放一个值, 不能直接用于映射. 一种方式是让 `BTNode`
+    由于 `BST` 中只能存放一个值, 不能直接用于字典. 一种方式是让 `BTNode`
     存放 key, value, 然后重写 `BST`, 但这种方式代价比较高. 另一种方式是
     `BST` 中存放一个可比较的类实例, 将 key, value 存放到这个类实例中即可.
     """
