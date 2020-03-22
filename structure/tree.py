@@ -295,6 +295,8 @@ class BST:
     """二分搜索树. (BST -> BinarySearchTree)
 
     树中不允许存在重复元素.
+
+    可将本数据结构当做 set, 用 LeetCode 804 测试.
     """
 
     def __init__(self):
