@@ -194,7 +194,7 @@ class TestBTUtil:
         assert list(n.val for level in f(trees[5]) for n in level) == [9, 8, 7, 4, 3]
 
     @pytest.mark.parametrize('f', (partial(BTUtil.levelorder, skip_none=False),))
-    def test_levelorder(self, f: Callable, trees: List[BTNode]):
+    def test_levelorder_with_none(self, f: Callable, trees: List[BTNode]):
         assert list(n and n.val for level in f(trees[0]) for n in level) == [1, 2, 3, None, 5]
         assert list(n and n.val for level in f(trees[1]) for n in level) == [1, 2, None, 9, None]
         assert list(n and n.val for level in f(trees[2]) for n in level) == []
