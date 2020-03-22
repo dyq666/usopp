@@ -307,9 +307,7 @@ class BST:
         return self._size
 
     def __iter__(self) -> Iterable:
-        return (node and node.val
-                for level in BTUtil.levelorder(self.root, skip_none=False)
-                for node in level)
+        return BTUtil.inorder(self.root)
 
     def add(self, value: Any):
         """添加元素.
