@@ -426,6 +426,34 @@ class BST:
             delete.val, delete.left = self._pop_max_from(delete.left)
         self._size -= 1
 
+    @not_empty
+    def remove_with_recursion(self, value: Any):
+        """`remove` 方法的递归实现."""
+        self.root = self._remove_with_recursion(self.root, value)
+
+    def _remove_with_recursion(self, node: BTNode, value: Any) -> Optional[BTNode]:
+        """从 `node` 中删除值为 `value` 的节点, 返回删除完成的树."""
+        # 树中没有 `value`
+        if node is None:
+            raise ValueError
+        # 找到了删除节点
+        if value == node.val:
+            if BTUtil.isleaf(node):
+                self._size -= 1
+                return
+            if node.right:
+                node.val, node.right = self._pop_min_from(node.right)
+            else:  # elif node.left
+                node.val, node.left = self._pop_max_from(node.left)
+            self._size -= 1
+            return node
+
+        if value < node.val:
+            node.left = self._remove_with_recursion(node.left, value)
+        else:  # val > node.val
+            node.right = self._remove_with_recursion(node.right, value)
+        return node
+
     @classmethod
     def from_iteralbe(cls, values: Iterable) -> 'BST':
         tree = cls()
