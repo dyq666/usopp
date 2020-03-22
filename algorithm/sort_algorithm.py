@@ -10,7 +10,14 @@ from typing import Callable
 
 import pytest
 
-from .util import swap_two_ele
+
+def swap_two_ele(nums, ele1, ele2):
+    """
+    交换数组中索引ele1和ele2的位置
+    """
+    assert 0 <= ele1 < len(nums) and 0 <= ele2 < len(nums), "索引超出了数组的范围"
+
+    nums[ele1], nums[ele2] = nums[ele2], nums[ele1]
 
 
 def selection_sort(array: list) -> None:
