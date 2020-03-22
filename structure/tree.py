@@ -2,6 +2,7 @@ __all__ = (
     'BST', 'BTNode', 'BTUtil'
 )
 
+from functools import total_ordering
 from itertools import chain, zip_longest
 from typing import Any, Generator, List, Iterable, Optional, Tuple
 
@@ -525,3 +526,47 @@ class BST:
             return min_.val, node.right
         prev.left = min_.right
         return min_.val, node
+
+
+@total_ordering
+class Pair:
+    """二分搜索树从集合转为映射的辅助类.
+
+    由于 `BST` 中只能存放一个值, 不能直接用于映射. 一种方式是让 `BTNode`
+    存放 key, value, 然后重写 `BST`, 但这种方式代价比较高. 另一种方式是
+    `BST` 中存放一个可比较的类实例, 将 key, value 存放到这个类实例中即可.
+    """
+
+    def __init__(self, key: Any, value: Any):
+        self.key = key
+        self.value = value
+
+    def __repr__(self):
+        return (
+            f'<{self.__class__.__name__}'
+            f' key={self.key!r}'
+            f' value={self.value!r}'
+            f'>'
+        )
+
+    def __eq__(self, other: 'Pair') -> bool:
+        return self.key == other.key
+
+    def __gt__(self, other: 'Pair') -> bool:
+        return self.key > other.key
+
+
+class BSTDict:
+    """用二分搜索树实现字典."""
+
+    def __init__(self):
+        self.tree = BST()
+
+    def __iter__(self) -> Iterable:
+        return ((node.val.key, node.val.value) for node in self.tree)
+
+    def add(self, key: Any, value: Any):
+        self.tree.add(Pair(key, value))
+
+    def remove(self, key: Any):
+        self.tree.remove(Pair(key, None))
