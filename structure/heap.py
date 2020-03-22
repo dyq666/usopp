@@ -2,18 +2,38 @@ __all__ = (
     'MaxHeap',
 )
 
-from typing import Tuple
+from typing import Any, Iterable, Tuple
 
 
 class MaxHeap:
     """最大堆."""
 
     def __init__(self):
-        self._size = 0
-        self._array = []
+        self._data = []
 
     def __len__(self) -> int:
-        return self._size
+        return len(self._data)
+
+    def __iter__(self) -> Iterable:
+        return iter(self._data)
+
+    def add(self, value: Any):
+        """添加元素.
+
+        先将元素放到末尾, 再升上去.
+        """
+        self._data.append(value)
+        self._sift_up(len(self) - 1)
+
+    def _sift_up(self, index: int):
+        """上升元素."""
+        d = self._data
+        while index != 0:
+            parent = self.parent_idx(index)
+            if d[index] < d[parent]:
+                return
+            d[index], d[parent] = d[parent], d[index]
+            index = parent
 
     @staticmethod
     def child_idxes(index: int) -> Tuple[int, int]:
