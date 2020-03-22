@@ -42,7 +42,7 @@ class BTNode:
           - 1: 3, 4
           - 2: 5, 6
             ...
-          - n: (n + 1) * 2 - 1, (n + 1) * 2
+          - n: 2 * n + 1, 2 * n + 2
 
         由于索引是连续的, 所以数组中只有最后一层的空节点可以省略.
         ```
@@ -61,8 +61,8 @@ class BTNode:
             return
 
         node = cls(data[index])
-        node.left = cls._gen_tree(data, (index + 1) * 2 - 1)
-        node.right = cls._gen_tree(data, (index + 1) * 2)
+        node.left = cls._gen_tree(data, index * 2 + 1)
+        node.right = cls._gen_tree(data, index * 2 + 2)
         return node
 
 
