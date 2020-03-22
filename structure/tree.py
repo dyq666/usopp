@@ -342,8 +342,7 @@ class BST:
         """`add` 方法的递归实现."""
         self.root = self._add_with_recursion(self.root, value)
 
-    def _add_with_recursion(self, node: Optional[BTNode],
-                            value: Any) -> BTNode:
+    def _add_with_recursion(self, node: Optional[BTNode], value: Any) -> BTNode:
         """向以 `node` 为根的树中添加 `value`, 返回添加完成的树.
 
         怎么理解递归终止条件 ?
@@ -391,6 +390,9 @@ class BST:
           1. 如果被删除节点是叶子节点, 父节点原本指向被删除节点的方向指向空 (根节点也是叶子节点, 需要特殊处理).
           2. 如果被删除节点有右子树, 删除右子树中的最小值, 将最小值赋给被删除节点.
           3. 如果被删除节点有左子树, 删除左子树中的最大值, 将最大值赋给被删除节点.
+
+        实际上, 合并之后的规则虽然清晰了, 但耗时增加了. 因为之前只有右子树或只有左子树的情况, 删除是 O(1) 的,
+        而找最小值或最大值是 O(logN). 所以理论上不应该合并规则的, 但这里牺牲了时间复杂度, 提高了可读性.
 
         为什么可以用右子树的最小值或左子树的最大值取代删除值 ?
 
