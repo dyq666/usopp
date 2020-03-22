@@ -19,7 +19,7 @@ class MaxHeap:
     def __iter__(self) -> Iterable:
         return iter(self._data)
 
-    def add(self, value: Any):
+    def push(self, value: Any):
         """添加元素.
 
         先将元素放到末尾, 再升上去.
