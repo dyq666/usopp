@@ -130,6 +130,15 @@ class TestBST:
         assert len(tree) == 4
         assert BTUtil.is_equal(tree.root, BTNode.from_iterable([6, 1, None, 0, 2]))
 
+    def test_get_and_contains(self, bst_arrays: List[List[Optional[int]]]):
+        tree = BST.from_iteralbe(bst_arrays[6])
+        assert tree.get(7) is None
+        assert tree.get(6).val == 6
+        assert tree.get(7, 100) == 100
+
+        assert 7 not in tree
+        assert 6 in tree
+
 
 class TestBTUtil:
 

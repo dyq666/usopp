@@ -1,5 +1,5 @@
 __all__ = (
-    'BST', 'BTNode', 'BTUtil'
+    'BST', 'BSTDict', 'BTNode', 'BTUtil'
 )
 
 from functools import total_ordering
@@ -297,6 +297,9 @@ class BST:
 
     树中不允许存在重复元素.
 
+    本数据结构有个弊端, 由于需要使用 `value` 的可比较性, 因而不同类型的值
+    无法存储到一起.
+
     可将本数据结构当做 set, 用 LeetCode 804 测试.
     """
 
@@ -309,6 +312,9 @@ class BST:
 
     def __iter__(self) -> Iterable:
         return BTUtil.inorder(self.root)
+
+    def __contains__(self, value: Any) -> bool:
+        return self.get(value) is not None
 
     def add(self, value: Any):
         """添加元素.
@@ -461,6 +467,24 @@ class BST:
             node.right = self._remove_with_recursion(node.right, value)
         return node
 
+    def get(self, value: Any, default: Any = None) -> Any:
+        """返回值为 `value` 的节点, 如果没有则返回 `default`.
+
+        虽然看起来这个函数比较奇怪, 但当 `value` 是一个可比较对象时, 就有意义了,
+        例如当 `value` 是下面用于字典的类 `Pair`.
+        """
+        geted = self.root
+        while geted:
+            if value == geted.val:
+                return geted
+            if value < geted.val:
+                geted = geted.left
+            else:  # value > geted.val
+                geted = geted.right
+
+        # 没找到
+        return default
+
     @classmethod
     def from_iteralbe(cls, values: Iterable) -> 'BST':
         tree = cls()
@@ -561,16 +585,35 @@ class Pair:
 
 
 class BSTDict:
-    """用二分搜索树实现字典."""
+    """用二分搜索树实现字典.
+
+    本数据结构有个弊端, 由于需要底层的 `BST` 需要每个节点的值是可比较的,
+    因而 `key` 必须是同一种类型, 否则将报错提示不可比较.
+    """
 
     def __init__(self):
         self.tree = BST()
 
+    def __repr__(self) -> str:
+        return '{' + ', '.join(': '.join((repr(k), repr(v))) for k, v in self) + '}'
+
     def __iter__(self) -> Iterable:
         return ((node.val.key, node.val.value) for node in self.tree)
 
-    def add(self, key: Any, value: Any):
+    def __len__(self) -> int:
+        return len(self.tree)
+
+    def __contains__(self, key: Any) -> bool:
+        return Pair(key, None) in self.tree
+
+    def __setitem__(self, key: Any, value: Any):
         self.tree.add(Pair(key, value))
 
-    def remove(self, key: Any):
+    def __getitem__(self, key: Any) -> Any:
+        pair: Optional[BTNode] = self.tree.get(Pair(key, None))
+        if pair is None:
+            raise KeyError
+        return pair.val.value
+
+    def __delitem__(self, key: Any):
         self.tree.remove(Pair(key, None))
