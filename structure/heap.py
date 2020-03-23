@@ -2,7 +2,7 @@ __all__ = (
     'MaxHeap',
 )
 
-from typing import Any, Iterable, Tuple
+from typing import Any, Iterable, Optional, Tuple
 
 from .util import not_empty
 
@@ -13,8 +13,12 @@ class MaxHeap:
     函数命名和 `import heapq` 保持一致.
     """
 
-    def __init__(self):
-        self._data = []
+    def __init__(self, data: Optional[list] = None):
+        """注意如果传入 `data` 必须保证 `data` 已经是一个最大堆了.
+
+        如果不能保证则应该使用 `heapify`.
+        """
+        self._data = [] if data is None else data[:]
 
     def __len__(self) -> int:
         return len(self._data)
@@ -87,6 +91,25 @@ class MaxHeap:
             d[child], d[index] = d[index], d[child]
             index = child
             l, r = self.child_idxes(index)
+
+    @classmethod
+    def heapify(cls, data: list) -> 'MaxHeap':
+        """使任意排序的数组转换成堆.
+
+        从最后一个非叶子节点到第一个节点逐个下降 (实际上从最后一个
+        节点开始下降也是可以的, 只不过叶子节点下降等于什么都不干).
+
+        heapify 的时间复杂度是 O(N) !
+        """
+        data = data[:]
+        if len(data) < 2:
+            return cls(data)
+
+        last = cls.parent_idx(len(data) - 1)
+        heap = cls(data)
+        for i in range(last, -1, -1):
+            heap._sift_down(i)
+        return heap
 
     @staticmethod
     def child_idxes(index: int) -> Tuple[int, int]:

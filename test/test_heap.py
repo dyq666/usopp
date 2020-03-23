@@ -112,3 +112,10 @@ def test_pushpop_and_replace():
         heap.push(i)
     assert 8 == heap.pushpop(4)
     assert list(heap) == [7, 4, 6]
+
+
+def test_heapify():
+    assert list(MaxHeap.heapify([])) == []
+    assert list(MaxHeap.heapify([2])) == [2]
+    assert list(MaxHeap.heapify([2, 3])) == [3, 2]
+    assert list(MaxHeap.heapify([0, 4, 3, 2, 1])) == [4, 2, 3, 0, 1]
