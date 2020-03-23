@@ -11,6 +11,8 @@ class MaxHeap:
     """最大堆.
 
     函数命名和 `import heapq` 保持一致.
+
+    可使用 LeetCode 347 测试.
     """
 
     def __init__(self, data: Optional[list] = None):
