@@ -84,3 +84,31 @@ def test_pop():
 
     with pytest.raises(IndexError):
         heap.pop()
+
+
+def test_pushpop_and_replace():
+    # 空
+    with pytest.raises(IndexError):
+        MaxHeap().replace(1)
+    assert 1 == MaxHeap().pushpop(1)
+
+    # 比较二者放入一个比堆最大值还大的元素
+    heap = MaxHeap()
+    for i in range(8, 5, -1):
+        heap.push(i)
+    assert 9 == heap.pushpop(9)
+    assert list(heap) == [8, 7, 6]
+    assert 8 == heap.replace(9)
+    assert list(heap) == [9, 7, 6]
+
+    # 比较二者放入一个小于堆最大值的元素
+    heap = MaxHeap()
+    for i in range(8, 5, -1):
+        heap.push(i)
+    assert 8 == heap.replace(4)
+    assert list(heap) == [7, 4, 6]
+    heap = MaxHeap()
+    for i in range(8, 5, -1):
+        heap.push(i)
+    assert 8 == heap.pushpop(4)
+    assert list(heap) == [7, 4, 6]

@@ -8,7 +8,10 @@ from .util import not_empty
 
 
 class MaxHeap:
-    """最大堆."""
+    """最大堆.
+
+    函数命名和 `import heapq` 保持一致.
+    """
 
     def __init__(self):
         self._data = []
@@ -38,6 +41,25 @@ class MaxHeap:
         max_ = d.pop()
         self._sift_down(0)
         return max_
+
+    @not_empty
+    def replace(self, value: Any) -> Any:
+        """先 `pop` 首元素, 再 `push` 一个元素.
+
+        :) 实际上这个方法可以叫做 `poppush`!
+        """
+        max_ = self._data[0]
+        self._data[0] = value
+        self._sift_down(0)
+        return max_
+
+    def pushpop(self, value: Any) -> Any:
+        """先 `push` 一个元素, 再 `pop` 首元素."""
+        if len(self) == 0 or value >= self._data[0]:
+            return value
+
+        # 当 `value < max_` 时, 和先 `pop` 后 `push` 就是一样的
+        return self.replace(value)
 
     def _sift_up(self, index: int):
         """上升元素."""
