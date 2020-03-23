@@ -64,11 +64,9 @@ class MaxHeap:
     def _sift_up(self, index: int):
         """上升元素."""
         d = self._data
-        while index > 0:
+        # 如果没上升到头并且比父亲大, 则继续上升
+        while index > 0 and d[index] > d[self.parent_idx(index)]:
             parent = self.parent_idx(index)
-            # 孩子节点小于父节点就终止
-            if d[index] < d[parent]:
-                return
             d[index], d[parent] = d[parent], d[index]
             index = parent
 
