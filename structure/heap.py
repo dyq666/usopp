@@ -80,14 +80,19 @@ class MaxHeap:
         l, r = self.child_idxes(index)
         # 这个循环条件等价于 `index` 不是叶子节点
         while l < len(self) or r < len(self):
-            # 从孩子中找到最大值
-            vl = d[l] if l < len(self) else float('-inf')
-            vr = d[r] if r < len(self) else float('-inf')
+            # 从孩子中找到最大值, None 代表没有这个方向的孩子
+            vl = d[l] if l < len(self) else None
+            vr = d[r] if r < len(self) else None
             # 父节点比两个孩子节点都大, 就终止
-            if max(d[index], vl, vr) == d[index]:
+            if max(i for i in (d[index], vl, vr) if i is not None) == d[index]:
                 break
 
-            child = l if vl > vr else r
+            if vl is not None and vr is not None:
+                child = l if vl > vr else r
+            elif vr is not None:
+                child = r
+            else:  # vl is not None
+                child = l
             d[child], d[index] = d[index], d[child]
             index = child
             l, r = self.child_idxes(index)
