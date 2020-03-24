@@ -81,21 +81,18 @@ class MaxHeap:
         """下降元素."""
         d = self._data
         l, r = BTUtil.left_idx(index), BTUtil.right_idx(index)
-        # 这个循环条件等价于 `index` 不是叶子节点
-        while l < len(self) or r < len(self):
-            # 从孩子中找到最大值, None 代表没有这个方向的孩子
-            vl = d[l] if l < len(self) else None
-            vr = d[r] if r < len(self) else None
-            # 父节点比两个孩子节点都大, 就终止
-            if max(i for i in (d[index], vl, vr) if i is not None) == d[index]:
-                break
-
-            if vl is not None and vr is not None:
-                child = l if vl > vr else r
-            elif vr is not None:
-                child = r
-            else:  # vl is not None
+        # 当左 >= len 时, 等价于 `index` 没有左, 由于右 = 左 + 1, 因而也没有右,
+        # 所以此时 `index` 是叶子, 叶子无法继续下降.
+        while l < len(self):
+            # 如果有右节点, 则从左右中选择一个大的.
+            if r < len(self):
+                child = l if d[l] > d[r] else r
+            else:
                 child = l
+
+            # 父比孩子中最大的还大, 不需要下降了.
+            if d[index] >= d[child]:
+                break
             d[child], d[index] = d[index], d[child]
             index = child
             l, r = BTUtil.left_idx(index), BTUtil.right_idx(index)
