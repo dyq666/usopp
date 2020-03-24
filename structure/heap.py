@@ -41,7 +41,7 @@ class MaxHeap:
     def pop(self) -> Any:
         """删除元素.
 
-        头和尾互换, 换完之后, 尾弹出, 头下降.
+        头和尾互换, 换完之后, 尾弹出, 头下沉.
         """
         d = self._data
         d[0], d[-1] = d[-1], d[0]
@@ -69,20 +69,20 @@ class MaxHeap:
         return self.replace(value)
 
     def _sift_up(self, index: int):
-        """上升元素."""
+        """上浮元素."""
         d = self._data
-        # 如果没上升到头并且比父亲大, 则继续上升
+        # 如果没上浮到头并且比父亲大, 则继续上浮
         while index > 0 and d[index] > d[BTUtil.parent_idx(index)]:
             parent = BTUtil.parent_idx(index)
             d[index], d[parent] = d[parent], d[index]
             index = parent
 
     def _sift_down(self, index: int):
-        """下降元素."""
+        """下沉元素."""
         d = self._data
         l, r = BTUtil.left_idx(index), BTUtil.right_idx(index)
         # 当左 >= len 时, 等价于 `index` 没有左, 由于右 = 左 + 1, 因而也没有右,
-        # 所以此时 `index` 是叶子, 叶子无法继续下降.
+        # 所以此时 `index` 是叶子, 叶子无法继续下沉.
         while l < len(self):
             # 如果有右节点, 则从左右中选择一个大的.
             if r < len(self):
@@ -90,7 +90,7 @@ class MaxHeap:
             else:
                 child = l
 
-            # 父比孩子中最大的还大, 不需要下降了.
+            # 父比孩子中最大的还大, 不需要下沉了.
             if d[index] >= d[child]:
                 break
             d[child], d[index] = d[index], d[child]
@@ -101,8 +101,8 @@ class MaxHeap:
     def heapify(cls, data: list) -> 'MaxHeap':
         """使任意排序的数组转换成堆.
 
-        从最后一个非叶子节点到第一个节点逐个下降 (实际上从最后一个
-        节点开始下降也是可以的, 只不过叶子节点下降等于什么都不干).
+        从最后一个非叶子节点到第一个节点逐个下沉 (实际上从最后一个
+        节点开始下沉也是可以的, 只不过叶子节点下沉等于什么都不干).
 
         heapify 的时间复杂度是 O(N) !
         """
