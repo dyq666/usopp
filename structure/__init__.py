@@ -3,7 +3,7 @@ __all__ = (
     'DynamicArrayV1', 'DynamicArrayV2',
     'LinkedListV1', 'LinkedListV2',
     'LoopArrayV1', 'LoopArrayV2', 'LoopArrayV3',
-    'MaxHeap',
+    'MaxHeap', 'SegmentTree',
 )
 
 from .array import (
@@ -12,4 +12,5 @@ from .array import (
 )
 from .linked_list import LinkedListV1, LinkedListV2
 from .heap import MaxHeap
+from .segment_tree import SegmentTree
 from .tree import BST, BSTDict, BTNode, BTUtil
