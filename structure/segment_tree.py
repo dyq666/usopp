@@ -2,6 +2,8 @@ __all__ = (
     'SegmentTree',
 )
 
+from typing import Any
+
 from .tree import BTUtil
 
 
@@ -27,6 +29,32 @@ class SegmentTree:
         self._merger = merger
 
         self._build(0, len(array) - 1, 0)
+
+    def query(self, l: int, r: int) -> Any:
+        """查询 [l...r] 范围的数据."""
+        if not (0 <= l < len(self._array) and 0 <= r < len(self._array) and l <= r):
+            raise IndexError
+        return self._query(0, len(self._array) - 1, l, r, 0)
+
+    def _query(self, l: int, r: int, query_l: int, query_r: int, tree_idx: int) -> Any:
+        """在以根为 `tree_idx` 的 [l...r] 的范围中查询, [query_l...query_r] 范围的数据."""
+        if l == query_l and r == query_r:
+            return self._tree[tree_idx]
+
+        # 将范围劈成两半, [l...mid], [mid + 1...r]
+        mid = (l + r) // 2
+        tree_l, tree_r = BTUtil.left_idx(tree_idx), BTUtil.right_idx(tree_idx)
+
+        # 如果查询的左索引在中间索引的右边, 那么直接去查右区间.
+        if query_l >= mid + 1:
+            return self._query(mid + 1, r, query_l, query_r, tree_r)
+        # 如果查询的右索引在中间索引的左边, 那么直接去查左区间.
+        if query_r <= mid:
+            return self._query(l, mid, query_l, query_r, tree_l)
+        # 否则证明, 查询索引横跨左右区间, 因此两边分开找.
+        vl = self._query(l, mid, query_l, mid, tree_l)
+        vr = self._query(mid + 1, r, query_r, mid + 1, tree_r)
+        return self._merger(vl, vr)
 
     def _build(self, l: int, r: int, tree_idx: int):
         """以数组 [l...r] 范围的数据构建一课根节点为 `tree_idx` 的线段树."""

@@ -223,25 +223,43 @@ def test_SegmentTree():
     assert tree._tree == []
 
     # 奇数个元素的线段树
-    #     3+3
-    #  1+2   3
-    #  1 2  N N
-    tree = SegmentTree([1, 2, 3], merger=add)
-    assert tree._tree == [6, 3, 3, 1, 2] + [None] * 7
-    #    -1-3
-    #  1-2   3
-    #  1 2  N N
-    tree = SegmentTree([1, 2, 3], merger=sub)
-    assert tree._tree == [-4, -1, 3, 1, 2] + [None] * 7
+    #     5+8
+    #  1+4   8
+    #  1 4  N N
+    tree = SegmentTree([1, 4, 8], merger=add)
+    assert tree._tree == [13, 5, 8, 1, 4] + [None] * 7
+    assert tree.query(0, 0) == 1
+    assert tree.query(0, 1) == 5
+    assert tree.query(1, 2) == 12
+    assert tree.query(0, 2) == 13
+    #    -3-8
+    #  1-4   8
+    #  1 4  N N
+    tree = SegmentTree([1, 4, 8], merger=sub)
+    assert tree._tree == [-11, -3, 8, 1, 4] + [None] * 7
+    assert tree.query(0, 0) == 1
+    assert tree.query(0, 1) == -3
+    assert tree.query(1, 2) == -4
+    assert tree.query(0, 2) == -11
 
     # 偶数个元素的线段树
-    #     3+7
-    #  1+2   3+4
-    #  1 2   3 4
-    tree = SegmentTree([1, 2, 3, 4], merger=add)
-    assert tree._tree == [10, 3, 7, 1, 2, 3, 4] + [None] * 9
-    #  (-1)-(-1)
-    #  1-2   3-4
-    #  1 2   3 4
-    tree = SegmentTree([1, 2, 3, 4], merger=sub)
-    assert tree._tree == [0, -1, -1, 1, 2, 3, 4] + [None] * 9
+    #     4+14
+    #  1+3   6+8
+    #  1 3   6 8
+    tree = SegmentTree([1, 3, 6, 8], merger=add)
+    assert tree._tree == [18, 4, 14, 1, 3, 6, 8] + [None] * 9
+    assert tree.query(0, 0) == 1
+    assert tree.query(0, 1) == 4
+    assert tree.query(1, 2) == 9
+    assert tree.query(0, 2) == 10
+    assert tree.query(0, 3) == 18
+    #  (-2)-(-2)
+    #  1-3   6-8
+    #  1 3   6 8
+    tree = SegmentTree([1, 3, 6, 8], merger=sub)
+    assert tree._tree == [0, -2, -2, 1, 3, 6, 8] + [None] * 9
+    assert tree.query(0, 0) == 1
+    assert tree.query(0, 1) == -2
+    assert tree.query(1, 2) == -3
+    assert tree.query(0, 2) == -8
+    assert tree.query(0, 3) == 0
