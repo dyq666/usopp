@@ -232,6 +232,8 @@ def test_SegmentTree():
     assert tree.query(0, 1) == 5
     assert tree.query(1, 2) == 12
     assert tree.query(0, 2) == 13
+    tree[0] = 10
+    assert tree._tree == [22, 14, 8, 10, 4] + [None] * 7
     #    -3-8
     #  1-4   8
     #  1 4  N N
@@ -241,6 +243,8 @@ def test_SegmentTree():
     assert tree.query(0, 1) == -3
     assert tree.query(1, 2) == -4
     assert tree.query(0, 2) == -11
+    tree[0] = 10
+    assert tree._tree == [-2, 6, 8, 10, 4] + [None] * 7
 
     # 偶数个元素的线段树
     #     4+14
@@ -253,6 +257,8 @@ def test_SegmentTree():
     assert tree.query(1, 2) == 9
     assert tree.query(0, 2) == 10
     assert tree.query(0, 3) == 18
+    tree[0] = 10
+    assert tree._tree == [27, 13, 14, 10, 3, 6, 8] + [None] * 9
     #  (-2)-(-2)
     #  1-3   6-8
     #  1 3   6 8
@@ -263,3 +269,5 @@ def test_SegmentTree():
     assert tree.query(1, 2) == -3
     assert tree.query(0, 2) == -8
     assert tree.query(0, 3) == 0
+    tree[0] = 10
+    assert tree._tree == [9, 7, -2, 10, 3, 6, 8] + [None] * 9

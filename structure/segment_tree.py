@@ -5,6 +5,7 @@ __all__ = (
 from typing import Any
 
 from .tree import BTUtil
+from .util import check_index
 
 
 class SegmentTree:
@@ -30,11 +31,19 @@ class SegmentTree:
 
         self._build(0, len(array) - 1, 0)
 
+    def __len__(self) -> int:
+        return len(self._array)
+
+    @check_index()
+    def __setitem__(self, index: int, value: Any):
+        self._array[index] = value
+        self._set(0, len(self) - 1, 0, index, value)
+
     def query(self, l: int, r: int) -> Any:
         """查询 [l...r] 范围的数据."""
-        if not (0 <= l < len(self._array) and 0 <= r < len(self._array) and l <= r):
+        if not (0 <= l < len(self) and 0 <= r < len(self) and l <= r):
             raise IndexError
-        return self._query(0, len(self._array) - 1, l, r, 0)
+        return self._query(0, len(self) - 1, l, r, 0)
 
     def _query(self, l: int, r: int, query_l: int, query_r: int, tree_idx: int) -> Any:
         """在以根为 `tree_idx` 的 [l...r] 的范围中查询, [query_l...query_r] 范围的数据."""
@@ -73,4 +82,22 @@ class SegmentTree:
 
         self._build(l, mid, tree_l)
         self._build(mid + 1, r, tree_r)
+        self._tree[tree_idx] = self._merger(self._tree[tree_l], self._tree[tree_r])
+
+    def _set(self, l: int, r: int, tree_idx: int, target_idx: int, value: Any):
+        """实际上和 `_build` 逻辑几乎一样, 只不过 `_build` 中要设置所有索引,
+        `_set` 只用设置 `target_idx` 一个索引.
+        """
+        if l == r:
+            self._tree[tree_idx] = value
+            return
+
+        mid = (l + r) // 2
+        tree_l = BTUtil.left_idx(tree_idx)
+        tree_r = BTUtil.right_idx(tree_idx)
+
+        if target_idx >= mid + 1:
+            self._set(mid + 1, r, tree_r, target_idx, value)
+        else:
+            self._set(l, mid, tree_l, target_idx, value)
         self._tree[tree_idx] = self._merger(self._tree[tree_l], self._tree[tree_r])
