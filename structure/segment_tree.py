@@ -2,6 +2,8 @@ __all__ = (
     'SegmentTree',
 )
 
+from .tree import BTUtil
+
 
 class SegmentTree:
     """线段树.
@@ -19,6 +21,28 @@ class SegmentTree:
     8 * 4 > 8 * 2 = 16, 当 N = 9 时, 9 * 4 > 8 * 4 = 32.
     """
 
-    def __init__(self, array: list):
+    def __init__(self, array: list, merger: callable):
         self._array = array[:]
         self._tree = [None for _ in range(len(array) * 4)]
+        self._merger = merger
+
+        self._build(0, len(array) - 1, 0)
+
+    def _build(self, l: int, r: int, tree_idx: int):
+        """以数组 [l...r] 范围的数据构建一课根节点为 `tree_idx` 的线段树."""
+        # 无效范围
+        if l > r:
+            return
+        # 范围内只有一个元素
+        if l == r:
+            self._tree[tree_idx] = self._array[l]
+            return
+
+        # 将范围对半分分别构建线段树
+        mid = (l + r) // 2
+        tree_l = BTUtil.left_idx(tree_idx)
+        tree_r = BTUtil.right_idx(tree_idx)
+
+        self._build(l, mid, tree_l)
+        self._build(mid + 1, r, tree_r)
+        self._tree[tree_idx] = self._merger(self._tree[tree_l], self._tree[tree_r])

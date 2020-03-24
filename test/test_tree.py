@@ -1,9 +1,10 @@
 from functools import partial
+from operator import add, sub
 from typing import Callable, List, Optional
 
 import pytest
 
-from structure import BST, BTNode, BTUtil
+from structure import BST, BTNode, BTUtil, SegmentTree
 
 
 @pytest.fixture
@@ -213,3 +214,34 @@ class TestBTUtil:
         # 第一个树 5 是 2 的右节点, 第二个则是左节点
         assert not f(gen([1, 2, 3, None, 5]), gen([1, 2, 3, 5]))
         assert f(gen([1, 2, 3, None, 5]), gen([1, 2, 3, None, 5]))
+
+
+def test_SegmentTree():
+    # 空的线段树
+    tree = SegmentTree([], merger=add)
+    assert tree._array == []
+    assert tree._tree == []
+
+    # 奇数个元素的线段树
+    #     3+3
+    #  1+2   3
+    #  1 2  N N
+    tree = SegmentTree([1, 2, 3], merger=add)
+    assert tree._tree == [6, 3, 3, 1, 2] + [None] * 7
+    #    -1-3
+    #  1-2   3
+    #  1 2  N N
+    tree = SegmentTree([1, 2, 3], merger=sub)
+    assert tree._tree == [-4, -1, 3, 1, 2] + [None] * 7
+
+    # 偶数个元素的线段树
+    #     3+7
+    #  1+2   3+4
+    #  1 2   3 4
+    tree = SegmentTree([1, 2, 3, 4], merger=add)
+    assert tree._tree == [10, 3, 7, 1, 2, 3, 4] + [None] * 9
+    #  (-1)-(-1)
+    #  1-2   3-4
+    #  1 2   3 4
+    tree = SegmentTree([1, 2, 3, 4], merger=sub)
+    assert tree._tree == [0, -1, -1, 1, 2, 3, 4] + [None] * 9
