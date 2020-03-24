@@ -80,13 +80,16 @@ class SegmentTree:
         tree_l = BTUtil.left_idx(tree_idx)
         tree_r = BTUtil.right_idx(tree_idx)
 
+        # 后续遍历
         self._build(l, mid, tree_l)
         self._build(mid + 1, r, tree_r)
         self._tree[tree_idx] = self._merger(self._tree[tree_l], self._tree[tree_r])
 
     def _set(self, l: int, r: int, tree_idx: int, target_idx: int, value: Any):
-        """实际上和 `_build` 逻辑几乎一样, 只不过 `_build` 中要设置所有索引,
-        `_set` 只用设置 `target_idx` 一个索引.
+        """在以根节点 `tree_idx` 的 [l...r] 中范围中设置 `target_idx` 的值.
+
+        实际上和 `_build` 逻辑几乎一样, 只不过 `_build` 中要设置所有索引,
+        而 `_set` 只用设置 `target_idx` 一个索引.
         """
         if l == r:
             self._tree[tree_idx] = value
@@ -96,6 +99,7 @@ class SegmentTree:
         tree_l = BTUtil.left_idx(tree_idx)
         tree_r = BTUtil.right_idx(tree_idx)
 
+        # 比较像链表后序遍历, 每个节点都得等后面的所有节点修改过了才能修改.
         if target_idx >= mid + 1:
             self._set(mid + 1, r, tree_r, target_idx, value)
         else:
