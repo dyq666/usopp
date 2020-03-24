@@ -30,26 +30,12 @@ class BTNode:
     def from_iterable(cls, data: Iterable) -> Optional['BTNode']:
         """根据数组生成一棵树.
 
-        如下图所示, 层序遍历树生成数组.
-        ```
-            1          [1,
-          2   3    ->   2, 3,
-         4 5 空 6       4, 5, None, 40]
-        ```
-
-        数组依照索引生成树, 由上图可知父索引和子索引关系:
-          - 0: 1, 2
-          - 1: 3, 4
-          - 2: 5, 6
-            ...
-          - n: 2 * n + 1, 2 * n + 2
-
-        由于索引是连续的, 所以数组中只有最后一层的空节点可以省略.
+        注意, 由于索引是连续的, 所以数组中只能忽略最后一个叶子节点之后的空节点.
         ```
               1           [1,
-            2   3     ->   2, 3
+            2   3     <-   2, 3
           4  5             4, 5, None, None,
-        空空 空6            None, None, 6]
+        空空 空6            None, None, None, 6]
         ```
         """
         return cls._gen_tree(tuple(data), 0)
@@ -61,8 +47,8 @@ class BTNode:
             return
 
         node = cls(data[index])
-        node.left = cls._gen_tree(data, index * 2 + 1)
-        node.right = cls._gen_tree(data, index * 2 + 2)
+        node.left = cls._gen_tree(data, BTUtil.left_idx(index))
+        node.right = cls._gen_tree(data, BTUtil.right_idx(index))
         return node
 
 
@@ -290,6 +276,53 @@ class BTUtil:
         yield root
         yield from cls.preorder_with_recursion_and_none(root.left, cls.isleaf(root))
         yield from cls.preorder_with_recursion_and_none(root.right, cls.isleaf(root))
+
+    @staticmethod
+    def left_idx(index: int) -> int:
+        """返回 `index` 的左孩子索引.
+
+        如何推导出父索引和孩子索引之间的关系 ?
+
+        答: 根据下图中树和数组的关系, 可以推出索引之间的转换公式.
+        ```
+             0          [0,
+           1   2    ->   1, 2
+          3 4 5 6        3, 4, 5, 6]
+        ```
+        父 -> 左, 右
+        0  -> 1, 2
+        1  -> 3, 4
+        2  -> 5, 6
+        ...
+        n  -> 2 * n + 1, 2 * n + 2
+
+        孩子 -> 父
+        1   -> 0
+        2   -> 0
+        3   -> 1
+        4   -> 1
+        ...
+        n   -> (n - 1) // 2
+        """
+        return index * 2 + 1
+
+    @staticmethod
+    def right_idx(index: int) -> int:
+        """返回 `index` 的右孩子索引.
+
+        公式推导参考 `left_idx`.
+        """
+        return index * 2 + 2
+
+    @staticmethod
+    def parent_idx(index: int) -> int:
+        """返回 `index` 的父索引.
+
+        公式推导参考 `left_idx`.
+        """
+        if index == 0:
+            raise ValueError
+        return (index - 1) // 2
 
 
 class BST:
