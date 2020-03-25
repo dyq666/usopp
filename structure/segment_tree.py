@@ -118,6 +118,11 @@ class SegmentTree2:
     def __len__(self) -> int:
         return len(self._a)
 
+    @check_index()
+    def __setitem__(self, index: int, value: Any):
+        self._a[index] = value
+        self._update(0, len(self) - 1, index, value, root=0)
+
     @classmethod
     def from_iterable(cls, iterable: Iterable, key: callable
                       ) -> 'SegmentTree2':
@@ -132,7 +137,7 @@ class SegmentTree2:
         return segement
 
     def _build(self, l: int, r: int, root: int):
-        """以 `root` 为根构建线段树, 根代表的区间为 [l...r]"""
+        """以 `root` 为根构建线段树, 根代表的区间为 [l...r]."""
         # 无效区间
         if l > r:
             return
@@ -153,3 +158,19 @@ class SegmentTree2:
         """融合孩子节点得到父节点的值."""
         return self.key(self._t[BTUtil.left_idx(root)],
                         self._t[BTUtil.right_idx(root)])
+
+    def _update(self, l: int, r: int, target_idx: int, value: Any, root: int):
+        """在以 `root` 为根的线段树中, 更新包含 `target_idx` 的区间, 根代表的区间为 [l...r]."""
+        if l == r == target_idx:
+            self._t[root] = self._a[l]
+            return
+
+        # 区间分为 [l...mid], [mid+1...r]
+        mid = (l + r) // 2
+
+        # target_idx 只可能在左区间或右区间
+        if target_idx <= mid:
+            self._update(l, mid, target_idx, value, root=BTUtil.left_idx(root))
+        else:
+            self._update(l, mid, target_idx, value, root=BTUtil.right_idx(root))
+        self._t[root] = self._merge(root)

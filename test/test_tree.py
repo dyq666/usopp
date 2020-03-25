@@ -291,3 +291,20 @@ class TestSegmentTree:
         assert f(arrays[0], add)._t == []
         assert f(arrays[1], add)._t == [13, 5, 8, 1, 4] + [None] * 7
         assert f(arrays[2], add)._t == [17, 3, 14, 1, 2, 5, 9] + [None] * 9
+
+    def test_update(self, segement_arrays: List[List[int]]):
+        arrays = segement_arrays
+
+        tree = SegmentTree2.from_iterable(arrays[0], key=add)
+        with pytest.raises(IndexError):
+            tree[0] = 1
+        with pytest.raises(IndexError):
+            tree[-1] = 1
+
+        tree = SegmentTree2.from_iterable(arrays[1], key=add)
+        tree[0] = 10
+        assert tree._t == [22, 14, 8, 10, 4] + [None] * 7
+
+        tree = SegmentTree2.from_iterable(arrays[2], key=add)
+        tree[0] = 10
+        assert tree._t == [26, 12, 14, 10, 2, 5, 9] + [None] * 9
