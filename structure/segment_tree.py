@@ -10,7 +10,10 @@ from .util import check_index
 
 
 class SegmentTree:
-    """线段树 (数组存储)."""
+    """线段树 (数组存储).
+
+    可用 LeetCode 307 测试.
+    """
 
     def __init__(self, array: list, tree: list, key: callable):
         self._a = array
