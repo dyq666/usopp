@@ -69,9 +69,7 @@ class SegmentTree:
                         self._t[BTUtil.right_idx(root)])
 
     def _query(self, l: int, r: int, root: int, query_l: int, query_r: int) -> Any:
-        """在以 `root` 为根的线段树中查询 [query_l...query_r] 区间,
-        根代表的区间为 [l...r].
-        """
+        """在以 `root` 为根的线段树中查询区间 [query_l...query_r], 根代表的区间为 [l...r]."""
         if l == query_l and r == query_r:
             return self._t[root]
 
@@ -127,6 +125,11 @@ class SegmentTreeWithNode:
         self._a[index] = value
         self._update(0, len(self) - 1, target_idx=index, root=self.root)
 
+    def query(self, l: int, r: int) -> Any:
+        if not (0 <= l < len(self) and 0 <= r < len(self) and l <= r):
+            raise IndexError
+        return self._query(0, len(self) - 1, root=self.root, query_l=l, query_r=r)
+
     @classmethod
     def from_iterable(cls, iterable: Iterable, key: callable
                       ) -> 'SegmentTreeWithNode':
@@ -152,6 +155,26 @@ class SegmentTreeWithNode:
         node_l = self._build(l, mid)
         node_r = self._build(mid + 1, r)
         return BTNode(self.key(node_l.val, node_r.val), node_l, node_r)
+
+    def _query(self, l, r, root: BTNode, query_l, query_r) -> Any:
+        """在以 `root` 为根的线段树中查询 [query_l...query_r], 根代表的区间为 [l...r]."""
+        if l == query_l and r == query_r:
+            return root.val
+
+        # 区间分为 [l...mid], [mid+1...r]
+        mid = (l + r) // 2
+
+        # 如果查询区间是左或右区间的子集, 那么直接去左或右查
+        if query_r <= mid:
+            return self._query(l, mid, root=root.left,
+                               query_l=query_l, query_r=query_r)
+        elif query_l >= mid + 1:
+            return self._query(mid + 1, r, root=root.right,
+                               query_l=query_l, query_r=query_r)
+        # 查询区间横跨两个区间, 那么把查询区间分为 [query_l...mid], [mid+1...query_r]
+        vl = self._query(l, mid, root=root.left, query_l=query_l, query_r=mid)
+        vr = self._query(mid + 1, r, root=root.right, query_l=mid + 1, query_r=query_r)
+        return self.key(vl, vr)
 
     def _update(self, l: int, r: int, target_idx: int, root: BTNode):
         """在以 `root` 为根的线段树中, 更新包含 `target_idx` 的区间, 根代表的区间为 [l...r]."""
