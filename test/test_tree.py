@@ -233,6 +233,9 @@ class TestSegmentTree:
         assert SegmentTree.from_iterable(arrays[0], operator.add)._t == []
         assert SegmentTree.from_iterable(arrays[1], operator.add)._t == [13, 5, 8, 1, 4] + [None] * 7
         assert SegmentTree.from_iterable(arrays[2], operator.add)._t == [17, 3, 14, 1, 2, 5, 9] + [None] * 9
+        assert SegmentTree.from_iterable(arrays[0], operator.sub)._t == []
+        assert SegmentTree.from_iterable(arrays[1], operator.sub)._t == [-11, -3, 8, 1, 4] + [None] * 7
+        assert SegmentTree.from_iterable(arrays[2], operator.sub)._t == [3, -1, -4, 1, 2, 5, 9] + [None] * 9
 
     def test_update(self, segement_arrays: List[List[int]]):
         arrays = segement_arrays
@@ -242,19 +245,33 @@ class TestSegmentTree:
             tree[0] = 1
         with pytest.raises(IndexError):
             tree[-1] = 1
+        tree = SegmentTree.from_iterable(arrays[0], key=operator.sub)
+        with pytest.raises(IndexError):
+            tree[0] = 1
+        with pytest.raises(IndexError):
+            tree[-1] = 1
 
         tree = SegmentTree.from_iterable(arrays[1], key=operator.add)
         tree[0] = 10
         assert tree._t == [22, 14, 8, 10, 4] + [None] * 7
+        tree = SegmentTree.from_iterable(arrays[1], key=operator.sub)
+        tree[0] = 10
+        assert tree._t == [-2, 6, 8, 10, 4] + [None] * 7
 
         tree = SegmentTree.from_iterable(arrays[2], key=operator.add)
         tree[0] = 10
         assert tree._t == [26, 12, 14, 10, 2, 5, 9] + [None] * 9
+        tree = SegmentTree.from_iterable(arrays[2], key=operator.sub)
+        tree[0] = 10
+        assert tree._t == [12, 8, -4, 10, 2, 5, 9] + [None] * 9
 
     def test_query(self, segement_arrays: List[List[int]]):
         arrays = segement_arrays
 
         tree = SegmentTree.from_iterable(arrays[0], key=operator.add)
+        with pytest.raises(IndexError):
+            tree.query(0, 0)
+        tree = SegmentTree.from_iterable(arrays[0], key=operator.sub)
         with pytest.raises(IndexError):
             tree.query(0, 0)
 
@@ -263,6 +280,11 @@ class TestSegmentTree:
         assert tree.query(0, 1) == 5
         assert tree.query(0, 2) == 13
         assert tree.query(1, 2) == 12
+        tree = SegmentTree.from_iterable(arrays[1], key=operator.sub)
+        assert tree.query(0, 0) == 1
+        assert tree.query(0, 1) == -3
+        assert tree.query(0, 2) == -11
+        assert tree.query(1, 2) == -4
 
         tree = SegmentTree.from_iterable(arrays[2], key=operator.add)
         assert tree.query(0, 0) == 1
@@ -272,3 +294,11 @@ class TestSegmentTree:
         assert tree.query(1, 2) == 7
         assert tree.query(1, 3) == 16
         assert tree.query(2, 3) == 14
+        tree = SegmentTree.from_iterable(arrays[2], key=operator.sub)
+        assert tree.query(0, 0) == 1
+        assert tree.query(0, 1) == -1
+        assert tree.query(0, 2) == -6
+        assert tree.query(0, 3) == 3
+        assert tree.query(1, 2) == -3
+        assert tree.query(1, 3) == 6
+        assert tree.query(2, 3) == -4
