@@ -1,6 +1,6 @@
+import operator
 from functools import partial
-from operator import add
-from typing import Callable, List, Optional
+from typing import List, Optional
 
 import pytest
 
@@ -54,7 +54,7 @@ class TestBST:
 
     @pytest.mark.parametrize('f', (BST.add,
                                    BST.add_with_recursion,))
-    def test_add(self, f: Callable, bst_arrays: List[List[Optional[int]]]):
+    def test_add(self, f: callable, bst_arrays: List[List[Optional[int]]]):
         for array in bst_arrays:
             tree = BST()
             for val in array:
@@ -75,7 +75,7 @@ class TestBST:
 
     @pytest.mark.parametrize('f', (BST.remove,
                                    BST.remove_with_recursion,))
-    def test_remove(self, f: Callable, bst_arrays: List[List[Optional[int]]]):
+    def test_remove(self, f: callable, bst_arrays: List[List[Optional[int]]]):
         # 从空树中删除.
         tree = BST.from_iteralbe(bst_arrays[0])
         with pytest.raises(IndexError):
@@ -156,7 +156,7 @@ class TestBTUtil:
     @pytest.mark.parametrize('f', (BTUtil.preorder,
                                    BTUtil.preorder_with_mocked_stack,
                                    BTUtil.preorder_with_recursion,))
-    def test_preorder(self, f: Callable, trees: List[BTNode]):
+    def test_preorder(self, f: callable, trees: List[BTNode]):
         assert list(n.val for n in f(trees[0])) == []
         assert list(n.val for n in f(trees[1])) == [3]
         assert list(n.val for n in f(trees[2])) == [3, 1, 0]
@@ -168,7 +168,7 @@ class TestBTUtil:
     @pytest.mark.parametrize('f', (partial(BTUtil.preorder, skip_none=False),
                                    BTUtil.preorder_with_mocked_stack_and_none,
                                    BTUtil.preorder_with_recursion_and_none,))
-    def test_preorder_with_none(self, f: Callable, trees: List[BTNode]):
+    def test_preorder_with_none(self, f: callable, trees: List[BTNode]):
         assert list(n and n.val for n in f(trees[0])) == []
         assert list(n and n.val for n in f(trees[1])) == [3]
         assert list(n and n.val for n in f(trees[2])) == [3, 1, 0, None, None]
@@ -178,7 +178,7 @@ class TestBTUtil:
         assert list(n and n.val for n in f(trees[6])) == [3, 1, 0, 2, 5, 4, 6]
 
     @pytest.mark.parametrize('f', (BTUtil.inorder,))
-    def test_inorder(self, f: Callable, trees: List[BTNode]):
+    def test_inorder(self, f: callable, trees: List[BTNode]):
         assert list(n and n.val for n in f(trees[0])) == []
         assert list(n and n.val for n in f(trees[1])) == [3]
         assert list(n and n.val for n in f(trees[2])) == [0, 1, 3]
@@ -188,7 +188,7 @@ class TestBTUtil:
         assert list(n and n.val for n in f(trees[6])) == [0, 1, 2, 3, 4, 5, 6]
 
     @pytest.mark.parametrize('f', (BTUtil.postorder,))
-    def test_postorder(self, f: Callable, trees: List[BTNode]):
+    def test_postorder(self, f: callable, trees: List[BTNode]):
         assert list(n and n.val for n in f(trees[0])) == []
         assert list(n and n.val for n in f(trees[1])) == [3]
         assert list(n and n.val for n in f(trees[2])) == [0, 1, 3]
@@ -198,7 +198,7 @@ class TestBTUtil:
         assert list(n and n.val for n in f(trees[6])) == [0, 2, 1, 4, 6, 5, 3]
 
     @pytest.mark.parametrize('f', (BTUtil.levelorder,))
-    def test_levelorder(self, f: Callable, trees: List[BTNode]):
+    def test_levelorder(self, f: callable, trees: List[BTNode]):
         assert list(n.val for level in f(trees[0]) for n in level) == []
         assert list(n.val for level in f(trees[1]) for n in level) == [3]
         assert list(n.val for level in f(trees[2]) for n in level) == [3, 1, 0]
@@ -208,7 +208,7 @@ class TestBTUtil:
         assert list(n.val for level in f(trees[6]) for n in level) == [3, 1, 5, 0, 2, 4, 6]
 
     @pytest.mark.parametrize('f', (partial(BTUtil.levelorder, skip_none=False),))
-    def test_levelorder_with_none(self, f: Callable, trees: List[BTNode]):
+    def test_levelorder_with_none(self, f: callable, trees: List[BTNode]):
         assert list(n and n.val for level in f(trees[0]) for n in level) == []
         assert list(n and n.val for level in f(trees[1]) for n in level) == [3]
         assert list(n and n.val for level in f(trees[2]) for n in level) == [3, 1, None, 0, None]
@@ -230,41 +230,41 @@ class TestSegmentTree:
 
     def test_build(self, segement_arrays: List[List[int]]):
         arrays = segement_arrays
-        assert SegmentTree.from_iterable(arrays[0], add)._t == []
-        assert SegmentTree.from_iterable(arrays[1], add)._t == [13, 5, 8, 1, 4] + [None] * 7
-        assert SegmentTree.from_iterable(arrays[2], add)._t == [17, 3, 14, 1, 2, 5, 9] + [None] * 9
+        assert SegmentTree.from_iterable(arrays[0], operator.add)._t == []
+        assert SegmentTree.from_iterable(arrays[1], operator.add)._t == [13, 5, 8, 1, 4] + [None] * 7
+        assert SegmentTree.from_iterable(arrays[2], operator.add)._t == [17, 3, 14, 1, 2, 5, 9] + [None] * 9
 
     def test_update(self, segement_arrays: List[List[int]]):
         arrays = segement_arrays
 
-        tree = SegmentTree.from_iterable(arrays[0], key=add)
+        tree = SegmentTree.from_iterable(arrays[0], key=operator.add)
         with pytest.raises(IndexError):
             tree[0] = 1
         with pytest.raises(IndexError):
             tree[-1] = 1
 
-        tree = SegmentTree.from_iterable(arrays[1], key=add)
+        tree = SegmentTree.from_iterable(arrays[1], key=operator.add)
         tree[0] = 10
         assert tree._t == [22, 14, 8, 10, 4] + [None] * 7
 
-        tree = SegmentTree.from_iterable(arrays[2], key=add)
+        tree = SegmentTree.from_iterable(arrays[2], key=operator.add)
         tree[0] = 10
         assert tree._t == [26, 12, 14, 10, 2, 5, 9] + [None] * 9
 
     def test_query(self, segement_arrays: List[List[int]]):
         arrays = segement_arrays
 
-        tree = SegmentTree.from_iterable(arrays[0], key=add)
+        tree = SegmentTree.from_iterable(arrays[0], key=operator.add)
         with pytest.raises(IndexError):
             tree.query(0, 0)
 
-        tree = SegmentTree.from_iterable(arrays[1], key=add)
+        tree = SegmentTree.from_iterable(arrays[1], key=operator.add)
         assert tree.query(0, 0) == 1
         assert tree.query(0, 1) == 5
         assert tree.query(0, 2) == 13
         assert tree.query(1, 2) == 12
 
-        tree = SegmentTree.from_iterable(arrays[2], key=add)
+        tree = SegmentTree.from_iterable(arrays[2], key=operator.add)
         assert tree.query(0, 0) == 1
         assert tree.query(0, 1) == 3
         assert tree.query(0, 2) == 8

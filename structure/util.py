@@ -3,17 +3,17 @@ __all__ = (
 )
 
 from functools import wraps
-from typing import Any, Callable, Sized
+from typing import Any, Sized
 
 
-def check_index(offset: int = 0) -> Callable:
+def check_index(offset: int = 0) -> callable:
     """在执行数据结构某个方法前检查索引是否有效.
 
     方法必须满足第一个参数是 `self`, 第二是索引, 同时类必须实现 `__len__`.
 
     索引的检查范围是 [0, len + offset).
     """
-    def deco(f: Callable) -> Callable:
+    def deco(f: callable) -> callable:
         @wraps(f)
         def wrapper(self: Any, index: int, *args, **kwargs) -> Any:
             if not (0 <= index < len(self) + offset):
@@ -25,7 +25,7 @@ def check_index(offset: int = 0) -> Callable:
     return deco
 
 
-def not_empty(f: Callable) -> Callable:
+def not_empty(f: callable) -> callable:
     """在执行数据结构某个方法前检查数据结构是否为空."""
     @wraps(f)
     def wrapper(self: Sized, *args, **kwargs) -> Any:
