@@ -22,6 +22,11 @@ class SegmentTree:
     在上面这种方式中我们每次都需要计算 log(2, N) 找到一个值, 比较麻烦. 如果我们
     每次都让 N 个元素的最后一行为 2N 个, 就不需要计算 log2 了. 当 N = 8 时,
     8 * 4 > 8 * 2 = 16, 当 N = 9 时, 9 * 4 > 8 * 4 = 32.
+
+    数组作为树和链表作为树有哪些等价的操作 ?
+
+    答: `BTUtil.left_idx(tree_idx)` 和 `node.left` 是一个操作,
+        `self._tree[BTUtilleft_idx(tree_idx)]` 和 `node.left.val` 是一个操作.
     """
 
     def __init__(self, array: list, merger: callable):
@@ -52,38 +57,37 @@ class SegmentTree:
 
         # 将范围劈成两半, [l...mid], [mid + 1...r]
         mid = (l + r) // 2
-        tree_l, tree_r = BTUtil.left_idx(tree_idx), BTUtil.right_idx(tree_idx)
+        l_node, r_node = BTUtil.left_idx(tree_idx), BTUtil.right_idx(tree_idx)
 
         # 如果查询的左索引在中间索引的右边, 那么直接去查右区间.
         if query_l >= mid + 1:
-            return self._query(mid + 1, r, query_l, query_r, tree_r)
+            return self._query(mid + 1, r, query_l, query_r, r_node)
         # 如果查询的右索引在中间索引的左边, 那么直接去查左区间.
         if query_r <= mid:
-            return self._query(l, mid, query_l, query_r, tree_l)
+            return self._query(l, mid, query_l, query_r, l_node)
         # 否则证明, 查询索引横跨左右区间, 因此两边分开找.
-        vl = self._query(l, mid, query_l, mid, tree_l)
-        vr = self._query(mid + 1, r, query_r, mid + 1, tree_r)
+        vl = self._query(l, mid, query_l, mid, l_node)
+        vr = self._query(mid + 1, r, query_r, mid + 1, r_node)
         return self._merger(vl, vr)
 
     def _build(self, l: int, r: int, tree_idx: int):
-        """以数组 [l...r] 范围的数据构建一课根节点为 `tree_idx` 的线段树."""
-        # 无效范围
+        """构建一课根节点为 `tree_idx` 的线段树, 根节点代表的区间为 [l...r]."""
+        # 无效区间
         if l > r:
             return
-        # 范围内只有一个元素
+        # 区间不可再分
         if l == r:
             self._tree[tree_idx] = self._array[l]
             return
 
-        # 将范围对半分分别构建线段树
         mid = (l + r) // 2
-        tree_l = BTUtil.left_idx(tree_idx)
-        tree_r = BTUtil.right_idx(tree_idx)
+        l_node, r_node = BTUtil.left_idx(tree_idx), BTUtil.right_idx(tree_idx)
 
         # 后续遍历
-        self._build(l, mid, tree_l)
-        self._build(mid + 1, r, tree_r)
-        self._tree[tree_idx] = self._merger(self._tree[tree_l], self._tree[tree_r])
+        self._build(l, mid, l_node)
+        self._build(mid + 1, r, r_node)
+        self._tree[tree_idx] = self._merger(self._tree[l_node],
+                                            self._tree[r_node])
 
     def _set(self, l: int, r: int, tree_idx: int, target_idx: int, value: Any):
         """在以根节点 `tree_idx` 的 [l...r] 中范围中设置 `target_idx` 的值.
@@ -95,13 +99,14 @@ class SegmentTree:
             self._tree[tree_idx] = value
             return
 
+        # 将区间分为 [l...mid], [mid+1...r]
         mid = (l + r) // 2
-        tree_l = BTUtil.left_idx(tree_idx)
-        tree_r = BTUtil.right_idx(tree_idx)
+        l_node, r_node = BTUtil.left_idx(tree_idx), BTUtil.right_idx(tree_idx)
 
         # 比较像链表后序遍历, 每个节点都得等后面的所有节点修改过了才能修改.
         if target_idx >= mid + 1:
-            self._set(mid + 1, r, tree_r, target_idx, value)
+            self._set(mid + 1, r, r_node, target_idx, value)
         else:
-            self._set(l, mid, tree_l, target_idx, value)
-        self._tree[tree_idx] = self._merger(self._tree[tree_l], self._tree[tree_r])
+            self._set(l, mid, l_node, target_idx, value)
+        self._tree[tree_idx] = self._merger(self._tree[l_node],
+                                            self._tree[r_node])
