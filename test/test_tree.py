@@ -4,7 +4,7 @@ from typing import Callable, List, Optional
 
 import pytest
 
-from structure import BST, BTNode, BTUtil, SegmentTree
+from structure import BST, BTNode, BTUtil, SegmentTree, SegmentTree2
 
 
 @pytest.fixture
@@ -37,6 +37,16 @@ def bst_arrays() -> List[List[Optional[int]]]:
         [3, 1, 5, 0, None, 4, None],
         [3, 1, 5, None, 2, None, 6],
         [3, 1, 5, 0, 2, 4, 6],
+    ]
+
+
+@pytest.fixture
+def segement_arrays() -> List[List[int]]:
+    """空, 奇数个, 偶数个."""
+    return [
+        [],
+        [1, 4, 8],
+        [1, 2, 5, 9],
     ]
 
 
@@ -220,54 +230,64 @@ def test_SegmentTree():
     # 空的线段树
     tree = SegmentTree([], merger=add)
     assert tree._array == []
-    assert tree._tree == []
+    assert tree._t == []
 
     # 奇数个元素的线段树
     #     5+8
     #  1+4   8
     #  1 4  N N
     tree = SegmentTree([1, 4, 8], merger=add)
-    assert tree._tree == [13, 5, 8, 1, 4] + [None] * 7
+    assert tree._t == [13, 5, 8, 1, 4] + [None] * 7
     assert tree.query(0, 0) == 1
     assert tree.query(0, 1) == 5
     assert tree.query(1, 2) == 12
     assert tree.query(0, 2) == 13
     tree[0] = 10
-    assert tree._tree == [22, 14, 8, 10, 4] + [None] * 7
+    assert tree._t == [22, 14, 8, 10, 4] + [None] * 7
     #    -3-8
     #  1-4   8
     #  1 4  N N
     tree = SegmentTree([1, 4, 8], merger=sub)
-    assert tree._tree == [-11, -3, 8, 1, 4] + [None] * 7
+    assert tree._t == [-11, -3, 8, 1, 4] + [None] * 7
     assert tree.query(0, 0) == 1
     assert tree.query(0, 1) == -3
     assert tree.query(1, 2) == -4
     assert tree.query(0, 2) == -11
     tree[0] = 10
-    assert tree._tree == [-2, 6, 8, 10, 4] + [None] * 7
+    assert tree._t == [-2, 6, 8, 10, 4] + [None] * 7
 
     # 偶数个元素的线段树
     #     4+14
     #  1+3   6+8
     #  1 3   6 8
     tree = SegmentTree([1, 3, 6, 8], merger=add)
-    assert tree._tree == [18, 4, 14, 1, 3, 6, 8] + [None] * 9
+    assert tree._t == [18, 4, 14, 1, 3, 6, 8] + [None] * 9
     assert tree.query(0, 0) == 1
     assert tree.query(0, 1) == 4
     assert tree.query(1, 2) == 9
     assert tree.query(0, 2) == 10
     assert tree.query(0, 3) == 18
     tree[0] = 10
-    assert tree._tree == [27, 13, 14, 10, 3, 6, 8] + [None] * 9
+    assert tree._t == [27, 13, 14, 10, 3, 6, 8] + [None] * 9
     #  (-2)-(-2)
     #  1-3   6-8
     #  1 3   6 8
     tree = SegmentTree([1, 3, 6, 8], merger=sub)
-    assert tree._tree == [0, -2, -2, 1, 3, 6, 8] + [None] * 9
+    assert tree._t == [0, -2, -2, 1, 3, 6, 8] + [None] * 9
     assert tree.query(0, 0) == 1
     assert tree.query(0, 1) == -2
     assert tree.query(1, 2) == -3
     assert tree.query(0, 2) == -8
     assert tree.query(0, 3) == 0
     tree[0] = 10
-    assert tree._tree == [9, 7, -2, 10, 3, 6, 8] + [None] * 9
+    assert tree._t == [9, 7, -2, 10, 3, 6, 8] + [None] * 9
+
+
+class TestSegmentTree:
+
+    @pytest.mark.parametrize('f', (SegmentTree, SegmentTree2.from_iterable,))
+    def test_build(self, f: callable, segement_arrays: List[List[int]]):
+        arrays = segement_arrays
+        assert f(arrays[0], add)._t == []
+        assert f(arrays[1], add)._t == [13, 5, 8, 1, 4] + [None] * 7
+        assert f(arrays[2], add)._t == [17, 3, 14, 1, 2, 5, 9] + [None] * 9
