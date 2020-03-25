@@ -25,7 +25,7 @@ class SegmentTree:
     @check_index()
     def __setitem__(self, index: int, value: Any):
         self._a[index] = value
-        self._update(0, len(self) - 1, index, value, root=0)
+        self._update(0, len(self) - 1, target_idx=index, root=0)
 
     def query(self, l: int, r: int) -> Any:
         if not (0 <= l < len(self) and 0 <= r < len(self) and l <= r):
@@ -92,7 +92,7 @@ class SegmentTree:
                          query_l=mid + 1, query_r=query_r)
         return self.key(vl, vr)
 
-    def _update(self, l: int, r: int, target_idx: int, value: Any, root: int):
+    def _update(self, l: int, r: int, target_idx: int, root: int):
         """在以 `root` 为根的线段树中, 更新包含 `target_idx` 的区间, 根代表的区间为 [l...r]."""
         if l == r == target_idx:
             self._t[root] = self._a[l]
@@ -101,11 +101,11 @@ class SegmentTree:
         # 区间分为 [l...mid], [mid+1...r]
         mid = (l + r) // 2
 
-        # target_idx 只可能在左区间或右区间
+        # `target_idx` 只可能在左区间或右区间
         if target_idx <= mid:
-            self._update(l, mid, target_idx, value, root=BTUtil.left_idx(root))
+            self._update(l, mid, target_idx, root=BTUtil.left_idx(root))
         else:
-            self._update(l, mid, target_idx, value, root=BTUtil.right_idx(root))
+            self._update(l, mid, target_idx, root=BTUtil.right_idx(root))
         self._t[root] = self._merge(root)
 
 
@@ -122,6 +122,11 @@ class SegmentTreeWithNode:
     def __iter__(self) -> Iterable:
         return (n.val for level in BTUtil.levelorder(self.root) for n in level)
 
+    @check_index()
+    def __setitem__(self, index: int, value: Any):
+        self._a[index] = value
+        self._update(0, len(self) - 1, target_idx=index, root=self.root)
+
     @classmethod
     def from_iterable(cls, iterable: Iterable, key: callable
                       ) -> 'SegmentTreeWithNode':
@@ -133,14 +138,33 @@ class SegmentTreeWithNode:
 
     def _build(self, l: int, r: int) -> Optional[BTNode]:
         """以 `node` 为根构建线段树, 根代表的区间为 [l...r]."""
+        # 无效区间
         if l > r:
             return
+        # 区间无法再分割了
         if l == r:
             return BTNode(self._a[l])
 
         # 区间分为 [l...mid], [mid+1...r]
         mid = (l + r) // 2
 
+        # 后序遍历, 左节点代表左区间, 右节点代表右区间
         node_l = self._build(l, mid)
         node_r = self._build(mid + 1, r)
         return BTNode(self.key(node_l.val, node_r.val), node_l, node_r)
+
+    def _update(self, l: int, r: int, target_idx: int, root: BTNode):
+        """在以 `root` 为根的线段树中, 更新包含 `target_idx` 的区间, 根代表的区间为 [l...r]."""
+        if l == r == target_idx:
+            root.val = self._a[l]
+            return
+
+        # 区间分为 [l...mid], [mid+1...r]
+        mid = (l + r) // 2
+
+        # `target_idx` 只可能在左区间或右区间
+        if target_idx <= mid:
+            self._update(l, mid, target_idx=target_idx, root=root.left)
+        else:
+            self._update(mid + 1, r, target_idx=target_idx, root=root.right)
+        root.val = self.key(root.left.val, root.right.val)

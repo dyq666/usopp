@@ -232,40 +232,42 @@ class TestSegmentTree:
                                    SegmentTreeWithNode.from_iterable,))
     def test_build(self, f: callable, segement_arrays: List[List[int]]):
         arrays = segement_arrays
-        assert list(f(arrays[0], operator.add)) == []
-        assert list(f(arrays[1], operator.add)) == [13, 5, 8, 1, 4]
-        assert list(f(arrays[2], operator.add)) == [17, 3, 14, 1, 2, 5, 9]
-        assert list(f(arrays[0], operator.sub)) == []
-        assert list(f(arrays[1], operator.sub)) == [-11, -3, 8, 1, 4]
-        assert list(f(arrays[2], operator.sub)) == [3, -1, -4, 1, 2, 5, 9]
+        assert list(f(arrays[0], key=operator.add)) == []
+        assert list(f(arrays[1], key=operator.add)) == [13, 5, 8, 1, 4]
+        assert list(f(arrays[2], key=operator.add)) == [17, 3, 14, 1, 2, 5, 9]
+        assert list(f(arrays[0], key=operator.sub)) == []
+        assert list(f(arrays[1], key=operator.sub)) == [-11, -3, 8, 1, 4]
+        assert list(f(arrays[2], key=operator.sub)) == [3, -1, -4, 1, 2, 5, 9]
 
-    def test_update(self, segement_arrays: List[List[int]]):
+    @pytest.mark.parametrize('f', (SegmentTree.from_iterable,
+                                   SegmentTreeWithNode.from_iterable,))
+    def test_update(self, f: callable, segement_arrays: List[List[int]]):
         arrays = segement_arrays
 
-        tree = SegmentTree.from_iterable(arrays[0], key=operator.add)
+        tree = f(arrays[0], key=operator.add)
         with pytest.raises(IndexError):
             tree[0] = 1
         with pytest.raises(IndexError):
             tree[-1] = 1
-        tree = SegmentTree.from_iterable(arrays[0], key=operator.sub)
+        tree = f(arrays[0], key=operator.sub)
         with pytest.raises(IndexError):
             tree[0] = 1
         with pytest.raises(IndexError):
             tree[-1] = 1
 
-        tree = SegmentTree.from_iterable(arrays[1], key=operator.add)
+        tree = f(arrays[1], key=operator.add)
         tree[0] = 10
-        assert tree._t == [22, 14, 8, 10, 4] + [None] * 7
-        tree = SegmentTree.from_iterable(arrays[1], key=operator.sub)
+        assert list(tree) == [22, 14, 8, 10, 4]
+        tree = f(arrays[1], key=operator.sub)
         tree[0] = 10
-        assert tree._t == [-2, 6, 8, 10, 4] + [None] * 7
+        assert list(tree) == [-2, 6, 8, 10, 4]
 
-        tree = SegmentTree.from_iterable(arrays[2], key=operator.add)
+        tree = f(arrays[2], key=operator.add)
         tree[0] = 10
-        assert tree._t == [26, 12, 14, 10, 2, 5, 9] + [None] * 9
-        tree = SegmentTree.from_iterable(arrays[2], key=operator.sub)
+        assert list(tree) == [26, 12, 14, 10, 2, 5, 9]
+        tree = f(arrays[2], key=operator.sub)
         tree[0] = 10
-        assert tree._t == [12, 8, -4, 10, 2, 5, 9] + [None] * 9
+        assert list(tree) == [12, 8, -4, 10, 2, 5, 9]
 
     def test_query(self, segement_arrays: List[List[int]]):
         arrays = segement_arrays
