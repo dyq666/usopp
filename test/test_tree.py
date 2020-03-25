@@ -277,11 +277,14 @@ class TestSegmentTree:
         tree = f(arrays[0], key=operator.add)
         with pytest.raises(IndexError):
             tree.query(0, 0)
-        tree = f(arrays[0], key=operator.sub)
-        with pytest.raises(IndexError):
-            tree.query(0, 0)
 
         tree = f(arrays[1], key=operator.add)
+        with pytest.raises(IndexError):
+            tree.query(-1, 0)
+        with pytest.raises(IndexError):
+            tree.query(0, -1)
+        with pytest.raises(IndexError):
+            tree.query(2, 1)
         assert tree.query(0, 0) == 1
         assert tree.query(0, 1) == 5
         assert tree.query(0, 2) == 13
