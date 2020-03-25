@@ -4,7 +4,7 @@ from typing import List, Optional
 
 import pytest
 
-from structure import BST, BTNode, BTUtil, SegmentTree
+from structure import BST, BTNode, BTUtil, SegmentTree, SegmentTreeWithNode
 
 
 @pytest.fixture
@@ -228,14 +228,16 @@ class TestBTUtil:
 
 class TestSegmentTree:
 
-    def test_build(self, segement_arrays: List[List[int]]):
+    @pytest.mark.parametrize('f', (SegmentTree.from_iterable,
+                                   SegmentTreeWithNode.from_iterable,))
+    def test_build(self, f: callable, segement_arrays: List[List[int]]):
         arrays = segement_arrays
-        assert SegmentTree.from_iterable(arrays[0], operator.add)._t == []
-        assert SegmentTree.from_iterable(arrays[1], operator.add)._t == [13, 5, 8, 1, 4] + [None] * 7
-        assert SegmentTree.from_iterable(arrays[2], operator.add)._t == [17, 3, 14, 1, 2, 5, 9] + [None] * 9
-        assert SegmentTree.from_iterable(arrays[0], operator.sub)._t == []
-        assert SegmentTree.from_iterable(arrays[1], operator.sub)._t == [-11, -3, 8, 1, 4] + [None] * 7
-        assert SegmentTree.from_iterable(arrays[2], operator.sub)._t == [3, -1, -4, 1, 2, 5, 9] + [None] * 9
+        assert list(f(arrays[0], operator.add)) == []
+        assert list(f(arrays[1], operator.add)) == [13, 5, 8, 1, 4]
+        assert list(f(arrays[2], operator.add)) == [17, 3, 14, 1, 2, 5, 9]
+        assert list(f(arrays[0], operator.sub)) == []
+        assert list(f(arrays[1], operator.sub)) == [-11, -3, 8, 1, 4]
+        assert list(f(arrays[2], operator.sub)) == [3, -1, -4, 1, 2, 5, 9]
 
     def test_update(self, segement_arrays: List[List[int]]):
         arrays = segement_arrays

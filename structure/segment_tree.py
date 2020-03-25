@@ -1,10 +1,11 @@
 __all__ = (
-    'SegmentTree',
+    'SegmentTree', 'SegmentTreeWithNode',
 )
 
-from typing import Any, Iterable
+import itertools
+from typing import Any, Iterable, Optional
 
-from .tree import BTUtil
+from .tree import BTNode, BTUtil
 from .util import check_index
 
 
@@ -17,6 +18,9 @@ class SegmentTree:
 
     def __len__(self) -> int:
         return len(self._a)
+
+    def __iter__(self) -> Iterable:
+        return itertools.takewhile(lambda o: o is not None, self._t)
 
     @check_index()
     def __setitem__(self, index: int, value: Any):
@@ -103,3 +107,40 @@ class SegmentTree:
         else:
             self._update(l, mid, target_idx, value, root=BTUtil.right_idx(root))
         self._t[root] = self._merge(root)
+
+
+class SegmentTreeWithNode:
+
+    def __init__(self, array: list, key: callable):
+        self._a = array
+        self.key = key
+        self.root: Optional[BTNode] = None
+
+    def __len__(self) -> int:
+        return len(self._a)
+
+    def __iter__(self) -> Iterable:
+        return (n.val for level in BTUtil.levelorder(self.root) for n in level)
+
+    @classmethod
+    def from_iterable(cls, iterable: Iterable, key: callable
+                      ) -> 'SegmentTreeWithNode':
+        """根据 `iterable` 创建线段树, `key` 是融合函数."""
+        array = list(iterable)
+        segement = cls(array, key=key)
+        segement.root = segement._build(0, len(segement) - 1)
+        return segement
+
+    def _build(self, l: int, r: int) -> Optional[BTNode]:
+        """以 `node` 为根构建线段树, 根代表的区间为 [l...r]."""
+        if l > r:
+            return
+        if l == r:
+            return BTNode(self._a[l])
+
+        # 区间分为 [l...mid], [mid+1...r]
+        mid = (l + r) // 2
+
+        node_l = self._build(l, mid)
+        node_r = self._build(mid + 1, r)
+        return BTNode(self.key(node_l.val, node_r.val), node_l, node_r)
