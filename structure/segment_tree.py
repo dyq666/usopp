@@ -12,7 +12,11 @@ from .util import check_index
 class SegmentTree:
     """线段树 (数组存储).
 
-    可用 LeetCode 307 测试.
+    在线段树中, 节点代表的区间和节点对应的数组索引是一个节点必需的基本信息,
+    因此在几乎所有方法中都有 `l r root` 三个参数.
+
+    可用 LeetCode 307 测试. 另外需要注意线段树应该用于动态更新的场景,
+    对于 LeetCode 303 来说, 数组是静态的不需要使用线段树.
     """
 
     def __init__(self, array: list, tree: list, key: callable):
@@ -29,7 +33,7 @@ class SegmentTree:
     @check_index()
     def __setitem__(self, index: int, value: Any):
         self._a[index] = value
-        self._update(0, len(self) - 1, target_idx=index, root=0)
+        self._update(0, len(self) - 1, root=0, target_idx=index)
 
     def query(self, l: int, r: int) -> Any:
         if not (0 <= l < len(self) and 0 <= r < len(self) and l <= r):
@@ -62,7 +66,7 @@ class SegmentTree:
         return segement
 
     def _build(self, l: int, r: int, root: int):
-        """以 `root` 为根构建线段树, 根代表的区间为 [l...r]."""
+        """以 `root` 为根, 构建表示区间 [l...r] 的线段树."""
         # 无效区间
         if l > r:
             return
@@ -103,7 +107,7 @@ class SegmentTree:
                          query_l=mid + 1, query_r=query_r)
         return self.key(vl, vr)
 
-    def _update(self, l: int, r: int, target_idx: int, root: int):
+    def _update(self, l: int, r: int, root: int, target_idx: int):
         """在以 `root` 为根的线段树中, 更新包含 `target_idx` 的区间, 根代表的区间为 [l...r]."""
         if l == r == target_idx:
             self._t[root] = self._a[l]
@@ -114,9 +118,9 @@ class SegmentTree:
 
         # `target_idx` 只可能在左区间或右区间
         if target_idx <= mid:
-            self._update(l, mid, target_idx=target_idx, root=BTUtil.left_idx(root))
+            self._update(l, mid, root=BTUtil.left_idx(root), target_idx=target_idx)
         else:
-            self._update(mid + 1, r, target_idx=target_idx, root=BTUtil.right_idx(root))
+            self._update(mid + 1, r, root=BTUtil.right_idx(root), target_idx=target_idx)
         self._t[root] = self.key(self._t[BTUtil.left_idx(root)],
                                  self._t[BTUtil.right_idx(root)])
 
@@ -141,7 +145,7 @@ class SegmentTreeWithNode:
     @check_index()
     def __setitem__(self, index: int, value: Any):
         self._a[index] = value
-        self._update(0, len(self) - 1, target_idx=index, root=self.root)
+        self._update(0, len(self) - 1, root=self.root, target_idx=index)
 
     def query(self, l: int, r: int) -> Any:
         if not (0 <= l < len(self) and 0 <= r < len(self) and l <= r):
@@ -157,7 +161,7 @@ class SegmentTreeWithNode:
         return segement
 
     def _build(self, l: int, r: int) -> Optional[BTNode]:
-        """构建一棵区间为 [l...r] (根代表的区间) 的线段树, 返回构建完的树."""
+        """构建表示区间 [l...r] 的线段树, 返回构建完的树."""
         if l > r:
             return
         if l == r:
@@ -184,14 +188,14 @@ class SegmentTreeWithNode:
         vr = self._query(mid + 1, r, root=root.right, query_l=mid + 1, query_r=query_r)
         return self.key(vl, vr)
 
-    def _update(self, l: int, r: int, target_idx: int, root: BTNode):
+    def _update(self, l: int, r: int, root: BTNode, target_idx: int):
         if l == r == target_idx:
             root.val = self._a[l]
             return
 
         mid = (l + r) // 2
         if target_idx <= mid:
-            self._update(l, mid, target_idx=target_idx, root=root.left)
+            self._update(l, mid, root=root.left, target_idx=target_idx)
         else:
-            self._update(mid + 1, r, target_idx=target_idx, root=root.right)
+            self._update(mid + 1, r, root=root.right, target_idx=target_idx)
         root.val = self.key(root.left.val, root.right.val)
