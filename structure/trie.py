@@ -23,23 +23,23 @@ class Trie:
         return self.size
 
     def __contains__(self, word: str) -> bool:
-        needle = self.root
+        cur = self.root
         for char in word:
-            if char not in needle.children:
+            if char not in cur.children:
                 return False
-            needle = needle.children[char]
-        return needle.is_end
+            cur = cur.children[char]
+        return cur.is_end
 
     def __iter__(self) -> Iterator:
         return iter(self._words(self.root))
 
     def add(self, word: str):
-        needle = self.root
+        cur = self.root
         for char in word:
-            needle.children.setdefault(char, Node({}))
-            needle = needle.children[char]
-        if not needle.is_end:
-            needle.is_end = True
+            cur.children.setdefault(char, Node({}))
+            cur = cur.children[char]
+        if not cur.is_end:
+            cur.is_end = True
             self.size += 1
 
     @classmethod
