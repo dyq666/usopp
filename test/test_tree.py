@@ -317,20 +317,24 @@ class TestSegmentTree:
 
 
 def test_trie():
-    """测试空, 只有一个字符, 有一些单词.
+    """测试以下字典树:
     ```
-    N   N          N
-       a       d   a   e
-              d f     c f
-                 g   h
+    N   N          N              N
+       a       d   a   e      d   a   e
+              d f     c f    d *f*  *c* f
+                 g   h          g   h
     ```
+
+      - 空
+      - 只有一个字符
+      - 所有字符串都是到叶子节点才终止
+      - 部分字符串到非叶子节点终止 (用 ** 标记)
     """
-    # TODO 对于第四个测试用例来说, df 和 ec 应该是一个单词, 但现在无法被识别.
     words_set = (
         set(),
         {'a'},
         {'dd', 'dfg', 'a', 'ech', 'ef'},
-        # {'dd', 'df', 'dfg', 'a', 'ec', 'ech', 'ef'},
+        {'dd', 'df', 'dfg', 'a', 'ec', 'ech', 'ef'},
     )
 
     for words in words_set:

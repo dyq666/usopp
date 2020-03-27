@@ -4,8 +4,9 @@ from typing import Dict, Iterable, Iterator, List
 class Node:
     """字典树节点."""
 
-    def __init__(self, map_: Dict[str, 'Node']):
+    def __init__(self, map_: Dict[str, 'Node'], is_end: bool = False):
         self.map = map_
+        self.is_end = is_end
 
 
 class Trie:
@@ -21,7 +22,7 @@ class Trie:
                 return False
             needle = needle.map[char]
         # 必须是叶子节点, 才算包含
-        return not needle.map
+        return needle.is_end
 
     def __iter__(self) -> Iterator:
         return iter(self._words(self.root))
@@ -32,6 +33,7 @@ class Trie:
         for c in word:
             needle.map.setdefault(c, Node({}))
             needle = needle.map[c]
+        needle.is_end = True
 
     @classmethod
     def from_iterable(cls, iterable: Iterable[str]) -> 'Trie':
@@ -51,5 +53,8 @@ class Trie:
         words = []
         for char, child in root.map.items():
             child_words = self._words(child)
-            words.extend([char + w for w in child_words] if child_words else [char])
+            if child:
+                words.extend([char + w for w in child_words])
+            if child.is_end:
+                words.append(char)
         return words
