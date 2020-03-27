@@ -43,13 +43,12 @@ class Trie:
         return trie
 
     def _words(self, root: Node) -> List[str]:
-        """获得从根 `root` 到叶子的所有路径.
+        """返回从根 `root` 到标记了 `is_end` 节点的所有路径.
+
+        递归终止条件是隐式的, 当 `root.map` 为空字典时, 不会递归调用.
 
         和 LeetCode 257 问题类似.
         """
-        if not root.map:
-            return []
-
         words = []
         for char, child in root.map.items():
             child_words = self._words(child)
