@@ -17,6 +17,10 @@ class Trie:
 
     def __init__(self):
         self.root = Node({})
+        self.size = 0
+
+    def __len__(self) -> int:
+        return self.size
 
     def __contains__(self, word: str) -> bool:
         needle = self.root
@@ -34,7 +38,9 @@ class Trie:
         for char in word:
             needle.children.setdefault(char, Node({}))
             needle = needle.children[char]
-        needle.is_end = True
+        if not needle.is_end:
+            needle.is_end = True
+            self.size += 1
 
     @classmethod
     def from_iterable(cls, iterable: Iterable[str]) -> 'Trie':

@@ -339,7 +339,13 @@ def test_trie():
 
     for words in words_set:
         trie = Trie.from_iterable(words)
-        assert set(trie) == words
+        assert set(trie) == set(words)
+        assert len(trie) == len(words)
+
+        # 添加重复的元素应该没有任何影响
+        for word in words:
+            trie.add(word)
+        assert len(trie) == len(words)
 
         for word in words:
             for i in range(1, len(word) + 1):
