@@ -4,7 +4,10 @@ from typing import List, Optional
 
 import pytest
 
-from structure import BST, BTNode, BTUtil, SegmentTree, SegmentTreeWithNode
+from structure import (
+    BST, BTNode, BTUtil, SegmentTree, SegmentTreeWithNode,
+    Trie,
+)
 
 
 @pytest.fixture
@@ -311,3 +314,27 @@ class TestSegmentTree:
         assert tree.query(1, 2) == -3
         assert tree.query(1, 3) == 6
         assert tree.query(2, 3) == -4
+
+
+def test_trie():
+    """测试空, 只有一个字符, 有一些单词.
+    ```
+    N   N          N
+       a       d   a   e
+              d f     c f
+                 g   h
+    ```
+    """
+    # TODO 对于第三个测试用例来说, 如果 df 和 ec 应该是一个
+    # TODO 单词, 但现在无法被识别.
+    words_set = (
+        {},
+        {'a'},
+        {'dd', 'dfg', 'a', 'ech', 'ef'},
+    )
+
+    for words in words_set:
+        trie = Trie.from_iterable(words)
+        assert set(trie) == words
+        for word in words:
+            assert word in trie
