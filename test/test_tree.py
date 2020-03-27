@@ -325,16 +325,22 @@ def test_trie():
                  g   h
     ```
     """
-    # TODO 对于第三个测试用例来说, 如果 df 和 ec 应该是一个
-    # TODO 单词, 但现在无法被识别.
+    # TODO 对于第四个测试用例来说, df 和 ec 应该是一个单词, 但现在无法被识别.
     words_set = (
-        {},
+        set(),
         {'a'},
         {'dd', 'dfg', 'a', 'ech', 'ef'},
+        # {'dd', 'df', 'dfg', 'a', 'ec', 'ech', 'ef'},
     )
 
     for words in words_set:
         trie = Trie.from_iterable(words)
         assert set(trie) == words
+
         for word in words:
-            assert word in trie
+            for i in range(1, len(word) + 1):
+                # 字符串的子串如果不是一个单词, 那么就不应该在 `trie` 中.
+                if i < len(word) and word[:i] not in words:
+                    assert word[:i] not in trie
+                else:
+                    assert word[:i] in trie

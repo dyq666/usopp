@@ -20,7 +20,8 @@ class Trie:
             if char not in needle.map:
                 return False
             needle = needle.map[char]
-        return True
+        # 必须是叶子节点, 才算包含
+        return not needle.map
 
     def __iter__(self) -> Iterable:
         return iter(self._words(self.root))
