@@ -5,8 +5,8 @@ class Node:
     """字典树节点."""
 
     def __init__(self, children: Dict[str, 'Node'], is_end: bool = False):
-        self.children = children
-        self.is_end = is_end
+        self.children: Dict[str, 'Node'] = children
+        self.is_end: bool = is_end
 
 
 class Trie:
@@ -16,8 +16,8 @@ class Trie:
     """
 
     def __init__(self):
-        self.root = Node({})
-        self.size = 0
+        self.root: Node = Node({})
+        self.size: int = 0
 
     def __len__(self) -> int:
         return self.size
@@ -41,6 +41,18 @@ class Trie:
         if not cur.is_end:
             cur.is_end = True
             self.size += 1
+
+    def startswith(self, prefix: str) -> bool:
+        """是否有 `prefix` 前缀.
+
+        和 `__contains__` 逻辑基本一致, 除了最后一步不需要判断节点是否是 `is_end`'.
+        """
+        cur = self.root
+        for char in prefix:
+            if char not in cur.children:
+                return False
+            cur = cur.children[char]
+        return True
 
     @classmethod
     def from_iterable(cls, iterable: Iterable[str]) -> 'Trie':

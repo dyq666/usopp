@@ -354,3 +354,6 @@ def test_trie():
                     assert word[:i] not in trie
                 else:
                     assert word[:i] in trie
+
+                # 所有子串都是前缀.
+                assert trie.startswith(word[:i])
