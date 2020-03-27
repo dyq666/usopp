@@ -2,7 +2,7 @@ __all__ = (
     'MaxHeap',
 )
 
-from typing import Any, Iterable, Optional
+from typing import Any, Iterator, Optional
 
 from .tree import BTUtil
 from .util import not_empty
@@ -26,7 +26,7 @@ class MaxHeap:
     def __len__(self) -> int:
         return len(self._data)
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         return iter(self._data)
 
     def push(self, value: Any):

@@ -3,7 +3,7 @@ __all__ = (
 )
 
 import itertools
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Iterator, Optional
 
 from .tree import BTNode, BTUtil
 from .util import check_index
@@ -27,7 +27,7 @@ class SegmentTree:
     def __len__(self) -> int:
         return len(self._a)
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         return itertools.takewhile(lambda o: o is not None, self._t)
 
     @check_index()
@@ -139,7 +139,7 @@ class SegmentTreeWithNode:
     def __len__(self) -> int:
         return len(self._a)
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         return (n.val for level in BTUtil.levelorder(self.root) for n in level)
 
     @check_index()

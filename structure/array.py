@@ -5,7 +5,7 @@ __all__ = (
     'LoopArrayV2',
 )
 
-from typing import Any, Iterable
+from typing import Any, Iterator
 
 from .util import check_index, not_empty
 
@@ -40,7 +40,7 @@ class DynamicArrayV1:
     def __len__(self) -> int:
         return self._size
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         return iter(self._data[:len(self)])
 
     def append(self, value: Any):
@@ -95,7 +95,7 @@ class DynamicArrayV2:
     def __len__(self) -> int:
         return self._size
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         # __contains__ 实际上是不需要显示定义的, Python 会自动调用 __iter__,
         # 它的实现等价于 `return value in iter(self)`
         return iter(self._data[:len(self)])
@@ -184,7 +184,7 @@ class LoopArrayV1:
     def __len__(self) -> int:
         return self._tail - self._head
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         return iter(self._data[self._head:self._tail])
 
     def append(self, value: Any):
@@ -244,7 +244,7 @@ class LoopArrayV2:
     def __len__(self) -> int:
         return self._size
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         # 如果按照 `self._head` 和 `self._tail` 定位动态数组
         # 的范围, 那么一定不要忘记当二者相等时可能动态数组是空的也可能是满的.
         for i in range(len(self)):
@@ -347,7 +347,7 @@ class LoopArrayV3:
     def __len__(self) -> int:
         return self._size
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         # 如果按照 `self._head` 和 `self._tail` 定位动态数组
         # 的范围, 那么一定不要忘记当二者相等时可能动态数组是空的也可能是满的.
         for i in range(len(self)):

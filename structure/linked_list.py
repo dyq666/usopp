@@ -3,7 +3,7 @@ __all__ = (
     'LinkedListV2',
 )
 
-from typing import Any, Iterable, Optional
+from typing import Any, Iterator, Optional
 
 from .util import not_empty
 
@@ -32,7 +32,7 @@ class LinkedListV1:
     def __len__(self) -> int:
         return self._size
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         # 相当于从索引为 0 的位置开始
         needle = self._head.next
         for _ in range(self._size):
@@ -78,7 +78,7 @@ class LinkedListV2:
     def __len__(self) -> int:
         return self._size
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         # 相当于从索引为 0 的位置开始
         needle = self._head.next
         for _ in range(self._size):

@@ -4,7 +4,7 @@ __all__ = (
 
 from functools import total_ordering
 from itertools import chain, zip_longest
-from typing import Any, Generator, List, Iterable, Optional, Tuple
+from typing import Any, Generator, List, Iterable, Iterator, Optional, Tuple
 
 from .util import not_empty
 
@@ -343,7 +343,7 @@ class BST:
     def __len__(self) -> int:
         return self._size
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         return BTUtil.inorder(self.root)
 
     def __contains__(self, value: Any) -> bool:
@@ -630,7 +630,7 @@ class BSTDict:
     def __repr__(self) -> str:
         return '{' + ', '.join(': '.join((repr(k), repr(v))) for k, v in self) + '}'
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         return ((node.val.key, node.val.value) for node in self.tree)
 
     def __len__(self) -> int:

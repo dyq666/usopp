@@ -1,4 +1,4 @@
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable, Iterator, List
 
 
 class Node:
@@ -14,7 +14,7 @@ class Trie:
     def __init__(self):
         self.root = Node({})
 
-    def __contains__(self, item) -> bool:
+    def __contains__(self, item: str) -> bool:
         needle = self.root
         for char in item:
             if char not in needle.map:
@@ -23,7 +23,7 @@ class Trie:
         # 必须是叶子节点, 才算包含
         return not needle.map
 
-    def __iter__(self) -> Iterable:
+    def __iter__(self) -> Iterator:
         return iter(self._words(self.root))
 
     def add(self, word: str):
