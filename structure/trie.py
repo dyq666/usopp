@@ -10,29 +10,30 @@ class Node:
 
 
 class Trie:
-    """字典树."""
+    """字典树.
+
+    字典树中的节点不存储值, 值都存在父节点的字典中.
+    """
 
     def __init__(self):
         self.root = Node({})
 
-    def __contains__(self, item: str) -> bool:
+    def __contains__(self, word: str) -> bool:
         needle = self.root
-        for char in item:
+        for char in word:
             if char not in needle.children:
                 return False
             needle = needle.children[char]
-        # 必须是叶子节点, 才算包含
         return needle.is_end
 
     def __iter__(self) -> Iterator:
         return iter(self._words(self.root))
 
     def add(self, word: str):
-        """添加一个单词."""
         needle = self.root
-        for c in word:
-            needle.children.setdefault(c, Node({}))
-            needle = needle.children[c]
+        for char in word:
+            needle.children.setdefault(char, Node({}))
+            needle = needle.children[char]
         needle.is_end = True
 
     @classmethod
@@ -51,9 +52,7 @@ class Trie:
         """
         words = []
         for char, child in root.children.items():
-            child_words = self._words(child)
-            if child:
-                words.extend([char + w for w in child_words])
             if child.is_end:
                 words.append(char)
+            words.extend([char + w for w in self._words(child)])
         return words
