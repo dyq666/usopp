@@ -4,8 +4,8 @@ from typing import Dict, Iterable, Iterator, List
 class Node:
     """字典树节点."""
 
-    def __init__(self, map_: Dict[str, 'Node'], is_end: bool = False):
-        self.map = map_
+    def __init__(self, children: Dict[str, 'Node'], is_end: bool = False):
+        self.children = children
         self.is_end = is_end
 
 
@@ -18,9 +18,9 @@ class Trie:
     def __contains__(self, item: str) -> bool:
         needle = self.root
         for char in item:
-            if char not in needle.map:
+            if char not in needle.children:
                 return False
-            needle = needle.map[char]
+            needle = needle.children[char]
         # 必须是叶子节点, 才算包含
         return needle.is_end
 
@@ -31,8 +31,8 @@ class Trie:
         """添加一个单词."""
         needle = self.root
         for c in word:
-            needle.map.setdefault(c, Node({}))
-            needle = needle.map[c]
+            needle.children.setdefault(c, Node({}))
+            needle = needle.children[c]
         needle.is_end = True
 
     @classmethod
@@ -45,12 +45,12 @@ class Trie:
     def _words(self, root: Node) -> List[str]:
         """返回从根 `root` 到标记了 `is_end` 节点的所有路径.
 
-        递归终止条件是隐式的, 当 `root.map` 为空字典时, 不会递归调用.
+        递归终止条件是隐式的, 当 `root.children` 为空字典时, 不会递归调用.
 
         和 LeetCode 257 问题类似.
         """
         words = []
-        for char, child in root.map.items():
+        for char, child in root.children.items():
             child_words = self._words(child)
             if child:
                 words.extend([char + w for w in child_words])
