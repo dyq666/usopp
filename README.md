@@ -14,3 +14,4 @@
   - 二分搜索树实现的字典 structure.BSTDict
   - 最大堆 structure.MaxHeap (可用于实现优先级队列)
   - 线段树 structure.SegmentTree
+  - 字典树 structure.Trie
