@@ -1,12 +1,13 @@
-from typing import Dict, Iterable, Iterator, List
+from typing import Dict, Iterable, Iterator, List, Optional
 
 
 class Node:
     """字典树节点."""
 
-    def __init__(self, children: Dict[str, 'Node'], is_end: bool = False):
-        self.children: Dict[str, 'Node'] = children
-        self.is_end: bool = is_end
+    def __init__(self, children: Optional[Dict[str, 'Node']] = None,
+                 is_end: bool = False):
+        self.children = {} if children is None else children
+        self.is_end = is_end
 
 
 class Trie:
@@ -18,7 +19,7 @@ class Trie:
     """
 
     def __init__(self):
-        self.root: Node = Node({})
+        self.root: Node = Node()
         self.size: int = 0
 
     def __len__(self) -> int:
@@ -38,7 +39,7 @@ class Trie:
     def add(self, word: str):
         cur = self.root
         for char in word:
-            cur.children.setdefault(char, Node({}))
+            cur.children.setdefault(char, Node())
             cur = cur.children[char]
         if not cur.is_end:
             cur.is_end = True
