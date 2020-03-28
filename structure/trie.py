@@ -1,8 +1,15 @@
+__all__ = (
+    'Trie',
+)
+
 from typing import Dict, Iterable, Iterator, List, Optional
 
 
 class Node:
-    """字典树节点."""
+    """字典树节点.
+
+    `is_end`: 代表此节点是一个单词的末尾.
+    """
 
     def __init__(self, children: Optional[Dict[str, 'Node']] = None,
                  is_end: bool = False):
@@ -13,7 +20,8 @@ class Node:
 class Trie:
     """字典树.
 
-    字典树中的节点不存储值, 值都存在父节点的字典中.
+    字典树中的节点本身不存储值, 它的值存储在父节点的字典中, 因此部分逻辑和
+    一般的树结构有些区别.
 
     可用 LeetCode 208 测试.
     """
@@ -48,7 +56,7 @@ class Trie:
     def startswith(self, prefix: str) -> bool:
         """是否有 `prefix` 前缀.
 
-        和 `__contains__` 逻辑基本一致, 除了最后一步不需要判断节点是否是 `is_end`'.
+        和 `__contains__` 逻辑基本一致, 除了最后不需要判断节点是否终止.
         """
         cur = self.root
         for char in prefix:
@@ -65,11 +73,11 @@ class Trie:
         return trie
 
     def _words(self, root: Node) -> List[str]:
-        """返回从根 `root` 到标记了 `is_end` 节点的所有路径.
+        """返回从根 `root` 到所有终止节点的所有路径.
 
         和 LeetCode 257 问题类似.
         """
-        # 实际上这里的递归终止条件是可以省略的, 下面的遍历隐式的表达了
+        # 实际上这里的递归终止条件是可以省略的, 下面的遍历隐含
         # 终止条件: 当 `root.children` 为空时, 递归终止.
         if not root.children:
             return []
