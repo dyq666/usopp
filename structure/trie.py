@@ -67,10 +67,13 @@ class Trie:
     def _words(self, root: Node) -> List[str]:
         """返回从根 `root` 到标记了 `is_end` 节点的所有路径.
 
-        递归终止条件是隐式的, 当 `root.children` 为空字典时, 不会递归调用.
-
         和 LeetCode 257 问题类似.
         """
+        # 实际上这里的递归终止条件是可以省略的, 下面的遍历隐式的表达了
+        # 终止条件: 当 `root.children` 为空时, 递归终止.
+        if not root.children:
+            return []
+
         words = []
         for char, child in root.children.items():
             if child.is_end:
