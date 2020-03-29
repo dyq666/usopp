@@ -19,3 +19,21 @@ def test_union_find(f: callable):
     uf.union(0, 1)
     for p, q in combinations((0, 1, 2, 9), r=2):
         assert uf.is_connected(p, q)
+
+    # 边界测试
+    with pytest.raises(IndexError):
+        uf.union(-1, 0)
+    with pytest.raises(IndexError):
+        uf.union(0, -1)
+    with pytest.raises(IndexError):
+        uf.union(10, 0)
+    with pytest.raises(IndexError):
+        uf.union(0, 10)
+    with pytest.raises(IndexError):
+        uf.is_connected(-1, 0)
+    with pytest.raises(IndexError):
+        uf.is_connected(0, -1)
+    with pytest.raises(IndexError):
+        uf.is_connected(10, 0)
+    with pytest.raises(IndexError):
+        uf.is_connected(0, 10)
