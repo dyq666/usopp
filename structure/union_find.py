@@ -19,37 +19,36 @@ class UnionFindV1:
     """
 
     def __init__(self, ids: List[int]):
-        self._ids = ids
+        self._set_id = ids
 
     def __len__(self) -> int:
-        return len(self._ids)
+        return len(self._set_id)
 
-    def find(self, p: int) -> int:
-        """查找元素所在的集合 id."""
-        if not 0 <= p < len(self):
-            raise IndexError
-        return self._ids[p]
-
-    def is_connected(self, p: int, q: int) -> bool:
+    def is_connected(self, idx1: int, idx2: int) -> bool:
         """两个元素是否在一个集合中 ?"""
-        return self.find(p) == self.find(q)
+        return self._set(idx1) == self._set(idx2)
 
-    def union(self, p: int, q: int):
+    def union(self, idx1: int, idx2: int):
         """合并两个元素所在的集合."""
-        p_id, q_id = self.find(p), self.find(q)
+        set1, set2 = self._set(idx1), self._set(idx2)
 
-        if p_id == q_id:
+        if set1 == set2:
             return
 
-        # 把和 p 在一个集合的所有元素, 移动到 q 所在的集合中.
+        # 把和 idx1 在一个集合的所有元素, 移动到 idx2 所在的集合中.
         for i in range(len(self)):
-            if self._ids[i] == p_id:
-                self._ids[i] = q_id
+            if self._set(i) == set1:
+                self._set_id[i] = set2
+
+    @check_index()
+    def _set(self, index: int) -> int:
+        """查找元素所在的集合 id."""
+        return self._set_id[index]
 
     @classmethod
     def generate(cls, size: int) -> 'UnionFindV1':
         # 初始时, 每个元素都独自在一个集合中.
-        return UnionFindV1([i for i in range(size)])
+        return UnionFindV1(list(range(size)))
 
 
 class UnionFindV2:
