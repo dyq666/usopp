@@ -2,7 +2,7 @@ __all__ = (
     'MaxHeap',
 )
 
-from typing import Any, Iterator, Optional
+from typing import Any, Iterable, Iterator, Optional
 
 from .tree import BTUtil
 from .util import not_empty
@@ -11,31 +11,19 @@ from .util import not_empty
 class MaxHeap:
     """最大堆.
 
-    函数命名和 `import heapq` 保持一致.
+    函数命名和标准库中的 `heapq` 保持一致.
 
-    可使用 LeetCode 347 测试.
+    可在 LeetCode 347 中测试本数据结构.
     """
 
-    def __init__(self, data: Optional[list] = None):
-        """注意如果传入 `data` 必须保证 `data` 已经是一个最大堆了.
-
-        如果不能保证则应该使用 `heapify`.
-        """
-        self._data = [] if data is None else data[:]
+    def __init__(self, array: Optional[list] = None):
+        self._a = [] if array is None else array
 
     def __len__(self) -> int:
-        return len(self._data)
+        return len(self._a)
 
     def __iter__(self) -> Iterator:
-        return iter(self._data)
-
-    def push(self, value: Any):
-        """添加元素.
-
-        先将元素放到末尾, 再升上去.
-        """
-        self._data.append(value)
-        self._sift_up(len(self) - 1)
+        return iter(self._a)
 
     @not_empty
     def pop(self) -> Any:
@@ -43,11 +31,26 @@ class MaxHeap:
 
         头和尾互换, 换完之后, 尾弹出, 头下沉.
         """
-        d = self._data
-        d[0], d[-1] = d[-1], d[0]
-        max_ = d.pop()
+        self._a[0], self._a[-1] = self._a[-1], self._a[0]
+        max_ = self._a.pop()
         self._sift_down(0)
         return max_
+
+    def push(self, value: Any):
+        """添加元素.
+
+        先将元素放到末尾, 再升上去.
+        """
+        self._a.append(value)
+        self._sift_up(len(self) - 1)
+
+    def pushpop(self, value: Any) -> Any:
+        """先 `push` 一个元素, 再 `pop` 首元素."""
+        if len(self) == 0 or value >= self._a[0]:
+            return value
+
+        # 当 `value < max_` 时, 和先 `pop` 后 `push` 就是一样的
+        return self.replace(value)
 
     @not_empty
     def replace(self, value: Any) -> Any:
@@ -55,22 +58,14 @@ class MaxHeap:
 
         :) 实际上这个方法可以叫做 `poppush`!
         """
-        max_ = self._data[0]
-        self._data[0] = value
+        max_ = self._a[0]
+        self._a[0] = value
         self._sift_down(0)
         return max_
 
-    def pushpop(self, value: Any) -> Any:
-        """先 `push` 一个元素, 再 `pop` 首元素."""
-        if len(self) == 0 or value >= self._data[0]:
-            return value
-
-        # 当 `value < max_` 时, 和先 `pop` 后 `push` 就是一样的
-        return self.replace(value)
-
     def _sift_up(self, index: int):
         """上浮元素."""
-        d = self._data
+        d = self._a
         # 如果没上浮到头并且比父亲大, 则继续上浮
         while index > 0 and d[index] > d[BTUtil.parent_idx(index)]:
             parent = BTUtil.parent_idx(index)
@@ -79,7 +74,7 @@ class MaxHeap:
 
     def _sift_down(self, index: int):
         """下沉元素."""
-        d = self._data
+        d = self._a
         l, r = BTUtil.left_idx(index), BTUtil.right_idx(index)
         # 当左 >= len 时, 等价于 `index` 没有左, 由于右 = 左 + 1, 因而也没有右,
         # 所以此时 `index` 是叶子, 叶子无法继续下沉.
@@ -98,7 +93,7 @@ class MaxHeap:
             l, r = BTUtil.left_idx(index), BTUtil.right_idx(index)
 
     @classmethod
-    def heapify(cls, data: list) -> 'MaxHeap':
+    def heapify(cls, array: Iterable) -> 'MaxHeap':
         """使任意排序的数组转换成堆.
 
         从最后一个非叶子节点到第一个节点逐个下沉 (实际上从最后一个
@@ -106,12 +101,12 @@ class MaxHeap:
 
         heapify 的时间复杂度是 O(N) !
         """
-        data = data[:]
-        if len(data) < 2:
-            return cls(data)
+        array = list(array)
+        if len(array) < 2:
+            return cls(array)
 
-        last = BTUtil.parent_idx(len(data) - 1)
-        heap = cls(data)
+        last = BTUtil.parent_idx(len(array) - 1)
+        heap = cls(array)
         for i in range(last, -1, -1):
             heap._sift_down(i)
         return heap
