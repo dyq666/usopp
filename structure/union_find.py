@@ -54,7 +54,9 @@ class UnionFindV1:
 class UnionFindV2:
     """并查集 V2.
 
-    在本数据结构中, 并是 O(H), 查是 O(H), H 是索引的高度, H << N.
+    在本数据结构中, 并是 O(H), 查是 O(H) (H 是索引的高度). H 和 N 之间
+    的关系比较复杂, 最终结论是: O(H) == O(log*N), O(log*N) 比 O(logN) 更快, 接近 O(1).
+    https://en.wikipedia.org/wiki/Iterated_logarithm
 
     `self._parent` 的索引和值各代表什么 ?
 
@@ -64,7 +66,11 @@ class UnionFindV2:
 
     `self._rank` 的索引和值各代表什么 ?
 
-    答: 索引和 `_parent` 中的索引意义相同. 值代表以当前索引为根的树层数.
+    答: 索引和 `_parent` 中的索引意义相同. 如果不使用路径压缩优化, 那么
+       值代表以当前索引为根的树层数. 使用路径压缩优化后, 值就代表一个相对
+       评分, 原因是路径压缩过程中, 无法简单计算压缩之后树的层数, 因而无法
+       更新层数, 但这并不影响合并时比较两个树. 这也就是为什么这个变量叫做
+       rank 而不是 depth 的原因.
     """
 
     def __init__(self, parent: List[int], rank: List[int]):
@@ -97,6 +103,9 @@ class UnionFindV2:
         """查找元素的根节点."""
         # 当索引和值相同时, 元素为根节点.
         while index != self._parent[index]:
+            # 路径压缩, 减小树的层数. 让节点的父索引指向节点的爷爷索引, 由于根节点也有父索引 (是它自己),
+            # 所以非根节点以外的所有节点都有爷爷索引, 因此不会触发 `IndexError`.
+            self._parent[index] = self._parent[self._parent[index]]
             index = self._parent[index]
         return index
 
