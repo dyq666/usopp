@@ -62,14 +62,14 @@ class UnionFindV2:
        值代表元素父亲的索引. 当索引和值相同时, 元素为根节点. 如果两个
        元素的根节点相同, 那么两个元素在一个集合中.
 
-    `self._size` 的索引和值各代表什么 ?
+    `self._rank` 的索引和值各代表什么 ?
 
-    答: 索引和 `_parent` 中的索引意义相同. 值代表以当前索引为根的树节点个数.
+    答: 索引和 `_parent` 中的索引意义相同. 值代表以当前索引为根的树层数.
     """
 
-    def __init__(self, parent: List[int], size: List[int]):
+    def __init__(self, parent: List[int], rank: List[int]):
         self._parent = parent
-        self._size = size
+        self._rank = rank
 
     def __len__(self) -> int:
         return len(self._parent)
@@ -81,16 +81,16 @@ class UnionFindV2:
     def union(self, idx1: int, idx2: int):
         """合并两个元素所在的集合.
 
-        合并时将节点少的树合并到节点多的树中, 这样树的高度比反过来更低.
+        合并时将层数少的树合并到层数多的树中, 这样树的高度比反过来更低.
         """
         root1, root2 = self._root(idx1), self._root(idx2)
-        size1, size2 = self._size[root1], self._size[root2]
-        if size1 < size2:
+        rank1, rank2 = self._rank[root1], self._rank[root2]
+        if rank1 < rank2:
             self._parent[root1] = root2
-            self._size[root2] += size1
+            self._rank[root2] = max(rank2, rank1 + 1)
         else:
             self._parent[root2] = root1
-            self._size[root1] += size2
+            self._rank[root1] = max(rank1, rank2 + 1)
 
     @check_index()
     def _root(self, index: int) -> int:
@@ -102,5 +102,5 @@ class UnionFindV2:
 
     @classmethod
     def generate(cls, size: int) -> 'UnionFindV2':
-        # 初始时, 每个元素都是根节点 (值和索引相同), 每棵树的节点个数都为 1.
+        # 初始时, 每个元素都是根节点 (值和索引相同), 每棵树的层数都为 1.
         return UnionFindV2(list(range(size)), [1 for _ in range(size)])
