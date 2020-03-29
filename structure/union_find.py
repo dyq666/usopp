@@ -22,17 +22,19 @@ class UnionFindV1:
     def __len__(self) -> int:
         return len(self._ids)
 
+    def find(self, p: int) -> int:
+        """查找元素所在的集合 id."""
+        if not 0 <= p < len(self):
+            raise IndexError
+        return self._ids[p]
+
     def is_connected(self, p: int, q: int) -> bool:
         """两个元素是否在一个集合中 ?"""
-        if not (0 <= p < len(self) and 0 <= q < len(self)):
-            raise IndexError
-        return self._ids[p] == self._ids[q]
+        return self.find(p) == self.find(q)
 
     def union(self, p: int, q: int):
         """合并两个元素所在的集合."""
-        if not (0 <= p < len(self) and 0 <= q < len(self)):
-            raise IndexError
-        p_id, q_id = self._ids[p], self._ids[q]
+        p_id, q_id = self.find(p), self.find(q)
         # 把和 p 在一个集合的所有元素, 移动到 q 所在的集合中.
         for i in range(len(self)):
             if self._ids[i] == p_id:
