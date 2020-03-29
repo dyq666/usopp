@@ -23,11 +23,13 @@ class UnionFindV1:
         return len(self._ids)
 
     def is_connected(self, p: int, q: int) -> bool:
+        """两个元素是否在一个集合中 ?"""
         if not (0 <= p < len(self) and 0 <= q < len(self)):
             raise IndexError
         return self._ids[p] == self._ids[q]
 
     def union(self, p: int, q: int):
+        """合并两个元素所在的集合."""
         if not (0 <= p < len(self) and 0 <= q < len(self)):
             raise IndexError
         p_id, q_id = self._ids[p], self._ids[q]
@@ -38,4 +40,5 @@ class UnionFindV1:
 
     @classmethod
     def generate(cls, size: int) -> 'UnionFindV1':
+        # 初始时, 每个元素都独自在一个集合中.
         return UnionFindV1([i for i in range(size)])
