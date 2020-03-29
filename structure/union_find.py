@@ -35,6 +35,10 @@ class UnionFindV1:
     def union(self, p: int, q: int):
         """合并两个元素所在的集合."""
         p_id, q_id = self.find(p), self.find(q)
+
+        if p_id == q_id:
+            return
+
         # 把和 p 在一个集合的所有元素, 移动到 q 所在的集合中.
         for i in range(len(self)):
             if self._ids[i] == p_id:
