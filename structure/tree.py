@@ -2,7 +2,6 @@ __all__ = (
     'BST', 'BTNode', 'BTUtil'
 )
 
-from functools import total_ordering
 from itertools import chain, zip_longest
 from typing import Any, Generator, List, Iterable, Iterator, Optional, Tuple
 

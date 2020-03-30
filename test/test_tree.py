@@ -1,13 +1,9 @@
-import operator
 from functools import partial
 from typing import List, Optional
 
 import pytest
 
-from structure import (
-    BST, BTNode, BTUtil, SegmentTree, SegmentTreeWithNode,
-    Trie,
-)
+from structure import BST, BTNode, BTUtil
 
 
 @pytest.fixture
@@ -40,16 +36,6 @@ def bst_arrays() -> List[List[Optional[int]]]:
         [3, 1, 5, 0, None, 4, None],
         [3, 1, 5, None, 2, None, 6],
         [3, 1, 5, 0, 2, 4, 6],
-    ]
-
-
-@pytest.fixture
-def segement_arrays() -> List[List[int]]:
-    """空, 奇数个, 偶数个."""
-    return [
-        [],
-        [1, 4, 8],
-        [1, 2, 5, 9],
     ]
 
 
@@ -227,133 +213,3 @@ class TestBTUtil:
         # 第一个树 5 是 2 的右节点, 第二个则是左节点
         assert not f(gen([1, 2, 3, None, 5]), gen([1, 2, 3, 5]))
         assert f(gen([1, 2, 3, None, 5]), gen([1, 2, 3, None, 5]))
-
-
-class TestSegmentTree:
-
-    @pytest.mark.parametrize('f', (SegmentTree.from_iterable,
-                                   SegmentTreeWithNode.from_iterable,))
-    def test_build(self, f: callable, segement_arrays: List[List[int]]):
-        arrays = segement_arrays
-        assert list(f(arrays[0], key=operator.add)) == []
-        assert list(f(arrays[1], key=operator.add)) == [13, 5, 8, 1, 4]
-        assert list(f(arrays[2], key=operator.add)) == [17, 3, 14, 1, 2, 5, 9]
-        assert list(f(arrays[0], key=operator.sub)) == []
-        assert list(f(arrays[1], key=operator.sub)) == [-11, -3, 8, 1, 4]
-        assert list(f(arrays[2], key=operator.sub)) == [3, -1, -4, 1, 2, 5, 9]
-
-    @pytest.mark.parametrize('f', (SegmentTree.from_iterable,
-                                   SegmentTreeWithNode.from_iterable,))
-    def test_update(self, f: callable, segement_arrays: List[List[int]]):
-        arrays = segement_arrays
-
-        tree = f(arrays[0], key=operator.add)
-        with pytest.raises(IndexError):
-            tree[0] = 1
-        with pytest.raises(IndexError):
-            tree[-1] = 1
-        tree = f(arrays[0], key=operator.sub)
-        with pytest.raises(IndexError):
-            tree[0] = 1
-        with pytest.raises(IndexError):
-            tree[-1] = 1
-
-        tree = f(arrays[1], key=operator.add)
-        tree[0] = 10
-        assert list(tree) == [22, 14, 8, 10, 4]
-        tree = f(arrays[1], key=operator.sub)
-        tree[0] = 10
-        assert list(tree) == [-2, 6, 8, 10, 4]
-
-        tree = f(arrays[2], key=operator.add)
-        tree[0] = 10
-        assert list(tree) == [26, 12, 14, 10, 2, 5, 9]
-        tree = f(arrays[2], key=operator.sub)
-        tree[0] = 10
-        assert list(tree) == [12, 8, -4, 10, 2, 5, 9]
-
-    @pytest.mark.parametrize('f', (SegmentTree.from_iterable,
-                                   SegmentTreeWithNode.from_iterable,))
-    def test_query(self, f: callable, segement_arrays: List[List[int]]):
-        arrays = segement_arrays
-
-        tree = f(arrays[0], key=operator.add)
-        with pytest.raises(IndexError):
-            tree.query(0, 0)
-
-        tree = f(arrays[1], key=operator.add)
-        with pytest.raises(IndexError):
-            tree.query(-1, 0)
-        with pytest.raises(IndexError):
-            tree.query(0, -1)
-        with pytest.raises(IndexError):
-            tree.query(2, 1)
-        assert tree.query(0, 0) == 1
-        assert tree.query(0, 1) == 5
-        assert tree.query(0, 2) == 13
-        assert tree.query(1, 2) == 12
-        tree = f(arrays[1], key=operator.sub)
-        assert tree.query(0, 0) == 1
-        assert tree.query(0, 1) == -3
-        assert tree.query(0, 2) == -11
-        assert tree.query(1, 2) == -4
-
-        tree = f(arrays[2], key=operator.add)
-        assert tree.query(0, 0) == 1
-        assert tree.query(0, 1) == 3
-        assert tree.query(0, 2) == 8
-        assert tree.query(0, 3) == 17
-        assert tree.query(1, 2) == 7
-        assert tree.query(1, 3) == 16
-        assert tree.query(2, 3) == 14
-        tree = f(arrays[2], key=operator.sub)
-        assert tree.query(0, 0) == 1
-        assert tree.query(0, 1) == -1
-        assert tree.query(0, 2) == -6
-        assert tree.query(0, 3) == 3
-        assert tree.query(1, 2) == -3
-        assert tree.query(1, 3) == 6
-        assert tree.query(2, 3) == -4
-
-
-def test_trie():
-    """测试以下字典树:
-    ```
-    N   N          N              N
-       a       d   a   e      d   a   e
-              d f     c f    d *f*  *c* f
-                 g   h          g   h
-    ```
-
-      - 空
-      - 只有一个字符
-      - 所有字符串都是到叶子节点才终止
-      - 部分字符串到非叶子节点终止 (用 ** 标记)
-    """
-    words_set = (
-        set(),
-        {'a'},
-        {'dd', 'dfg', 'a', 'ech', 'ef'},
-        {'dd', 'df', 'dfg', 'a', 'ec', 'ech', 'ef'},
-    )
-
-    for words in words_set:
-        trie = Trie.from_iterable(words)
-        assert set(trie) == set(words)
-        assert len(trie) == len(words)
-
-        # 添加重复的元素应该没有任何影响
-        for word in words:
-            trie.add(word)
-        assert len(trie) == len(words)
-
-        for word in words:
-            for i in range(1, len(word) + 1):
-                # 字符串的子串如果不是一个单词, 那么就不应该在 `trie` 中.
-                if i < len(word) and word[:i] not in words:
-                    assert word[:i] not in trie
-                else:
-                    assert word[:i] in trie
-
-                # 所有子串都是前缀.
-                assert trie.startswith(word[:i])
