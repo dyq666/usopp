@@ -140,7 +140,7 @@ class SegmentTreeWithNode:
         return len(self._a)
 
     def __iter__(self) -> Iterator:
-        return (n.val for level in BTUtil.levelorder(self.root) for n in level)
+        return (n.key for level in BTUtil.levelorder(self.root) for n in level)
 
     @check_index()
     def __setitem__(self, index: int, value: Any):
@@ -170,11 +170,11 @@ class SegmentTreeWithNode:
         mid = (l + r) // 2
         node_l = self._build(l, mid)
         node_r = self._build(mid + 1, r)
-        return BTNode(self.key(node_l.val, node_r.val), node_l, node_r)
+        return BTNode(self.key(node_l.key, node_r.key), 0, left=node_l, right=node_r)
 
     def _query(self, l, r, root: BTNode, query_l, query_r) -> Any:
         if l == query_l and r == query_r:
-            return root.val
+            return root.key
 
         mid = (l + r) // 2
         if query_r <= mid:
@@ -190,7 +190,7 @@ class SegmentTreeWithNode:
 
     def _update(self, l: int, r: int, root: BTNode, target_idx: int):
         if l == r == target_idx:
-            root.val = self._a[l]
+            root.key = self._a[l]
             return
 
         mid = (l + r) // 2
@@ -198,4 +198,4 @@ class SegmentTreeWithNode:
             self._update(l, mid, root=root.left, target_idx=target_idx)
         else:
             self._update(mid + 1, r, root=root.right, target_idx=target_idx)
-        root.val = self.key(root.left.val, root.right.val)
+        root.key = self.key(root.left.key, root.right.key)

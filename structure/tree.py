@@ -1,5 +1,5 @@
 __all__ = (
-    'BST', 'BSTDict', 'BTNode', 'BTUtil'
+    'BST', 'BTNode', 'BTUtil'
 )
 
 from functools import total_ordering
@@ -10,11 +10,15 @@ from .util import not_empty
 
 
 class BTNode:
-    """二叉树节点. (BT -> BinaryTree)"""
+    """二叉树节点. (BT -> BinaryTree)
 
-    def __init__(self, val: Any,
+    由于二叉树可以用于实现字典, 因此节点中记录了 k/v.
+    """
+
+    def __init__(self, key: Any, val: Any = 0,
                  left: Optional['BTNode'] = None,
                  right: Optional['BTNode'] = None):
+        self.key = key
         self.val = val
         self.left = left
         self.right = right
@@ -22,6 +26,7 @@ class BTNode:
     def __repr__(self) -> str:
         return (
             f'<{self.__class__.__name__}'
+            f' key={self.key!r}'
             f' val={self.val!r}'
             f'>'
         )
@@ -158,9 +163,9 @@ class BTUtil:
         """
         for n1, n2 in zip_longest(BTUtil.preorder(one, skip_none=False),
                                   BTUtil.preorder(other, skip_none=False)):
-            v1 = n1 and n1.val
-            v2 = n2 and n2.val
-            if v1 != v2:
+            k1 = n1 and n1.key
+            k2 = n2 and n2.key
+            if k1 != k2:
                 return False
         return True
 
@@ -321,7 +326,8 @@ class BTUtil:
             return
 
         return BTNode(
-            val=array[idx],
+            key=array[idx],
+            val=0,
             left=BTUtil._gen_tree(array, BTUtil.left_idx(idx)),
             right=BTUtil._gen_tree(array, BTUtil.right_idx(idx))
         )
@@ -330,12 +336,9 @@ class BTUtil:
 class BST:
     """二分搜索树. (BST -> BinarySearchTree)
 
-    树中不允许存在重复元素.
+    树中不允许存在重复 `BTNode.key` 的节点.
 
-    本数据结构有个弊端, 由于需要使用 `value` 的可比较性, 因而不同类型的值
-    无法存储到一起.
-
-    可将本数据结构当做 set, 用 LeetCode 804 测试.
+    可将本数据结构当做 set, 在 LeetCode 804 中测试.
     """
 
     def __init__(self):
@@ -351,7 +354,7 @@ class BST:
     def __contains__(self, value: Any) -> bool:
         return self.get(value) is not None
 
-    def add(self, value: Any):
+    def add(self, key: Any, value: Any = 0):
         """添加元素.
 
         :) 如果能用 dummy_root 就能简化一些代码了 !
@@ -361,32 +364,31 @@ class BST:
         added = self.root
         direction = None
         while added:
-            # 重复元素时, 用新值覆盖旧值, 具体原因是为字典服务.
-            # 当 `value` 是一个类实例, 相等不代表他们真的都一样, 例如类 `Pair`.
-            if value == added.val:
+            # 重复元素时, 用新值覆盖旧值.
+            if key == added.key:
                 added.val = value
                 return
 
             prev = added
-            if value < added.val:
+            if key < added.key:
                 added = added.left
                 direction = 'left'
             else:
                 added = added.right
                 direction = 'right'
 
-        # 代表根节点为空
+        # 条件等价于根为空
         if direction is None:
-            self.root = BTNode(value)
+            self.root = BTNode(key, value)
         else:
-            setattr(prev, direction, BTNode(value))
+            setattr(prev, direction, BTNode(key, value))
         self._size += 1
 
-    def add_with_recursion(self, value: Any):
+    def add_with_recursion(self, key: Any, value: Any = 0):
         """`add` 方法的递归实现."""
-        self.root = self._add_with_recursion(self.root, value)
+        self.root = self._add_with_recursion(self.root, key, value)
 
-    def _add_with_recursion(self, node: Optional[BTNode], value: Any) -> BTNode:
+    def _add_with_recursion(self, node: Optional[BTNode], key: Any, value: Any) -> BTNode:
         """向以 `node` 为根的树中添加 `value`, 返回添加完成的树.
 
         怎么理解递归终止条件 ?
@@ -408,19 +410,20 @@ class BST:
         # 空代表找到了插入位置
         if node is None:
             self._size += 1
-            return BTNode(value)
+            return BTNode(key, value)
 
-        if value < node.val:
-            node.left = self._add_with_recursion(node.left, value)
-        elif value > node.val:
-            node.right = self._add_with_recursion(node.right, value)
-        else:  # value == node.val
+        if key < node.key:
+            node.left = self._add_with_recursion(node.left, key, value)
+        elif key > node.key:
+            node.right = self._add_with_recursion(node.right, key, value)
+        # 重复元素时, 用新值覆盖旧值.
+        else:
             node.val = value
         return node
 
     @not_empty
-    def remove(self, value: Any):
-        """删除值为 `value` 的节点.
+    def remove(self, key: Any):
+        """删除值为 `key` 的节点.
 
         删除情况有四种:
 
@@ -449,8 +452,8 @@ class BST:
         prev = self.root
         delete = self.root
         direction = None
-        while delete and value != delete.val:
-            if value < delete.val:
+        while delete and key != delete.key:
+            if key < delete.key:
                 direction = 'left'
                 prev = delete
                 delete = prev.left
@@ -459,7 +462,7 @@ class BST:
                 prev = delete
                 delete = prev.right
 
-        # `value` 不在树中
+        # `key` 不在树中
         if delete is None:
             raise ValueError
 
@@ -469,62 +472,62 @@ class BST:
             else:
                 setattr(prev, direction, None)
         elif delete.right:
-            delete.val, delete.right = self._pop_min_from(delete.right)
+            delete.key, delete.right = self._pop_min_from(delete.right)
         else:  # elif delete.left
-            delete.val, delete.left = self._pop_max_from(delete.left)
+            delete.key, delete.left = self._pop_max_from(delete.left)
         self._size -= 1
 
     @not_empty
-    def remove_with_recursion(self, value: Any):
+    def remove_with_recursion(self, key: Any):
         """`remove` 方法的递归实现."""
-        self.root = self._remove_with_recursion(self.root, value)
+        self.root = self._remove_with_recursion(self.root, key)
 
-    def _remove_with_recursion(self, node: BTNode, value: Any) -> Optional[BTNode]:
-        """从 `node` 中删除值为 `value` 的节点, 返回删除完成的树."""
-        # 树中没有 `value`
+    def _remove_with_recursion(self, node: BTNode, key: Any) -> Optional[BTNode]:
+        """从 `node` 中删除值为 .keyue` 的节点, 返回删除完成的树."""
+        # 树中没有 .keyue`
         if node is None:
             raise ValueError
         # 找到了删除节点
-        if value == node.val:
+        if key == node.key:
             if BTUtil.isleaf(node):
                 self._size -= 1
                 return
             if node.right:
-                node.val, node.right = self._pop_min_from(node.right)
+                node.key, node.right = self._pop_min_from(node.right)
             else:  # elif node.left
-                node.val, node.left = self._pop_max_from(node.left)
+                node.key, node.left = self._pop_max_from(node.left)
             self._size -= 1
             return node
 
-        if value < node.val:
-            node.left = self._remove_with_recursion(node.left, value)
-        else:  # val > node.val
-            node.right = self._remove_with_recursion(node.right, value)
+        if key < node.key:
+            node.left = self._remove_with_recursion(node.left, key)
+        else:  # key > node.key (等于在上面判断过了)
+            node.right = self._remove_with_recursion(node.right, key)
         return node
 
-    def get(self, value: Any, default: Any = None) -> Any:
-        """返回值为 `value` 的节点, 如果没有则返回 `default`.
+    def get(self, key: Any, default: Any = None) -> Any:
+        """返回值为 `key` 的节点, 如果没有则返回 `default`.
 
-        虽然看起来这个函数比较奇怪, 但当 `value` 是一个可比较对象时, 就有意义了,
-        例如当 `value` 是下面用于字典的类 `Pair`.
+        虽然看起来这个函数比较奇怪, 但当 `key` 是一个可比较对象时, 就有意义了,
+        例如当 `key` 是下面用于字典的类 `Pair`.
         """
         geted = self.root
         while geted:
-            if value == geted.val:
+            if key == geted.key:
                 return geted
-            if value < geted.val:
+            if key < geted.key:
                 geted = geted.left
-            else:  # value > geted.val
+            else:
                 geted = geted.right
 
         # 没找到
         return default
 
     @classmethod
-    def from_iteralbe(cls, values: Iterable) -> 'BST':
+    def from_iteralbe(cls, keys: Iterable) -> 'BST':
         tree = cls()
-        for v in values:
-            tree.add(v)
+        for k in keys:
+            tree.add(k)
         return tree
 
     @staticmethod
@@ -549,10 +552,10 @@ class BST:
             max_ = max_.right
 
         # `max_` 的值没有变, 证明被删除节点是根节点
-        if max_.val == node.val:
-            return max_.val, max_.left
+        if max_.key == node.key:
+            return max_.key, max_.left
         prev.right = max_.left
-        return max_.val, node
+        return max_.key, node
 
     @staticmethod
     def _pop_max_from_with_recursion(node: BTNode) -> Tuple[Any, Optional[BTNode]]:
@@ -565,7 +568,7 @@ class BST:
         """
         # 找到最大值了
         if node.right is None:
-            return node.val, node.left
+            return node.key, node.left
 
         v, n = BST._pop_max_from_with_recursion(node.right)
         node.right = n
@@ -585,70 +588,7 @@ class BST:
             min_ = min_.left
 
         # `min_` 的值没有变, 证明被删除节点是根节点
-        if min_.val == node.val:
-            return min_.val, node.right
+        if min_.key == node.key:
+            return min_.key, node.right
         prev.left = min_.right
-        return min_.val, node
-
-
-@total_ordering
-class Pair:
-    """二分搜索树从集合转为字典的辅助类.
-
-    由于 `BST` 中只能存放一个值, 不能直接用于字典. 一种方式是让 `BTNode`
-    存放 key, value, 然后重写 `BST`, 但这种方式代价比较高. 另一种方式是
-    `BST` 中存放一个可比较的类实例, 将 key, value 存放到这个类实例中即可.
-    """
-
-    def __init__(self, key: Any, value: Any):
-        self.key = key
-        self.value = value
-
-    def __repr__(self):
-        return (
-            f'<{self.__class__.__name__}'
-            f' key={self.key!r}'
-            f' value={self.value!r}'
-            f'>'
-        )
-
-    def __eq__(self, other: 'Pair') -> bool:
-        return self.key == other.key
-
-    def __gt__(self, other: 'Pair') -> bool:
-        return self.key > other.key
-
-
-class BSTDict:
-    """用二分搜索树实现字典.
-
-    本数据结构有个弊端, 由于需要底层的 `BST` 需要每个节点的值是可比较的,
-    因而 `key` 必须是同一种类型, 否则将报错提示不可比较.
-    """
-
-    def __init__(self):
-        self.tree = BST()
-
-    def __repr__(self) -> str:
-        return '{' + ', '.join(': '.join((repr(k), repr(v))) for k, v in self) + '}'
-
-    def __iter__(self) -> Iterator:
-        return ((node.val.key, node.val.value) for node in self.tree)
-
-    def __len__(self) -> int:
-        return len(self.tree)
-
-    def __contains__(self, key: Any) -> bool:
-        return Pair(key, None) in self.tree
-
-    def __setitem__(self, key: Any, value: Any):
-        self.tree.add(Pair(key, value))
-
-    def __getitem__(self, key: Any) -> Any:
-        pair: Optional[BTNode] = self.tree.get(Pair(key, None))
-        if pair is None:
-            raise KeyError
-        return pair.val.value
-
-    def __delitem__(self, key: Any):
-        self.tree.remove(Pair(key, None))
+        return min_.key, node
