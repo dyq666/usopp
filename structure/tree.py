@@ -30,8 +30,8 @@ class BTNode:
 class BTUtil:
     """二叉树常用操作. (BT -> BinaryTree)"""
 
-    @classmethod
-    def preorder(cls, root: Optional[BTNode], skip_none: bool = True
+    @staticmethod
+    def preorder(root: Optional[BTNode], skip_none: bool = True
                  ) -> Generator[Optional[BTNode], None, None]:
         """前序遍历.
 
@@ -68,11 +68,11 @@ class BTUtil:
             if skip_none:
                 nodes.extend(n for n in (node.right, node.left) if n)
             else:
-                if node and not cls.isleaf(node):
+                if node and not BTUtil.isleaf(node):
                     nodes.extend(n for n in (node.right, node.left))
 
-    @classmethod
-    def inorder(cls, root: Optional[BTNode]) -> Generator[BTNode, None, None]:
+    @staticmethod
+    def inorder(root: Optional[BTNode]) -> Generator[BTNode, None, None]:
         """中序遍历.
 
         中序遍历的验证可使用 LeetCode 538.
@@ -94,8 +94,8 @@ class BTUtil:
             yield node
             nodes.extend(_left_side(node.right))
 
-    @classmethod
-    def postorder(cls, root: Optional[BTNode]) -> Generator[BTNode, None, None]:
+    @staticmethod
+    def postorder(root: Optional[BTNode]) -> Generator[BTNode, None, None]:
         """后序遍历.
 
         TODO 研究为什么要这么做, 怎么从递归转换来的.
@@ -117,8 +117,8 @@ class BTUtil:
             else:
                 yield node
 
-    @classmethod
-    def levelorder(cls, root: Optional[BTNode], skip_none: bool = True
+    @staticmethod
+    def levelorder(root: Optional[BTNode], skip_none: bool = True
                    ) -> Generator[List[Optional[BTNode]], None, None]:
         """层序遍历 (每次都返回一层的节点).
 
@@ -140,13 +140,13 @@ class BTUtil:
                          for n in nodes
                          for child in (n.left, n.right) if child]
             else:
-                nodes = (n for n in nodes if n and not cls.isleaf(n))
+                nodes = (n for n in nodes if n and not BTUtil.isleaf(n))
                 nodes = list(chain.from_iterable((n.left, n.right)
                                                  for n in nodes
-                                                 if n and not cls.isleaf(n)))
+                                                 if n and not BTUtil.isleaf(n)))
 
-    @classmethod
-    def is_equal(cls, one: Optional[BTNode],
+    @staticmethod
+    def is_equal(one: Optional[BTNode],
                  other: Optional[BTNode]) -> bool:
         """判断两棵树是否相同.
 
@@ -156,21 +156,20 @@ class BTUtil:
 
         此外, 可以用 LeetCode 100 测试.
         """
-        for n1, n2 in zip_longest(cls.preorder(one, skip_none=False),
-                                  cls.preorder(other, skip_none=False)):
+        for n1, n2 in zip_longest(BTUtil.preorder(one, skip_none=False),
+                                  BTUtil.preorder(other, skip_none=False)):
             v1 = n1 and n1.val
             v2 = n2 and n2.val
             if v1 != v2:
                 return False
         return True
 
-    @classmethod
-    def isleaf(cls, node: Optional[BTNode]) -> bool:
-        """是否为叶子节点."""
+    @staticmethod
+    def isleaf(node: Optional[BTNode]) -> bool:
         return bool(node and node.left is None and node.right is None)
 
-    @classmethod
-    def preorder_with_mocked_stack(cls, root: Optional[BTNode]
+    @staticmethod
+    def preorder_with_mocked_stack(root: Optional[BTNode]
                                    ) -> Generator[BTNode, None, None]:
         """模拟系统栈实现前序遍历.
 
@@ -198,8 +197,8 @@ class BTUtil:
             else:
                 yield node
 
-    @classmethod
-    def preorder_with_mocked_stack_and_none(cls, root: Optional[BTNode]
+    @staticmethod
+    def preorder_with_mocked_stack_and_none(root: Optional[BTNode]
                                             ) -> Generator[Optional[BTNode], None, None]:
         """模拟系统栈实现前序遍历 (返回非叶子节点的空节点)."""
         if not root:
@@ -210,17 +209,17 @@ class BTUtil:
             operator, node = nodes.pop()
             if operator == 0:
                 operators = []
-                if node and (node.right or not cls.isleaf(node)):
+                if node and (node.right or not BTUtil.isleaf(node)):
                     operators.append((0, node.right))
-                if node and (node.left or not cls.isleaf(node)):
+                if node and (node.left or not BTUtil.isleaf(node)):
                     operators.append((0, node.left))
                 operators.append((1, node))
                 nodes.extend(operators)
             else:
                 yield node
 
-    @classmethod
-    def preorder_with_recursion(cls, root: Optional[BTNode]
+    @staticmethod
+    def preorder_with_recursion(root: Optional[BTNode]
                                 ) -> Generator[BTNode, None, None]:
         """递归实现前序遍历.
 
@@ -230,11 +229,11 @@ class BTUtil:
             return
 
         yield root
-        yield from cls.preorder_with_recursion(root.left)
-        yield from cls.preorder_with_recursion(root.right)
+        yield from BTUtil.preorder_with_recursion(root.left)
+        yield from BTUtil.preorder_with_recursion(root.right)
 
-    @classmethod
-    def preorder_with_recursion_and_none(cls, root: Optional[BTNode],
+    @staticmethod
+    def preorder_with_recursion_and_none(root: Optional[BTNode],
                                          father_is_leaf: bool = True
                                          ) -> Generator[Optional[BTNode], None, None]:
         """递归实现前序遍历, 同时返回非叶子节点的空节点.
@@ -249,8 +248,8 @@ class BTUtil:
             return
 
         yield root
-        yield from cls.preorder_with_recursion_and_none(root.left, cls.isleaf(root))
-        yield from cls.preorder_with_recursion_and_none(root.right, cls.isleaf(root))
+        yield from BTUtil.preorder_with_recursion_and_none(root.left, BTUtil.isleaf(root))
+        yield from BTUtil.preorder_with_recursion_and_none(root.right, BTUtil.isleaf(root))
 
     @staticmethod
     def left_idx(index: int) -> int:
