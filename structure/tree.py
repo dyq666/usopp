@@ -11,8 +11,8 @@ from .util import not_empty
 class BTNode:
     """二叉树节点.
 
-    由于可以用二叉树实现字典, 因此节点中记录了 k/v. 如果是当做集合使用, 那么
-    只使用 k 即可.
+    由于可以用二分搜索树实现字典, 因此节点中记录了 k/v.
+    如果用于实现集合, 那么只使用 k 即可 (val 默认为 0).
     """
 
     def __init__(self, key: Any, val: Any = 0,
@@ -63,6 +63,92 @@ class BTUtil:
                 # node 有可能为空
                 if node and not BTUtil.isleaf(node):
                     nodes.extend((node.right, node.left))
+
+    @staticmethod
+    def preorder_with_mocked_stack(root: Optional[BTNode]
+                                   ) -> Generator[BTNode, None, None]:
+        """模拟系统栈实现前序遍历.
+
+        `nodes` 中存储的结构为 (操作码, 节点), 操作码有 0, 1 两种, 其中 0 代表遍历, 1 代表返回.
+
+        另外, 只要改变入栈顺序就可以换成中序和后序.
+
+        `preorder` 和 `preorder_with_mocked_stack` 的区别 ?
+
+        答: `preorder_with_mocked_stack` 更容易理解, 更容易转换成中序和后序遍历.
+           而 `preorder` 只针对前序遍历的标准实现, 减少了入栈出栈的次数, 因而不能扩展到中序和后序,
+           当然, 中序和后序都有自己的标准实现.
+        """
+        if not root:
+            return
+
+        statements = [(0, root)]
+        while statements:
+            operator, node = statements.pop()
+            # 等价于 `preorder_with_recursion` 中的递归终止条件.
+            if node is None:
+                continue
+            # 等价于将一个 `preorder_with_recursion` 中的三条语句入栈.
+            if operator == 0:
+                statements.extend(((0, node.right),
+                                   (0, node.left),
+                                   (1, node)))
+            else:
+                yield node
+
+    @staticmethod
+    def preorder_with_mocked_stack_and_none(root: Optional[BTNode]
+                                            ) -> Generator[Optional[BTNode], None, None]:
+        """模拟系统栈实现前序遍历 (返回非叶子节点的空节点)."""
+        if not root:
+            return
+
+        statements = [(0, root, True)]
+        while statements:
+            operator, node, father_is_leaf = statements.pop()
+            if node is None:
+                if not father_is_leaf:
+                    yield
+                continue
+            if operator == 0:
+                statements.extend(((0, node.right, BTUtil.isleaf(node)),
+                                   (0, node.left, BTUtil.isleaf(node)),
+                                   (1, node, BTUtil.isleaf(node))))
+            else:
+                yield node
+
+    @staticmethod
+    def preorder_with_recursion(root: Optional[BTNode]
+                                ) -> Generator[BTNode, None, None]:
+        """递归实现前序遍历.
+
+        另外, 只要改变语句顺序就可以换成中序和后序.
+        """
+        if root is None:
+            return
+
+        yield root
+        yield from BTUtil.preorder_with_recursion(root.left)
+        yield from BTUtil.preorder_with_recursion(root.right)
+
+    @staticmethod
+    def preorder_with_recursion_and_none(root: Optional[BTNode],
+                                         father_is_leaf: bool = True
+                                         ) -> Generator[Optional[BTNode], None, None]:
+        """递归实现前序遍历, 同时返回非叶子节点的空节点.
+
+        `father_is_leaf`: 实际上这个函数拆成两个函数, 一个面向使用者, 一个用于递归. 因为 `father_is_leaf`
+                          并不需要提供给使用者. 默认值为 `True` 是因为当根节点为 None 时, 希望返回一个空
+                          的迭代器.
+        """
+        if root is None:
+            if not father_is_leaf:
+                yield
+            return
+
+        yield root
+        yield from BTUtil.preorder_with_recursion_and_none(root.left, BTUtil.isleaf(root))
+        yield from BTUtil.preorder_with_recursion_and_none(root.right, BTUtil.isleaf(root))
 
     @staticmethod
     def inorder(root: Optional[BTNode]) -> Generator[BTNode, None, None]:
@@ -160,92 +246,6 @@ class BTUtil:
     @staticmethod
     def isleaf(node: Optional[BTNode]) -> bool:
         return bool(node and node.left is None and node.right is None)
-
-    @staticmethod
-    def preorder_with_mocked_stack(root: Optional[BTNode]
-                                   ) -> Generator[BTNode, None, None]:
-        """模拟系统栈实现前序遍历.
-
-        `nodes` 中存储的结构为 (操作码, 节点), 操作码有 0, 1 两种, 其中 0 代表遍历, 1 代表返回.
-
-        另外, 只要改变入栈顺序就可以换成中序和后序.
-
-        `preorder` 和 `preorder_with_mocked_stack` 的区别 ?
-
-        答: `preorder_with_mocked_stack` 更容易理解, 更容易转换成中序和后序遍历.
-           而 `preorder` 只针对前序遍历的标准实现, 减少了入栈出栈的次数, 因而不能扩展到中序和后序,
-           当然, 中序和后序都有自己的标准实现.
-        """
-        if not root:
-            return
-
-        statements = [(0, root)]
-        while statements:
-            operator, node = statements.pop()
-            # 等价于 `preorder_with_recursion` 中的递归终止条件.
-            if node is None:
-                continue
-            # 等价于将一个 `preorder_with_recursion` 中的三条语句入栈.
-            if operator == 0:
-                statements.extend(((0, node.right),
-                                   (0, node.left),
-                                   (1, node)))
-            else:
-                yield node
-
-    @staticmethod
-    def preorder_with_mocked_stack_and_none(root: Optional[BTNode]
-                                            ) -> Generator[Optional[BTNode], None, None]:
-        """模拟系统栈实现前序遍历 (返回非叶子节点的空节点)."""
-        if not root:
-            return
-
-        statements = [(0, root, True)]
-        while statements:
-            operator, node, father_is_leaf = statements.pop()
-            if node is None:
-                if not father_is_leaf:
-                    yield
-                continue
-            if operator == 0:
-                statements.extend(((0, node.right, BTUtil.isleaf(node)),
-                                   (0, node.left, BTUtil.isleaf(node)),
-                                   (1, node, BTUtil.isleaf(node))))
-            else:
-                yield node
-
-    @staticmethod
-    def preorder_with_recursion(root: Optional[BTNode]
-                                ) -> Generator[BTNode, None, None]:
-        """递归实现前序遍历.
-
-        另外, 只要改变语句顺序就可以换成中序和后序.
-        """
-        if root is None:
-            return
-
-        yield root
-        yield from BTUtil.preorder_with_recursion(root.left)
-        yield from BTUtil.preorder_with_recursion(root.right)
-
-    @staticmethod
-    def preorder_with_recursion_and_none(root: Optional[BTNode],
-                                         father_is_leaf: bool = True
-                                         ) -> Generator[Optional[BTNode], None, None]:
-        """递归实现前序遍历, 同时返回非叶子节点的空节点.
-
-        `father_is_leaf`: 实际上这个函数拆成两个函数, 一个面向使用者, 一个用于递归. 因为 `father_is_leaf`
-                          并不需要提供给使用者. 默认值为 `True` 是因为当根节点为 None 时, 希望返回一个空
-                          的迭代器.
-        """
-        if root is None:
-            if not father_is_leaf:
-                yield
-            return
-
-        yield root
-        yield from BTUtil.preorder_with_recursion_and_none(root.left, BTUtil.isleaf(root))
-        yield from BTUtil.preorder_with_recursion_and_none(root.right, BTUtil.isleaf(root))
 
     @staticmethod
     def left_idx(index: int) -> int:
