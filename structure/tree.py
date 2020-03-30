@@ -26,33 +26,6 @@ class BTNode:
             f'>'
         )
 
-    @classmethod
-    def from_iterable(cls, array: Iterable) -> Optional['BTNode']:
-        """由数组生成一棵树.
-
-        注意, 由于索引是连续的, 所以数组中只能忽略最后一个叶子节点
-        之后的空节点 (即图中的 6 后面的四个 None).
-        ```
-               1           [1,
-            2    3     <-   2, 3
-          4  5  N N         4, 5, None, None,
-         NN N6 NN NN        None, None, None, 6]
-        ```
-        """
-        return cls._gen_tree(tuple(array), 0)
-
-    @classmethod
-    def _gen_tree(cls, array: tuple, idx: int) -> Optional['BTNode']:
-        """以索引 `index` 为根生成一棵树."""
-        if idx >= len(array) or array[idx] is None:
-            return
-
-        return cls(
-            val=array[idx],
-            left=cls._gen_tree(array, BTUtil.left_idx(idx)),
-            right=cls._gen_tree(array, BTUtil.right_idx(idx))
-        )
-
 
 class BTUtil:
     """二叉树常用操作. (BT -> BinaryTree)"""
@@ -325,6 +298,34 @@ class BTUtil:
         if index == 0:
             raise ValueError
         return (index - 1) // 2
+
+    @staticmethod
+    def gen_tree(array: Iterable) -> Optional[BTNode]:
+        """由数组生成一棵树.
+
+        注意, 由于索引是连续的, 所以数组中只能忽略最后一个叶子节点
+        之后的空节点 (即图中的 6 后面的四个 None).
+        ```
+               1           [1,
+            2    3     <-   2, 3
+          4  5  N N         4, 5, None, None,
+         NN N6 NN NN        None, None, None, 6]
+        ```
+        """
+        return BTUtil._gen_tree(tuple(array), 0)
+
+    @staticmethod
+    def _gen_tree(array: tuple, idx: int) -> Optional[BTNode]:
+        """以索引 `index` 为根生成一棵树."""
+        # 空节点
+        if idx > len(array) - 1 or array[idx] is None:
+            return
+
+        return BTNode(
+            val=array[idx],
+            left=BTUtil._gen_tree(array, BTUtil.left_idx(idx)),
+            right=BTUtil._gen_tree(array, BTUtil.right_idx(idx))
+        )
 
 
 class BST:

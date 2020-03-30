@@ -13,7 +13,7 @@ from structure import (
 @pytest.fixture
 def trees(bst_arrays: List[List[Optional[int]]]) -> List[BTNode]:
     """返回一些树 (最大层数: 3)."""
-    return [BTNode.from_iterable(a) for a in bst_arrays]
+    return [BTUtil.gen_tree(a) for a in bst_arrays]
 
 
 @pytest.fixture
@@ -63,7 +63,7 @@ class TestBST:
             for val in array:
                 if val is not None:
                     f(tree, val)
-            assert BTUtil.is_equal(tree.root, BTNode.from_iterable(array))
+            assert BTUtil.is_equal(tree.root, BTUtil.gen_tree(array))
             assert len(tree) == sum(1 for i in array if i is not None)
 
         # 重复元素应该被忽略
@@ -73,7 +73,7 @@ class TestBST:
             if val is not None:
                 f(tree, val)
                 f(tree, val)
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable(array))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree(array))
         assert len(tree) == sum(1 for i in array if i is not None)
 
     @pytest.mark.parametrize('f', (BST.remove,
@@ -92,57 +92,57 @@ class TestBST:
             f(tree, 100)
         f(tree, 3)
         assert len(tree) == 0
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([]))
         # 非根节点
         tree = BST.from_iteralbe(bst_arrays[6])
         f(tree, 6)
         assert len(tree) == 6
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, 5, 0, 2, 4]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([3, 1, 5, 0, 2, 4]))
         f(tree, 4)
         assert len(tree) == 5
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, 5, 0, 2]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([3, 1, 5, 0, 2]))
 
         # 删除只有右子树的节点.
         # 根节点
         tree = BST.from_iteralbe(v for v in bst_arrays[3] if v is not None)
         f(tree, 3)
         assert len(tree) == 2
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([5, None, 6]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([5, None, 6]))
         # 非根节点
         tree = BST.from_iteralbe(v for v in bst_arrays[5] if v is not None)
         f(tree, 5)
         assert len(tree) == 4
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 1, 6, None, 2]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([3, 1, 6, None, 2]))
         f(tree, 1)
         assert len(tree) == 3
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 2, 6]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([3, 2, 6]))
 
         # 删除只有左子树的节点.
         # 根节点
         tree = BST.from_iteralbe(v for v in bst_arrays[2] if v is not None)
         f(tree, 3)
         assert len(tree) == 2
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([1, 0]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([1, 0]))
         # 非根节点
         tree = BST.from_iteralbe(v for v in bst_arrays[4] if v is not None)
         f(tree, 1)
         assert len(tree) == 4
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 0, 5, None, None, 4, None]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([3, 0, 5, None, None, 4, None]))
         f(tree, 5)
         assert len(tree) == 3
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([3, 0, 4]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([3, 0, 4]))
 
         # 删除有左右子树的节点.
         tree = BST.from_iteralbe(v for v in bst_arrays[6] if v is not None)
         f(tree, 3)
         assert len(tree) == 6
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([4, 1, 5, 0, 2, None, 6]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([4, 1, 5, 0, 2, None, 6]))
         f(tree, 4)
         assert len(tree) == 5
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([5, 1, 6, 0, 2]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([5, 1, 6, 0, 2]))
         f(tree, 5)
         assert len(tree) == 4
-        assert BTUtil.is_equal(tree.root, BTNode.from_iterable([6, 1, None, 0, 2]))
+        assert BTUtil.is_equal(tree.root, BTUtil.gen_tree([6, 1, None, 0, 2]))
 
     def test_get_and_contains(self, bst_arrays: List[List[Optional[int]]]):
         tree = BST.from_iteralbe(bst_arrays[6])
@@ -222,7 +222,7 @@ class TestBTUtil:
 
     def test_is_equal(self):
         f = BTUtil.is_equal
-        gen = BTNode.from_iterable
+        gen = BTUtil.gen_tree
         assert f(gen([]), gen([]))
         # 第一个树 5 是 2 的右节点, 第二个则是左节点
         assert not f(gen([1, 2, 3, None, 5]), gen([1, 2, 3, 5]))
