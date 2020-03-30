@@ -117,3 +117,20 @@ class MaxHeap:
         for i in range(BTUtil.parent_idx(len(array) - 1), -1, -1):
             heap._sift_down(i)
         return heap
+
+    @staticmethod
+    def is_max_heap(heap: 'MaxHeap') -> bool:
+        """检验是否是最大堆."""
+        if len(heap) < 2:
+            return True
+
+        # 从到最后一个非叶子, 依次比较父和子的大小关系.
+        for i in range(0, BTUtil.parent_idx(len(heap) - 1) + 1):
+            l, r = BTUtil.left_idx(i), BTUtil.right_idx(i)
+            # 必有左孩子
+            if heap._a[i] < heap._a[l]:
+                return False
+            # 有可能有右孩子
+            if r < len(heap) and heap._a[i] < heap._a[r]:
+                return False
+        return True

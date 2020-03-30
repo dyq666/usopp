@@ -25,6 +25,7 @@ def test_push():
     for val, array in steps.items():
         heap.push(val)
         assert list(heap) == array
+        assert MaxHeap.is_max_heap(heap)
 
 
 def test_pop():
@@ -49,6 +50,7 @@ def test_pop():
     for val, array in steps.items():
         assert val == heap.pop()
         assert list(heap) == array
+        assert MaxHeap.is_max_heap(heap)
 
     with pytest.raises(IndexError):
         heap.pop()
