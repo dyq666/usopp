@@ -27,29 +27,31 @@ class BTNode:
         )
 
     @classmethod
-    def from_iterable(cls, data: Iterable) -> Optional['BTNode']:
-        """根据数组生成一棵树.
+    def from_iterable(cls, array: Iterable) -> Optional['BTNode']:
+        """由数组生成一棵树.
 
-        注意, 由于索引是连续的, 所以数组中只能忽略最后一个叶子节点之后的空节点.
+        注意, 由于索引是连续的, 所以数组中只能忽略最后一个叶子节点
+        之后的空节点 (即图中的 6 后面的四个 None).
         ```
-              1           [1,
-            2   3     <-   2, 3
-          4  5             4, 5, None, None,
-        空空 空6            None, None, None, 6]
+               1           [1,
+            2    3     <-   2, 3
+          4  5  N N         4, 5, None, None,
+         NN N6 NN NN        None, None, None, 6]
         ```
         """
-        return cls._gen_tree(tuple(data), 0)
+        return cls._gen_tree(tuple(array), 0)
 
     @classmethod
-    def _gen_tree(cls, data: tuple, index: int) -> Optional['BTNode']:
-        """以 `index` 索引作为根节点生成一棵树 (`cls.from_list` 的递归函数)."""
-        if index >= len(data) or data[index] is None:
+    def _gen_tree(cls, array: tuple, idx: int) -> Optional['BTNode']:
+        """以索引 `index` 为根生成一棵树."""
+        if idx >= len(array) or array[idx] is None:
             return
 
-        node = cls(data[index])
-        node.left = cls._gen_tree(data, BTUtil.left_idx(index))
-        node.right = cls._gen_tree(data, BTUtil.right_idx(index))
-        return node
+        return cls(
+            val=array[idx],
+            left=cls._gen_tree(array, BTUtil.left_idx(idx)),
+            right=cls._gen_tree(array, BTUtil.right_idx(idx))
+        )
 
 
 class BTUtil:
