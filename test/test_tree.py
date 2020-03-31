@@ -154,18 +154,6 @@ class TestBTUtil:
         assert list(n.key for n in f(trees[5])) == [3, 1, 2, 5, 6]
         assert list(n.key for n in f(trees[6])) == [3, 1, 0, 2, 5, 4, 6]
 
-    @pytest.mark.parametrize('f', (partial(BTUtil.preorder, skip_none=False),
-                                   BTUtil.preorder_with_mocked_stack_and_none,
-                                   BTUtil.preorder_with_recursion_and_none,))
-    def test_preorder_with_none(self, f: callable, trees: List[BTNode]):
-        assert list(n and n.key for n in f(trees[0])) == []
-        assert list(n and n.key for n in f(trees[1])) == [3]
-        assert list(n and n.key for n in f(trees[2])) == [3, 1, 0, None, None]
-        assert list(n and n.key for n in f(trees[3])) == [3, None, 5, None, 6]
-        assert list(n and n.key for n in f(trees[4])) == [3, 1, 0, None, 5, 4, None]
-        assert list(n and n.key for n in f(trees[5])) == [3, 1, None, 2, 5, None, 6]
-        assert list(n and n.key for n in f(trees[6])) == [3, 1, 0, 2, 5, 4, 6]
-
     @pytest.mark.parametrize('f', (BTUtil.inorder,))
     def test_inorder(self, f: callable, trees: List[BTNode]):
         assert list(n and n.key for n in f(trees[0])) == []

@@ -36,11 +36,8 @@ class BTUtil:
     """二叉树常用操作."""
 
     @staticmethod
-    def preorder(root: Optional[BTNode], skip_none: bool = True
-                 ) -> Generator[Optional[BTNode], None, None]:
+    def preorder(root: Optional[BTNode]) -> Generator[BTNode, None, None]:
         """前序遍历.
-
-        `skip_none`: 非叶子节点的空子节点是否返回.
 
         为什么前序遍历会想到用栈而不是队列呢 ?
 
@@ -49,20 +46,14 @@ class BTUtil:
            使用栈时, 可以右节点先入栈, 左节点再入栈, 取出左节点, 将左节点的子节点入栈,
            这时左子节点就插到了右节点的前面.
         """
-        if not root:
+        if root is None:
             return
 
         nodes = [root]
         while nodes:
             node = nodes.pop()
             yield node
-            if skip_none:
-                # node 不可能为空
-                nodes.extend(child for child in (node.right, node.left) if child)
-            else:
-                # node 有可能为空
-                if node and not BTUtil.isleaf(node):
-                    nodes.extend((node.right, node.left))
+            nodes.extend(child for child in (node.right, node.left) if child)
 
     @staticmethod
     def preorder_with_mocked_stack(root: Optional[BTNode]
@@ -79,7 +70,7 @@ class BTUtil:
            而 `preorder` 只针对前序遍历的标准实现, 减少了入栈出栈的次数, 因而不能扩展到中序和后序,
            当然, 中序和后序都有自己的标准实现.
         """
-        if not root:
+        if root is None:
             return
 
         statements = [(0, root)]
@@ -93,27 +84,6 @@ class BTUtil:
                 statements.extend(((0, node.right),
                                    (0, node.left),
                                    (1, node)))
-            else:
-                yield node
-
-    @staticmethod
-    def preorder_with_mocked_stack_and_none(root: Optional[BTNode]
-                                            ) -> Generator[Optional[BTNode], None, None]:
-        """模拟系统栈实现前序遍历 (返回非叶子节点的空节点)."""
-        if not root:
-            return
-
-        statements = [(0, root, True)]
-        while statements:
-            operator, node, father_is_leaf = statements.pop()
-            if node is None:
-                if not father_is_leaf:
-                    yield
-                continue
-            if operator == 0:
-                statements.extend(((0, node.right, BTUtil.isleaf(node)),
-                                   (0, node.left, BTUtil.isleaf(node)),
-                                   (1, node, BTUtil.isleaf(node))))
             else:
                 yield node
 
@@ -132,25 +102,6 @@ class BTUtil:
         yield from BTUtil.preorder_with_recursion(root.right)
 
     @staticmethod
-    def preorder_with_recursion_and_none(root: Optional[BTNode],
-                                         father_is_leaf: bool = True
-                                         ) -> Generator[Optional[BTNode], None, None]:
-        """递归实现前序遍历, 同时返回非叶子节点的空节点.
-
-        `father_is_leaf`: 实际上这个函数拆成两个函数, 一个面向使用者, 一个用于递归. 因为 `father_is_leaf`
-                          并不需要提供给使用者. 默认值为 `True` 是因为当根节点为 None 时, 希望返回一个空
-                          的迭代器.
-        """
-        if root is None:
-            if not father_is_leaf:
-                yield
-            return
-
-        yield root
-        yield from BTUtil.preorder_with_recursion_and_none(root.left, BTUtil.isleaf(root))
-        yield from BTUtil.preorder_with_recursion_and_none(root.right, BTUtil.isleaf(root))
-
-    @staticmethod
     def inorder(root: Optional[BTNode]) -> Generator[BTNode, None, None]:
         """中序遍历.
 
@@ -165,8 +116,9 @@ class BTUtil:
                 yield n
                 n = n.left
 
-        if not root:
+        if root is None:
             return
+
         nodes = list(_left_side(root))
         while nodes:
             node = nodes.pop()
@@ -208,7 +160,7 @@ class BTUtil:
         答: 虽然这里用的是 list, 但实际上还是先进先出, 只不过这里先进先出的特性是由
            遍历完成的 (先放进 list 的先被访问).
         """
-        if not root:
+        if root is None:
             return
 
         nodes = [root]
@@ -235,11 +187,12 @@ class BTUtil:
 
         此外, 可以在 LeetCode 100 中测试.
         """
-        for n1, n2 in zip_longest(BTUtil.preorder(one, skip_none=False),
-                                  BTUtil.preorder(other, skip_none=False)):
-            k1 = n1 and n1.key
-            k2 = n2 and n2.key
-            if k1 != k2:
+        for level1, level2 in zip_longest(BTUtil.levelorder(one, skip_none=False),
+                                          BTUtil.levelorder(other, skip_none=False),
+                                          fillvalue=[]):
+            v1 = [n and n.key for n in level1]
+            v2 = [n and n.key for n in level2]
+            if v1 != v2:
                 return False
         return True
 
@@ -295,7 +248,7 @@ class BTUtil:
         return (index - 1) // 2
 
     @staticmethod
-    def gen_tree(array: Iterable) -> Optional[BTNode]:
+    def gen_tree(iterable: Iterable) -> Optional[BTNode]:
         """由数组生成一棵树.
 
         注意, 由于索引是连续的, 所以数组中只能忽略最后一个叶子节点
@@ -307,7 +260,7 @@ class BTUtil:
          NN N6 NN NN        None, None, None, 6]
         ```
         """
-        return BTUtil._gen_tree(tuple(array), 0)
+        return BTUtil._gen_tree(tuple(iterable), 0)
 
     @staticmethod
     def _gen_tree(array: tuple, idx: int) -> Optional[BTNode]:
