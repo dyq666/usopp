@@ -37,15 +37,6 @@ class BTUtil:
 
     @staticmethod
     def preorder(root: Optional[BTNode]) -> Generator[BTNode, None, None]:
-        """前序遍历.
-
-        为什么前序遍历会想到用栈而不是队列呢 ?
-
-        答: 因为栈可以插队, 而队列不行. 当遍历到某个节点时, 需要存储节点的左右节点,
-           如果使用队列, 下两次出队的肯定是这两个节点, 而前序遍历需要先遍历左子树再遍历右子树.
-           使用栈时, 可以右节点先入栈, 左节点再入栈, 取出左节点, 将左节点的子节点入栈,
-           这时左子节点就插到了右节点的前面.
-        """
         if root is None:
             return
 
@@ -53,6 +44,7 @@ class BTUtil:
         while nodes:
             node = nodes.pop()
             yield node
+            # 先遍历左后遍历右, 因此右先入栈.
             nodes.extend(child for child in (node.right, node.left) if child)
 
     @staticmethod
@@ -60,27 +52,32 @@ class BTUtil:
                                    ) -> Generator[BTNode, None, None]:
         """模拟系统栈实现前序遍历.
 
-        `nodes` 中存储的结构为 (操作码, 节点), 操作码有 0, 1 两种, 其中 0 代表遍历, 1 代表返回.
+        改变入栈顺序就可以换成中序和后序.
 
-        另外, 只要改变入栈顺序就可以换成中序和后序.
+        `preorder_with_mocked_stack` 和 `preorder_with_recursion` 的关系 ?
+
+        答: 二者实际都是递归的实现, 只不过前者是模拟后者的系统栈调用. 具体语句的对应关系
+           在注释中写明了.
 
         `preorder` 和 `preorder_with_mocked_stack` 的区别 ?
 
         答: `preorder_with_mocked_stack` 更容易理解, 更容易转换成中序和后序遍历.
-           而 `preorder` 只针对前序遍历的标准实现, 减少了入栈出栈的次数, 因而不能扩展到中序和后序,
-           当然, 中序和后序都有自己的标准实现.
+           而 `preorder` 是前序遍历的标准实现, 不能扩展到中序和后序, 当然, 中序和后序
+           都有自己的标准实现.
         """
         if root is None:
             return
 
+        # (操作码, 节点), 操作码有 0, 1 两种, 其中 0 代表执行前序遍历, 1 代表返回节点.
         statements = [(0, root)]
         while statements:
             operator, node = statements.pop()
-            # 等价于 `preorder_with_recursion` 中的递归终止条件.
-            if node is None:
-                continue
-            # 等价于将一个 `preorder_with_recursion` 中的三条语句入栈.
+            # 等价于执行一次 `preorder_with_recursion`
             if operator == 0:
+                # 等价于 `preorder_with_recursion` 中的递归终止条件.
+                if node is None:
+                    continue
+                # 等价于将 `preorder_with_recursion` 中的三条语句入栈.
                 statements.extend(((0, node.right),
                                    (0, node.left),
                                    (1, node)))
@@ -92,7 +89,7 @@ class BTUtil:
                                 ) -> Generator[BTNode, None, None]:
         """递归实现前序遍历.
 
-        另外, 只要改变语句顺序就可以换成中序和后序.
+        改变语句顺序就可以换成中序和后序.
         """
         if root is None:
             return
@@ -149,11 +146,11 @@ class BTUtil:
                 yield node
 
     @staticmethod
-    def levelorder(root: Optional[BTNode], skip_none: bool = True
+    def levelorder(root: Optional[BTNode], filter_none: bool = True
                    ) -> Generator[List[Optional[BTNode]], None, None]:
         """层序遍历 (每次都返回一层的节点).
 
-        `skip_none`: 非叶子节点的空子节点是否返回.
+        `filter_none`: 是否过滤空子节点.
 
         层序遍历通常使用队列, 为什么这里用的是 list, list 应该只能用做栈 ?
 
@@ -163,32 +160,28 @@ class BTUtil:
         if root is None:
             return
 
-        nodes = [root]
-        while nodes:
-            yield nodes
-            if skip_none:
-                nodes = [child
-                         for n in nodes
+        level = [root]
+        while level:
+            yield level
+            if filter_none:
+                # 所有 node 都不可能为空
+                level = [child for n in level
                          for child in (n.left, n.right) if child]
             else:
-                nodes = (n for n in nodes if n and not BTUtil.isleaf(n))
-                nodes = list(chain.from_iterable((n.left, n.right)
-                                                 for n in nodes
-                                                 if n and not BTUtil.isleaf(n)))
+                # node 可能为空
+                gen = ((n.left, n.right) for n in level if n)
+                level = list(chain.from_iterable(gen))
 
     @staticmethod
-    def is_equal(one: Optional[BTNode],
-                 other: Optional[BTNode]) -> bool:
+    def is_equal(one: Optional[BTNode], other: Optional[BTNode]) -> bool:
         """判断两棵树是否相同.
 
-        这里可用任意遍历方式, 但无论哪种都必须返回非叶子节点的空子节点 (实际上返回包括
-        叶子节点的空子节点也是可以的, 只不过如果一棵树所有叶子节点相同, 那么这些叶子节
-        点的子节点也肯定是相同的).
+        这里可用任意遍历方式, 但无论哪种都必须返回空子节点.
 
         此外, 可以在 LeetCode 100 中测试.
         """
-        for level1, level2 in zip_longest(BTUtil.levelorder(one, skip_none=False),
-                                          BTUtil.levelorder(other, skip_none=False),
+        for level1, level2 in zip_longest(BTUtil.levelorder(one, filter_none=False),
+                                          BTUtil.levelorder(other, filter_none=False),
                                           fillvalue=[]):
             v1 = [n and n.key for n in level1]
             v2 = [n and n.key for n in level2]
