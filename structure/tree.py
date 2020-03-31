@@ -271,25 +271,26 @@ class BTUtil:
 
 
 class BST:
-    """二分搜索树. (BST -> BinarySearchTree)
+    """二分搜索树.
 
-    树中不允许存在重复 `BTNode.key` 的节点.
+    树中不允许存在重复的节点.
 
     可将本数据结构当做 set, 在 LeetCode 804 中测试.
+    可将本数据结构当做 dict, 在 LeetCode 1 中测试.
     """
 
     def __init__(self):
         self._size: int = 0
-        self.root: Optional[BTNode] = None
+        self._root: Optional[BTNode] = None
 
     def __len__(self) -> int:
         return self._size
 
     def __iter__(self) -> Iterator:
-        return BTUtil.inorder(self.root)
+        return BTUtil.inorder(self._root)
 
-    def __contains__(self, value: Any) -> bool:
-        return self.get(value) is not None
+    def __contains__(self, key: Any) -> bool:
+        return self.get(key) is not None
 
     def add(self, key: Any, value: Any = 0):
         """添加元素.
@@ -297,8 +298,8 @@ class BST:
         :) 如果能用 dummy_root 就能简化一些代码了 !
         """
         # 找到插入位置
-        prev = self.root
-        added = self.root
+        prev = self._root
+        added = self._root
         direction = None
         while added:
             # 重复元素时, 用新值覆盖旧值.
@@ -316,14 +317,14 @@ class BST:
 
         # 条件等价于根为空
         if direction is None:
-            self.root = BTNode(key, value)
+            self._root = BTNode(key, value)
         else:
             setattr(prev, direction, BTNode(key, value))
         self._size += 1
 
     def add_with_recursion(self, key: Any, value: Any = 0):
         """`add` 方法的递归实现."""
-        self.root = self._add_with_recursion(self.root, key, value)
+        self._root = self._add_with_recursion(self._root, key, value)
 
     def _add_with_recursion(self, node: Optional[BTNode], key: Any, value: Any) -> BTNode:
         """向以 `node` 为根的树中添加 `value`, 返回添加完成的树.
@@ -386,8 +387,8 @@ class BST:
         使用该元素前一个或后一个元素代替本身元素, 然后在删除前一个或后一个元素.
         """
         # 找到被删除的节点
-        prev = self.root
-        delete = self.root
+        prev = self._root
+        delete = self._root
         direction = None
         while delete and key != delete.key:
             if key < delete.key:
@@ -405,7 +406,7 @@ class BST:
 
         if BTUtil.isleaf(delete):
             if direction is None:
-                self.root = None
+                self._root = None
             else:
                 setattr(prev, direction, None)
         elif delete.right:
@@ -417,7 +418,7 @@ class BST:
     @not_empty
     def remove_with_recursion(self, key: Any):
         """`remove` 方法的递归实现."""
-        self.root = self._remove_with_recursion(self.root, key)
+        self._root = self._remove_with_recursion(self._root, key)
 
     def _remove_with_recursion(self, node: BTNode, key: Any) -> Optional[BTNode]:
         """从 `node` 中删除值为 .keyue` 的节点, 返回删除完成的树."""
@@ -448,7 +449,7 @@ class BST:
         虽然看起来这个函数比较奇怪, 但当 `key` 是一个可比较对象时, 就有意义了,
         例如当 `key` 是下面用于字典的类 `Pair`.
         """
-        geted = self.root
+        geted = self._root
         while geted:
             if key == geted.key:
                 return geted
