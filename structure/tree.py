@@ -530,3 +530,17 @@ class BST:
             return min_.key, node.right
         prev.left = min_.right
         return min_.key, node
+
+    @staticmethod
+    def is_bst(root: Optional[BTNode]) -> bool:
+        """判断一棵树是否为二分搜索树.
+
+        中序遍历是有序的就是二分搜索树.
+        """
+        # 空树也是合法的
+        if root is None:
+            return True
+
+        vals = [n.key for n in BTUtil.inorder(root)]
+        # 当只有一个元素时, 表达式等价于 all(), 而 all() is True.
+        return all(vals[i] <= vals[i + 1] for i in range(0, len(vals) - 1))
