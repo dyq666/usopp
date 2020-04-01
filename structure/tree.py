@@ -13,13 +13,17 @@ class BTNode:
 
     由于可以用二分搜索树实现字典, 因此节点中记录了 k/v.
     如果用于实现集合, 那么只使用 k 即可 (val 默认为 0).
+
+    由于 AVL 树中需要记录高度, 因此增加了 `height` 属性.
     """
 
     def __init__(self, key: Any, val: Any = 0,
+                 height: int = 1,
                  left: Optional['BTNode'] = None,
                  right: Optional['BTNode'] = None):
         self.key = key
         self.val = val
+        self.height = height
         self.left = left
         self.right = right
 
@@ -28,6 +32,7 @@ class BTNode:
             f'<{self.__class__.__name__}'
             f' key={self.key!r}'
             f' val={self.val!r}'
+            f' height={self.height!r}'
             f'>'
         )
 
