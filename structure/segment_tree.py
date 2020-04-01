@@ -134,30 +134,30 @@ class SegmentTreeWithNode:
     def __init__(self, array: list, key: callable):
         self._a = array
         self.key = key
-        self.root: Optional[BTNode] = None
+        self._root: Optional[BTNode] = None
 
     def __len__(self) -> int:
         return len(self._a)
 
     def __iter__(self) -> Iterator:
-        return BTUtil.levelorder(self.root)
+        return BTUtil.levelorder(self._root)
 
     @check_index()
     def __setitem__(self, index: int, value: Any):
         self._a[index] = value
-        self._update(0, len(self) - 1, root=self.root, target_idx=index)
+        self._update(0, len(self) - 1, root=self._root, target_idx=index)
 
     def query(self, l: int, r: int) -> Any:
         if not (0 <= l < len(self) and 0 <= r < len(self) and l <= r):
             raise IndexError
-        return self._query(0, len(self) - 1, root=self.root, query_l=l, query_r=r)
+        return self._query(0, len(self) - 1, root=self._root, query_l=l, query_r=r)
 
     @classmethod
     def from_iterable(cls, iterable: Iterable, key: callable
                       ) -> 'SegmentTreeWithNode':
         array = list(iterable)
         segement = cls(array, key=key)
-        segement.root = segement._build(0, len(segement) - 1)
+        segement._root = segement._build(0, len(segement) - 1)
         return segement
 
     def _build(self, l: int, r: int) -> Optional[BTNode]:
