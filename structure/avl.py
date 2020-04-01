@@ -166,5 +166,4 @@ class AVL:
     @staticmethod
     def is_avl(node: Optional[BTNode]) -> bool:
         """判断树是否符合 AVL 平衡规则."""
-        gen = (False for node in BTUtil.preorder(node) if abs(AVL.get_balance(node) > 1))
-        return next(gen, True)
+        return all(abs(AVL.get_balance(node) <= 1) for node in BTUtil.preorder(node))
