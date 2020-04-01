@@ -151,8 +151,8 @@ class BTUtil:
                 yield node
 
     @staticmethod
-    def levelorder(root: Optional[BTNode], filter_none: bool = True
-                   ) -> Generator[List[Optional[BTNode]], None, None]:
+    def levelorder_with_level(root: Optional[BTNode], filter_none: bool = True
+                              ) -> Generator[List[Optional[BTNode]], None, None]:
         """层序遍历 (每次都返回一层的节点).
 
         `filter_none`: 是否过滤空子节点.
@@ -174,8 +174,16 @@ class BTUtil:
                          for child in (n.left, n.right) if child]
             else:
                 # node 可能为空
-                gen = ((n.left, n.right) for n in level if n)
+                gen = ((n.left, n.right) for n in level if n and not BTUtil.isleaf(n))
                 level = list(chain.from_iterable(gen))
+
+    @staticmethod
+    def levelorder(root: Optional[BTNode], filter_none: bool = True
+                   ) -> Generator[Optional[BTNode], None, None]:
+        """层序遍历 (每次只返回一个节点)."""
+        return (n and n.key
+                for level in BTUtil.levelorder_with_level(root, filter_none=filter_none)
+                for n in level)
 
     @staticmethod
     def is_equal(one: Optional[BTNode], other: Optional[BTNode]) -> bool:
@@ -185,8 +193,8 @@ class BTUtil:
 
         此外, 可以在 LeetCode 100 中测试.
         """
-        for level1, level2 in zip_longest(BTUtil.levelorder(one, filter_none=False),
-                                          BTUtil.levelorder(other, filter_none=False),
+        for level1, level2 in zip_longest(BTUtil.levelorder_with_level(one, filter_none=False),
+                                          BTUtil.levelorder_with_level(other, filter_none=False),
                                           fillvalue=[]):
             v1 = [n and n.key for n in level1]
             v2 = [n and n.key for n in level2]
@@ -290,9 +298,6 @@ class BST:
 
     def __len__(self) -> int:
         return self._size
-
-    def __iter__(self) -> Iterator:
-        return BTUtil.inorder(self._root)
 
     def __contains__(self, key: Any) -> bool:
         return self.get(key) is not None

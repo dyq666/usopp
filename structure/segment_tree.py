@@ -140,7 +140,7 @@ class SegmentTreeWithNode:
         return len(self._a)
 
     def __iter__(self) -> Iterator:
-        return (n.key for level in BTUtil.levelorder(self.root) for n in level)
+        return BTUtil.levelorder(self.root)
 
     @check_index()
     def __setitem__(self, index: int, value: Any):

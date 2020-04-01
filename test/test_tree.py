@@ -207,20 +207,20 @@ class TestBTUtil:
             (trees[6], [3, 1, 5, 0, 2, 4, 6]),
         )
         for tree, res in items:
-            assert list(n.key for level in BTUtil.levelorder(tree) for n in level) == res
+            assert list(BTUtil.levelorder(tree)) == res
 
     def test_levelorder_with_none(self, trees: List[BTNode]):
         items = (
             (trees[0], []),
-            (trees[1], [3, None, None]),
-            (trees[2], [3, 1, None, 0, None, None, None]),
-            (trees[3], [3, None, 5, None, 6, None, None]),
-            (trees[4], [3, 1, 5, 0, None, 4, None, None, None, None, None]),
-            (trees[5], [3, 1, 5, None, 2, None, 6, None, None, None, None]),
-            (trees[6], [3, 1, 5, 0, 2, 4, 6] + [None] * 8),
+            (trees[1], [3]),
+            (trees[2], [3, 1, None, 0, None]),
+            (trees[3], [3, None, 5, None, 6]),
+            (trees[4], [3, 1, 5, 0, None, 4, None]),
+            (trees[5], [3, 1, 5, None, 2, None, 6]),
+            (trees[6], [3, 1, 5, 0, 2, 4, 6]),
         )
         for tree, res in items:
-            assert list(n and n.key for level in BTUtil.levelorder(tree, filter_none=False) for n in level) == res
+            assert list(BTUtil.levelorder(tree, filter_none=False)) == res
 
     def test_is_equal(self):
         f = BTUtil.is_equal
