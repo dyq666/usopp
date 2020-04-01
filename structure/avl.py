@@ -2,7 +2,7 @@ __all__ = (
     'AVL',
 )
 
-from typing import Optional
+from typing import Any, Iterable, Optional
 
 from .tree import BTNode
 
@@ -64,6 +64,77 @@ class AVL:
                                                              E(h)
     ```
     """
+
+    def __init__(self):
+        self._size = 0
+        self._root: Optional[BTNode] = None
+
+    def __len__(self) -> int:
+        return self._size
+
+    def add(self, key: Any, value: Any = 0):
+        self._root = self._add(self._root, key, value)
+
+    def _add(self, root: Optional[BTNode], key: Any, value: Any = 0):
+        """在以 `root` 为根的树中添加节点, 返回添加完成后的树."""
+        if root is None:
+            self._size += 1
+            return BTNode(key, value, height=1)
+
+        # 相等时更新值
+        if key == root.key:
+            root.val = value
+        elif key < root.key:
+            root.left = self._add(root.left, key, value)
+        else:
+            root.right = self._add(root.right, key, value)
+
+        self.flush_height(root)
+
+        balance = self.get_balance(root)
+        # LL
+        if balance > 1 and self.get_balance(root.left) > 0:
+            return self._right_rotate(root)
+        # RR
+        if balance < -1 and self.get_balance(root.right) < 0:
+            return self._left_rotate(root)
+        # LR
+        if balance > 1 and self.get_balance(root.left) < 0:
+            root.left = self._left_rotate(root.left)
+            return self._right_rotate(root)
+        # RL
+        if balance < -1 and self.get_balance(root.right) > 0:
+            root.right = self._right_rotate(root.right)
+            return self._left_rotate(root)
+
+        return root
+
+    @classmethod
+    def from_iterable(cls, iterable: Iterable) -> 'AVL':
+        avl = cls()
+        for key in iterable:
+            avl.add(key)
+        return avl
+
+    @staticmethod
+    def _right_rotate(root: BTNode):
+        """右旋转根节点, 返回旋转之后的节点.
+
+        根挂到左孩子的右边, 左孩子之前的右边挂到根的左边.
+        """
+        l_child = root.left
+        l_child.right, root.left = root, l_child.right
+        return root
+
+    @staticmethod
+    def _left_rotate(root: BTNode):
+        """坐旋转根节点, 返回旋转之后的节点.
+
+        根挂到右孩子的左边, 右孩子之前的左边挂到根的右边.
+        """
+        r_child = root.right
+        r_child.left, root.right = root, r_child.left
+        return r_child
 
     @staticmethod
     def flush_height(node: BTNode):
