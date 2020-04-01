@@ -304,7 +304,7 @@ class BST:
 
     def __iter__(self) -> Iterator:
         """层序遍历."""
-        return BTUtil.levelorder(self._root)
+        return BTUtil.levelorder(self._root, filter_none=False)
 
     def add(self, key: Any, value: Any = 0):
         """添加元素.
