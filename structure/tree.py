@@ -302,6 +302,10 @@ class BST:
     def __contains__(self, key: Any) -> bool:
         return self.get(key) is not None
 
+    def __iter__(self) -> Iterator:
+        """层序遍历."""
+        return BTUtil.levelorder(self._root)
+
     def add(self, key: Any, value: Any = 0):
         """添加元素.
 

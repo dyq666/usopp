@@ -2,9 +2,9 @@ __all__ = (
     'AVL',
 )
 
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Iterator, Optional
 
-from .tree import BTNode
+from .tree import BTNode, BTUtil
 
 
 class AVL:
@@ -72,6 +72,10 @@ class AVL:
     def __len__(self) -> int:
         return self._size
 
+    def __iter__(self) -> Iterator:
+        """层序遍历."""
+        return BTUtil.levelorder(self._root)
+
     def add(self, key: Any, value: Any = 0):
         self._root = self._add(self._root, key, value)
 
@@ -124,7 +128,9 @@ class AVL:
         """
         l_child = root.left
         l_child.right, root.left = root, l_child.right
-        return root
+        AVL.flush_height(l_child)
+        AVL.flush_height(root)
+        return l_child
 
     @staticmethod
     def _left_rotate(root: BTNode):
@@ -134,6 +140,8 @@ class AVL:
         """
         r_child = root.right
         r_child.left, root.right = root, r_child.left
+        AVL.flush_height(r_child)
+        AVL.flush_height(root)
         return r_child
 
     @staticmethod
@@ -153,4 +161,10 @@ class AVL:
         """返回节点的平衡因子, 空节点的平衡因子为 0."""
         if node is None:
             return 0
-        return AVL.get_balance(node.left) - AVL.get_balance(node.right)
+        return AVL.get_height(node.left) - AVL.get_height(node.right)
+
+    @staticmethod
+    def is_avl(node: Optional[BTNode]) -> bool:
+        """判断树是否符合 AVL 平衡规则."""
+        gen = (False for node in BTUtil.preorder(node) if abs(AVL.get_balance(node) > 1))
+        return next(gen, True)

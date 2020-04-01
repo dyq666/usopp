@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import pytest
 
-from structure import AVL, BST, BTNode, BTUtil
+from structure import BST, BTNode, BTUtil
 
 
 @pytest.fixture
@@ -40,13 +40,11 @@ def bst_arrays() -> List[List[Optional[int]]]:
 
 class TestBST:
 
-    @pytest.mark.parametrize('items', ((AVL, AVL.add),
-                                       (BST, BST.add),
-                                       (BST, BST.add_with_recursion),))
-    def test_add(self, items: tuple, bst_arrays: List[List[Optional[int]]]):
-        Cls, f = items
+    @pytest.mark.parametrize('f', (BST.add,
+                                   BST.add_with_recursion,))
+    def test_add(self, f: callable, bst_arrays: List[List[Optional[int]]]):
         for array in bst_arrays:
-            tree = Cls()
+            tree = BST()
             for val in array:
                 if val is not None:
                     f(tree, val)
@@ -56,7 +54,7 @@ class TestBST:
 
         # 重复元素应该被忽略
         array = bst_arrays[6]
-        tree = Cls()
+        tree = BST()
         for val in array:
             if val is not None:
                 f(tree, val)
