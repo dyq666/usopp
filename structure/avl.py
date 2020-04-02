@@ -55,9 +55,13 @@ class AVL:
         # 找到了删除节点
         if key == root.key:
             if root.right and root.left:
+                # _pop_max_from 中保证了 root.left 是平衡的, 但 _pop 之后,
+                # root 的平衡性可能变化.
                 root.key, root.val, root.left = self._pop_max_from(root.left)
-                res = root
+                self._flush_height(root)
+                res = self._balance(root)
             else:
+                # 这里其实直接把 root 删掉了, 因此不需要维护 root 的平衡性.
                 res = root.right or root.left or None
             self._size -= 1
             return res
@@ -126,7 +130,9 @@ class AVL:
 
     @staticmethod
     def _pop_max_from(root: BTNode) -> Tuple[Any, Any, Optional[BTNode]]:
-        """删除以 `root` 为根的树中最大节点, 返回最大值和删除之后的树."""
+        """删除以 `root` 为根的树中最大节点, 返回最大值和删除之后的树,
+        且保证返回的树是平衡的.
+        """
         # 找到最大值了
         if root.right is None:
             return root.key, root.val, root.left
