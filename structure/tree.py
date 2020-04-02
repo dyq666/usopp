@@ -424,38 +424,38 @@ class BST:
             else:
                 setattr(prev, direction, None)
         elif delete.right:
-            delete.key, delete.right = self._pop_min_from(delete.right)
+            delete.key, delete.val, delete.right = self._pop_min_from(delete.right)
         else:  # elif delete.left
-            delete.key, delete.left = self._pop_max_from(delete.left)
+            delete.key, delete.val, delete.left = self._pop_max_from(delete.left)
         self._size -= 1
 
     @not_empty
     def remove_with_recursion(self, key: Any):
-        """`remove` 方法的递归实现."""
+        """从树中删除键为 `key` 的节点."""
         self._root = self._remove_with_recursion(self._root, key)
 
-    def _remove_with_recursion(self, node: BTNode, key: Any) -> Optional[BTNode]:
-        """从 `node` 中删除值为 .keyue` 的节点, 返回删除完成的树."""
-        # 树中没有 .keyue`
-        if node is None:
+    def _remove_with_recursion(self, root: BTNode, key: Any) -> Optional[BTNode]:
+        """从以 `root` 为根的树中删除键为 `key` 的节点, 返回删除后的树."""
+        # 树中没有 `key`
+        if root is None:
             raise ValueError
         # 找到了删除节点
-        if key == node.key:
-            if BTUtil.isleaf(node):
+        if key == root.key:
+            if BTUtil.isleaf(root):
                 self._size -= 1
                 return
-            if node.right:
-                node.key, node.right = self._pop_min_from(node.right)
-            else:  # elif node.left
-                node.key, node.left = self._pop_max_from(node.left)
+            if root.right:
+                root.key, root.val, root.right = self._pop_min_from(root.right)
+            else:  # elif root.left
+                root.key, root.val, root.left = self._pop_max_from(root.left)
             self._size -= 1
-            return node
+            return root
 
-        if key < node.key:
-            node.left = self._remove_with_recursion(node.left, key)
-        else:  # key > node.key (等于在上面判断过了)
-            node.right = self._remove_with_recursion(node.right, key)
-        return node
+        if key < root.key:
+            root.left = self._remove_with_recursion(root.left, key)
+        else:  # key > root.key (等于在上面判断过了)
+            root.right = self._remove_with_recursion(root.right, key)
+        return root
 
     def get(self, key: Any, default: Any = None) -> Any:
         """返回值为 `key` 的节点, 如果没有则返回 `default`.
@@ -483,7 +483,7 @@ class BST:
         return tree
 
     @staticmethod
-    def _pop_max_from(node: BTNode) -> Tuple[Any, Optional[BTNode]]:
+    def _pop_max_from(node: BTNode) -> Tuple[Any, Any, Optional[BTNode]]:
         """删除以 `node` 为根的树中的最大节点, 返回最大值和删除之后的树.
 
         最大值只可能出现于以下情况:
@@ -505,29 +505,23 @@ class BST:
 
         # `max_` 的值没有变, 证明被删除节点是根节点
         if max_.key == node.key:
-            return max_.key, max_.left
+            return max_.key, max_.val, max_.left
         prev.right = max_.left
-        return max_.key, node
+        return max_.key, max_.val, node
 
     @staticmethod
-    def _pop_max_from_with_recursion(node: BTNode) -> Tuple[Any, Optional[BTNode]]:
-        """删除以 `node` 为根的树中的最大节点, 返回最大值和删除之后的树.
-
-        `_pop_max_from` 的递归实现.
-
-        `_pop_max_from_with_recursion`, `_pop_max_from` 之间的联系和
-        `add_with_recursion`, `add` 之间的联系类似.
-        """
+    def _pop_max_from_with_recursion(root: BTNode) -> Tuple[Any, Any, Optional[BTNode]]:
+        """删除以 `root` 为根的树中最大节点, 返回最大值和删除之后的树."""
         # 找到最大值了
-        if node.right is None:
-            return node.key, node.left
+        if root.right is None:
+            return root.key, root.val, root.left
 
-        v, n = BST._pop_max_from_with_recursion(node.right)
-        node.right = n
-        return v, n
+        k, v, n = BST._pop_max_from_with_recursion(root.right)
+        root.right = n
+        return k, v, n
 
     @staticmethod
-    def _pop_min_from(node: BTNode) -> Tuple[Any, Optional[BTNode]]:
+    def _pop_min_from(node: BTNode) -> Tuple[Any, Any, Optional[BTNode]]:
         """删除以 `node` 为根的树中的最小节点, 返回最小值和删除之后的树.
 
         基本原理和 `_pop_max_from` 相同.
@@ -541,9 +535,9 @@ class BST:
 
         # `min_` 的值没有变, 证明被删除节点是根节点
         if min_.key == node.key:
-            return min_.key, node.right
+            return min_.key, min_.val, node.right
         prev.left = min_.right
-        return min_.key, node
+        return min_.key, min_.val, node
 
     @staticmethod
     def is_bst(root: Optional[BTNode]) -> bool:
