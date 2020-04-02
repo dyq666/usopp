@@ -3,6 +3,7 @@ __all__ = (
     'DynamicArrayV2',
     'LoopArrayV1',
     'LoopArrayV2',
+    'LoopArrayV3',
 )
 
 from typing import Any, Iterator
