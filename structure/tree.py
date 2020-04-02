@@ -294,7 +294,7 @@ class BST:
 
     def __init__(self):
         self._size: int = 0
-        self._root: Optional[BTNode] = None
+        self._dummy_root = BTNode(None)
 
     def __len__(self) -> int:
         return self._size
@@ -306,12 +306,20 @@ class BST:
         """层序遍历."""
         return BTUtil.levelorder(self._root, filter_none=False)
 
+    @property
+    def _root(self) -> Optional[BTNode]:
+        return self._dummy_root.left
+
+    @_root.setter
+    def _root(self, node: Optional[BTNode]):
+        self._dummy_root.left = node
+
     def add(self, key: Any, value: Any = 0):
         """添加元素."""
         # 找到插入位置
-        prev = self._root
-        added = self._root
-        direction = None
+        direction = 'left'
+        prev = self._dummy_root
+        added = getattr(prev, direction)
         while added:
             # 找到重复元素, 用新值覆盖旧值.
             if key == added.key:
@@ -322,10 +330,7 @@ class BST:
             added = getattr(added, direction)
 
         # 条件和根为空是等价的
-        if direction is None:
-            self._root = BTNode(key, value)
-        else:
-            setattr(prev, direction, BTNode(key, value))
+        setattr(prev, direction, BTNode(key, value))
         self._size += 1
 
     def add_with_recursion(self, key: Any, value: Any = 0):
@@ -369,33 +374,25 @@ class BST:
     def remove(self, key: Any):
         """删除值为 `key` 的节点.
 
-        删除情况有四种:
+        删除情况有 3 种:
 
           1. 如果被删除节点是叶子节点, 父节点原本指向被删除节点的方向指向空 (根节点也可能是叶子节点, 需要特殊处理).
-          2. 如果被删除节点只有右子树, 父节点原本指向被删除节点的方向指向右子树 (根节点也可能只有右子树, 需要特殊处理).
-          3. 如果被删除节点只有左子树, 父节点原本指向被删除节点的方向指向左子树 (根节点也可能只有左子树, 需要特殊处理).
-          4. 如果被删除节点左右子树都有, 那么找到被删除节点的右子树最小的值,
+          2. 如果被删除节点只有右子树或只有左子树, 父节点原本指向被删除节点的方向指向右子树
+             或左子树 (根节点也可能只有右子树或只有左子树, 需要特殊处理).
+          3. 如果被删除节点左右子树都有, 那么找到被删除节点的右子树最小的值,
              将此值覆盖到删除节点, 然后删除这个最小节点 (由于被删除节点只是被覆盖值, 不会真正被删除, 因此不需要考虑根节点).
 
-        2, 3, 4 还能整合一下. 4 实际上有两种办法删除节点, 找右子树的最小值或找左子树的最大值.
-        而 2 可以转换为找右子树的最小值, 3 可以转换为找左子树的最大值. 因此将规则合并为:
+        1, 2 可以合并一下, 因为指向空等于指向叶子节点的右或者左.
 
-          1. 如果被删除节点是叶子节点, 父节点原本指向被删除节点的方向指向空 (根节点也是叶子节点, 需要特殊处理).
-          2. 如果被删除节点有右子树, 删除右子树中的最小值, 将最小值赋给被删除节点.
-          3. 如果被删除节点有左子树, 删除左子树中的最大值, 将最大值赋给被删除节点.
-
-        实际上, 合并之后的规则虽然清晰了, 但耗时增加了. 因为之前只有右子树或只有左子树的情况, 删除是 O(1) 的,
-        而找最小值或最大值是 O(logN).
-
-        为什么可以用右子树的最小值或左子树的最大值取代删除值 ?
+        为什么会想到用右子树的最小值或左子树的最大值取代删除值 ?
 
         答: BST 在中序遍历下的结果是一个有序数组, 在有序数组中删除一个元素, 可以被理解为
            使用该元素前一个或后一个元素代替本身元素, 然后在删除前一个或后一个元素.
         """
         # 找到被删除的节点
-        prev = self._root
-        delete = self._root
-        direction = None
+        direction = 'left'
+        prev = self._dummy_root
+        delete = getattr(prev, direction)
         while delete and key != delete.key:
             direction = 'left' if key < delete.key else 'right'
             prev = delete
@@ -405,18 +402,10 @@ class BST:
         if delete is None:
             raise ValueError
 
-        if BTUtil.isleaf(delete):
-            if direction is None:
-                self._root = None
-            else:
-                setattr(prev, direction, None)
-        elif delete.right and delete.left:
+        if delete.right and delete.left:
             delete.key, delete.val, delete.left = self._pop_max_from(delete.left)
-        else:  # elif delete.right or delete.left
-            if direction is None:
-                self._root = delete.right or delete.left
-            else:
-                setattr(prev, direction, delete.right or delete.left)
+        else:
+            setattr(prev, direction, delete.right or delete.left or None)
         self._size -= 1
 
     @not_empty
@@ -431,13 +420,11 @@ class BST:
             raise ValueError
         # 找到了删除节点
         if key == root.key:
-            if BTUtil.isleaf(root):
-                res = None
-            elif root.right and root.left:
+            if root.right and root.left:
                 root.key, root.val, root.left = self._pop_max_from(root.left)
                 res = root
-            else:  # root.right or root.left
-                res = root.right or root.left
+            else:
+                res = root.right or root.left or None
             self._size -= 1
             return res
 
