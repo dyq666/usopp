@@ -15,3 +15,4 @@
   - 线段树 SegmentTree
   - 字典树 Trie
   - 并查集 UnionFindV2
+  - AVL 树 AVL (可用于实现集合, 字典)
