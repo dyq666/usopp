@@ -93,8 +93,8 @@ class AVL:
         """
         l_child = root.left
         l_child.right, root.left = root, l_child.right
-        AVL._flush_height(l_child)
         AVL._flush_height(root)
+        AVL._flush_height(l_child)
         return l_child
 
     @staticmethod
@@ -105,8 +105,8 @@ class AVL:
         """
         r_child = root.right
         r_child.left, root.right = root, r_child.left
-        AVL._flush_height(r_child)
         AVL._flush_height(root)
+        AVL._flush_height(r_child)
         return r_child
 
     @staticmethod
