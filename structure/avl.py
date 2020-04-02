@@ -38,7 +38,7 @@ class AVL:
         else:
             root.right = self._add(root.right, key, value)
 
-        self.flush_height(root)
+        self._flush_height(root)
         return self._balance(root)
 
     def _balance(self, node: BTNode) -> BTNode:
@@ -97,19 +97,19 @@ class AVL:
                                                                  E(h)
         ```
         """
-        balance = self.get_balance(node)
+        balance = self._get_balance(node)
         # LL
-        if balance > 1 and self.get_balance(node.left) >= 0:
+        if balance > 1 and self._get_balance(node.left) >= 0:
             return self._right_rotate(node)
         # RR
-        if balance < -1 and self.get_balance(node.right) <= 0:
+        if balance < -1 and self._get_balance(node.right) <= 0:
             return self._left_rotate(node)
         # LR
-        if balance > 1 and self.get_balance(node.left) < 0:
+        if balance > 1 and self._get_balance(node.left) < 0:
             node.left = self._left_rotate(node.left)
             return self._right_rotate(node)
         # RL
-        if balance < -1 and self.get_balance(node.right) > 0:
+        if balance < -1 and self._get_balance(node.right) > 0:
             node.right = self._right_rotate(node.right)
             return self._left_rotate(node)
 
@@ -123,6 +123,11 @@ class AVL:
         return avl
 
     @staticmethod
+    def is_avl(node: Optional[BTNode]) -> bool:
+        """判断树是否符合 AVL 平衡规则."""
+        return all(abs(AVL._get_balance(node) <= 1) for node in BTUtil.preorder(node))
+
+    @staticmethod
     def _right_rotate(root: BTNode):
         """右旋转根节点, 返回旋转之后的节点.
 
@@ -130,8 +135,8 @@ class AVL:
         """
         l_child = root.left
         l_child.right, root.left = root, l_child.right
-        AVL.flush_height(l_child)
-        AVL.flush_height(root)
+        AVL._flush_height(l_child)
+        AVL._flush_height(root)
         return l_child
 
     @staticmethod
@@ -142,30 +147,25 @@ class AVL:
         """
         r_child = root.right
         r_child.left, root.right = root, r_child.left
-        AVL.flush_height(r_child)
-        AVL.flush_height(root)
+        AVL._flush_height(r_child)
+        AVL._flush_height(root)
         return r_child
 
     @staticmethod
-    def flush_height(node: BTNode):
+    def _flush_height(node: BTNode):
         """更新节点的高度."""
-        node.height = 1 + max(AVL.get_height(node.left), AVL.get_height(node.right))
+        node.height = 1 + max(AVL._get_height(node.left), AVL._get_height(node.right))
 
     @staticmethod
-    def get_height(node: Optional[BTNode]) -> int:
+    def _get_height(node: Optional[BTNode]) -> int:
         """返回节点的高度, 空节点的高度为 0."""
         if node is None:
             return 0
         return node.height
 
     @staticmethod
-    def get_balance(node: Optional[BTNode]) -> int:
+    def _get_balance(node: Optional[BTNode]) -> int:
         """返回节点的平衡因子, 空节点的平衡因子为 0."""
         if node is None:
             return 0
-        return AVL.get_height(node.left) - AVL.get_height(node.right)
-
-    @staticmethod
-    def is_avl(node: Optional[BTNode]) -> bool:
-        """判断树是否符合 AVL 平衡规则."""
-        return all(abs(AVL.get_balance(node) <= 1) for node in BTUtil.preorder(node))
+        return AVL._get_height(node.left) - AVL._get_height(node.right)
