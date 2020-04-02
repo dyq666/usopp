@@ -1,11 +1,11 @@
 __all__ = (
-    'BST', 'BTNode', 'BTUtil'
+    'BST', 'BSTDict', 'BTNode', 'BTUtil'
 )
 
 from itertools import chain, zip_longest
 from typing import Any, Generator, List, Iterable, Iterator, Optional, Tuple
 
-from .util import not_empty
+from .util import no_value, not_empty
 
 
 class BTNode:
@@ -300,7 +300,7 @@ class BST:
         return self._size
 
     def __contains__(self, key: Any) -> bool:
-        return self.get(key) is not None
+        return self.get(key, no_value) is not no_value
 
     def __iter__(self) -> Iterator:
         """层序遍历."""
@@ -435,7 +435,7 @@ class BST:
         return root
 
     def get(self, key: Any, default: Any = None) -> Any:
-        """返回值为 `key` 的节点, 如果没有则返回 `default`.
+        """返回值为 `key` 的节点的值, 如果没有则返回 `default`.
 
         虽然看起来这个函数比较奇怪, 但当 `key` 是一个可比较对象时, 就有意义了,
         例如当 `key` 是下面用于字典的类 `Pair`.
@@ -443,7 +443,7 @@ class BST:
         geted = self._root
         while geted:
             if key == geted.key:
-                return geted
+                return geted.val
             if key < geted.key:
                 geted = geted.left
             else:
@@ -510,3 +510,37 @@ class BST:
         vals = [n.key for n in BTUtil.inorder(root)]
         # 当只有一个元素时, 表达式等价于 all(), 而 all() is True.
         return all(vals[i] <= vals[i + 1] for i in range(0, len(vals) - 1))
+
+
+class BSTDict:
+    """用二分搜索树实现字典.
+    本数据结构有个弊端, 由于需要底层的 `BST` 需要每个节点的值是可比较的,
+    因而 `key` 必须是同一种类型, 否则将报错提示不可比较.
+    """
+
+    def __init__(self):
+        self._tree = BST()
+
+    def __repr__(self) -> str:
+        return '{' + ', '.join(': '.join((repr(k), repr(v))) for k, v in self) + '}'
+
+    def __iter__(self) -> Iterator:
+        return ((node.key, node.val) for node in BTUtil.preorder(self._tree._root))
+
+    def __len__(self) -> int:
+        return len(self._tree)
+
+    def __contains__(self, key: Any) -> bool:
+        return key in self._tree
+
+    def __setitem__(self, key: Any, value: Any):
+        self._tree.add(key, value)
+
+    def __getitem__(self, key: Any) -> Any:
+        val = self._tree.get(key, no_value)
+        if val is no_value:
+            raise KeyError
+        return val
+
+    def __delitem__(self, key: Any):
+        self._tree.remove(key)

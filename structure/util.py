@@ -1,9 +1,11 @@
 __all__ = (
-    'check_index', 'not_empty',
+    'check_index', 'no_value', 'not_empty',
 )
 
 from functools import wraps
 from typing import Any, Sized
+
+no_value = object()
 
 
 def check_index(offset: int = 0) -> callable:

@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import pytest
 
-from structure import BST, BTNode, BTUtil
+from structure import BST, BSTDict, BTNode, BTUtil
 
 
 @pytest.fixture
@@ -143,7 +143,7 @@ class TestBST:
     def test_get_and_contains(self, bst_arrays: List[List[Optional[int]]]):
         tree = BST.from_iteralbe(bst_arrays[6])
         assert tree.get(7) is None
-        assert tree.get(6).key == 6
+        assert tree.get(6) == 0
         assert tree.get(7, 100) == 100
 
         assert 7 not in tree
@@ -228,3 +228,28 @@ class TestBTUtil:
         # 第一个树 5 是 2 的右节点, 第二个则是左节点
         assert not f(gen([1, 2, 3, None, 5]), gen([1, 2, 3, 5]))
         assert f(gen([1, 2, 3, None, 5]), gen([1, 2, 3, None, 5]))
+
+
+def test_BSTDict():
+    d = BSTDict()
+    assert len(d) == 0
+    assert list(d) == []
+
+    d[1] = 2
+    assert len(d) == 1
+    assert list(d) == [(1, 2)]
+    assert 1 in d
+    assert 2 not in d
+    assert d[1] == 2
+    with pytest.raises(KeyError):
+        assert d[2]
+
+    d[0] = 3
+    d[2] = 4
+    assert dict(d) == {1: 2, 0: 3, 2: 4}
+    del d[1]
+    assert dict(d) == {0: 3, 2: 4}
+    del d[0]
+    assert dict(d) == {2: 4}
+    del d[2]
+    assert dict(d) == {}
