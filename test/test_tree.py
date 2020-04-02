@@ -129,15 +129,15 @@ class TestBST:
         tree = BST.from_iteralbe(v for v in bst_arrays[6] if v is not None)
         f(tree, 3)
         assert len(tree) == 6
-        assert BTUtil.is_equal(tree._root, BTUtil.gen_tree([4, 1, 5, 0, 2, None, 6]))
+        assert BTUtil.is_equal(tree._root, BTUtil.gen_tree([2, 1, 5, 0, None, 4, 6]))
         assert BST.is_bst(tree._root)
-        f(tree, 4)
+        f(tree, 2)
         assert len(tree) == 5
-        assert BTUtil.is_equal(tree._root, BTUtil.gen_tree([5, 1, 6, 0, 2]))
+        assert BTUtil.is_equal(tree._root, BTUtil.gen_tree([1, 0, 5, None, None, 4, 6]))
         assert BST.is_bst(tree._root)
-        f(tree, 5)
+        f(tree, 1)
         assert len(tree) == 4
-        assert BTUtil.is_equal(tree._root, BTUtil.gen_tree([6, 1, None, 0, 2]))
+        assert BTUtil.is_equal(tree._root, BTUtil.gen_tree([0, None, 5, None, None, 4, 6]))
         assert BST.is_bst(tree._root)
 
     def test_get_and_contains(self, bst_arrays: List[List[Optional[int]]]):

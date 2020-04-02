@@ -385,7 +385,7 @@ class BST:
           3. 如果被删除节点有左子树, 删除左子树中的最大值, 将最大值赋给被删除节点.
 
         实际上, 合并之后的规则虽然清晰了, 但耗时增加了. 因为之前只有右子树或只有左子树的情况, 删除是 O(1) 的,
-        而找最小值或最大值是 O(logN). 所以理论上不应该合并规则的, 但这里选择牺牲时间复杂度, 使代码逻辑更清晰.
+        而找最小值或最大值是 O(logN).
 
         为什么可以用右子树的最小值或左子树的最大值取代删除值 ?
 
@@ -410,10 +410,13 @@ class BST:
                 self._root = None
             else:
                 setattr(prev, direction, None)
-        elif delete.right:
-            delete.key, delete.val, delete.right = self._pop_min_from(delete.right)
-        else:  # elif delete.left
+        elif delete.right and delete.left:
             delete.key, delete.val, delete.left = self._pop_max_from(delete.left)
+        else:  # elif delete.right or delete.left
+            if direction is None:
+                self._root = delete.right or delete.left
+            else:
+                setattr(prev, direction, delete.right or delete.left)
         self._size -= 1
 
     @not_empty
@@ -429,14 +432,14 @@ class BST:
         # 找到了删除节点
         if key == root.key:
             if BTUtil.isleaf(root):
-                self._size -= 1
-                return
-            if root.right:
-                root.key, root.val, root.right = self._pop_min_from(root.right)
-            else:  # elif root.left
+                res = None
+            elif root.right and root.left:
                 root.key, root.val, root.left = self._pop_max_from(root.left)
+                res = root
+            else:  # root.right or root.left
+                res = root.right or root.left
             self._size -= 1
-            return root
+            return res
 
         if key < root.key:
             root.left = self._remove_with_recursion(root.left, key)
@@ -506,25 +509,6 @@ class BST:
         k, v, n = BST._pop_max_from_with_recursion(root.right)
         root.right = n
         return k, v, n
-
-    @staticmethod
-    def _pop_min_from(node: BTNode) -> Tuple[Any, Any, Optional[BTNode]]:
-        """删除以 `node` 为根的树中的最小节点, 返回最小值和删除之后的树.
-
-        基本原理和 `_pop_max_from` 相同.
-        """
-        # 找到最小节点
-        min_ = node
-        prev = node
-        while min_.left:
-            prev = min_
-            min_ = min_.left
-
-        # `min_` 的值没有变, 证明被删除节点是根节点
-        if min_.key == node.key:
-            return min_.key, min_.val, node.right
-        prev.left = min_.right
-        return min_.key, min_.val, node
 
     @staticmethod
     def is_bst(root: Optional[BTNode]) -> bool:
