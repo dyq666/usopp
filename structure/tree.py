@@ -288,8 +288,8 @@ class BST:
 
     树中不允许存在重复的节点.
 
-    可将本数据结构当做 set, 在 LeetCode 804 中测试.
-    可将本数据结构当做 dict, 在 LeetCode 1 中测试.
+    可将本数据结构作为 set 使用, 在 LeetCode 804 中测试.
+    可将本数据结构作为 dict 使用, 在 LeetCode 1 中测试.
     """
 
     def __init__(self):
@@ -307,29 +307,21 @@ class BST:
         return BTUtil.levelorder(self._root, filter_none=False)
 
     def add(self, key: Any, value: Any = 0):
-        """添加元素.
-
-        :) 如果能用 dummy_root 就能简化一些代码了 !
-        """
+        """添加元素."""
         # 找到插入位置
         prev = self._root
         added = self._root
         direction = None
         while added:
-            # 重复元素时, 用新值覆盖旧值.
+            # 找到重复元素, 用新值覆盖旧值.
             if key == added.key:
                 added.val = value
                 return
-
+            direction = 'left' if key < added.key else 'right'
             prev = added
-            if key < added.key:
-                added = added.left
-                direction = 'left'
-            else:
-                added = added.right
-                direction = 'right'
+            added = getattr(added, direction)
 
-        # 条件等价于根为空
+        # 条件和根为空是等价的
         if direction is None:
             self._root = BTNode(key, value)
         else:
@@ -337,20 +329,20 @@ class BST:
         self._size += 1
 
     def add_with_recursion(self, key: Any, value: Any = 0):
-        """`add` 方法的递归实现."""
+        """添加元素."""
         self._root = self._add_with_recursion(self._root, key, value)
 
-    def _add_with_recursion(self, node: Optional[BTNode], key: Any, value: Any) -> BTNode:
-        """向以 `node` 为根的树中添加 `value`, 返回添加完成的树.
+    def _add_with_recursion(self, root: Optional[BTNode], key: Any, value: Any) -> BTNode:
+        """向以 `root` 为根的树中添加元素, 返回添加完成的树.
 
         怎么理解递归终止条件 ?
 
-        答: 当 `node is None` 时, 说明找到了插入位置. 而空也是一棵树,
-        向空树中插入值就等于创建一个新节点, 因而符合本递归函数定义.
+        答: 当 `root is None` 时, 说明找到了插入位置. 而空也是一棵树,
+        向空树中插入值就等于创建一个根, 因而符合本递归函数定义.
 
         为什么要返回节点呢 ?
 
-        答: 当 `node is None` 时, 说明找到了插入位置, 但连接新节点需要
+        答: 当 `root is None` 时, 说明找到了插入位置, 但连接新节点需要
         使用父节点. 如果传入父节点, 那么还需要传入插到左还是右. 而每次都返回节点,
         就可以由调用方连接节点, 被调用方就无需知道父节点了.
 
@@ -360,18 +352,18 @@ class BST:
         由调用方决定的, 因而不需要 `self.add` 中的变量 `direction`.
         """
         # 空代表找到了插入位置
-        if node is None:
+        if root is None:
             self._size += 1
             return BTNode(key, value)
 
-        if key < node.key:
-            node.left = self._add_with_recursion(node.left, key, value)
-        elif key > node.key:
-            node.right = self._add_with_recursion(node.right, key, value)
-        # 重复元素时, 用新值覆盖旧值.
+        if key < root.key:
+            root.left = self._add_with_recursion(root.left, key, value)
+        elif key > root.key:
+            root.right = self._add_with_recursion(root.right, key, value)
+        # 找到重复元素, 用新值覆盖旧值.
         else:
-            node.val = value
-        return node
+            root.val = value
+        return root
 
     @not_empty
     def remove(self, key: Any):
@@ -379,7 +371,7 @@ class BST:
 
         删除情况有四种:
 
-          1. 如果被删除节点是叶子节点, 父节点原本指向被删除节点的方向指向空 (根节点也是叶子节点, 需要特殊处理).
+          1. 如果被删除节点是叶子节点, 父节点原本指向被删除节点的方向指向空 (根节点也可能是叶子节点, 需要特殊处理).
           2. 如果被删除节点只有右子树, 父节点原本指向被删除节点的方向指向右子树 (根节点也可能只有右子树, 需要特殊处理).
           3. 如果被删除节点只有左子树, 父节点原本指向被删除节点的方向指向左子树 (根节点也可能只有左子树, 需要特殊处理).
           4. 如果被删除节点左右子树都有, 那么找到被删除节点的右子树最小的值,
@@ -393,26 +385,21 @@ class BST:
           3. 如果被删除节点有左子树, 删除左子树中的最大值, 将最大值赋给被删除节点.
 
         实际上, 合并之后的规则虽然清晰了, 但耗时增加了. 因为之前只有右子树或只有左子树的情况, 删除是 O(1) 的,
-        而找最小值或最大值是 O(logN). 所以理论上不应该合并规则的, 但这里牺牲了时间复杂度, 提高了可读性.
+        而找最小值或最大值是 O(logN). 所以理论上不应该合并规则的, 但这里选择牺牲时间复杂度, 使代码逻辑更清晰.
 
         为什么可以用右子树的最小值或左子树的最大值取代删除值 ?
 
         答: BST 在中序遍历下的结果是一个有序数组, 在有序数组中删除一个元素, 可以被理解为
-        使用该元素前一个或后一个元素代替本身元素, 然后在删除前一个或后一个元素.
+           使用该元素前一个或后一个元素代替本身元素, 然后在删除前一个或后一个元素.
         """
         # 找到被删除的节点
         prev = self._root
         delete = self._root
         direction = None
         while delete and key != delete.key:
-            if key < delete.key:
-                direction = 'left'
-                prev = delete
-                delete = prev.left
-            else:
-                direction = 'right'
-                prev = delete
-                delete = prev.right
+            direction = 'left' if key < delete.key else 'right'
+            prev = delete
+            delete = getattr(delete, direction)
 
         # `key` 不在树中
         if delete is None:
@@ -436,7 +423,7 @@ class BST:
 
     def _remove_with_recursion(self, root: BTNode, key: Any) -> Optional[BTNode]:
         """从以 `root` 为根的树中删除键为 `key` 的节点, 返回删除后的树."""
-        # 树中没有 `key`
+        # `key` 不在树中
         if root is None:
             raise ValueError
         # 找到了删除节点
@@ -453,7 +440,7 @@ class BST:
 
         if key < root.key:
             root.left = self._remove_with_recursion(root.left, key)
-        else:  # key > root.key (等于在上面判断过了)
+        else:  # key > root.key
             root.right = self._remove_with_recursion(root.right, key)
         return root
 
