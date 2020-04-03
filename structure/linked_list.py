@@ -18,38 +18,32 @@ class ListNode:
 class LinkedListV1:
     """头指针单向链表.
 
-    `self._head` 其实相当于数组中的 -1 索引.
-
-    只实现了两个 O(1) 的 `appendleft` 和 `popleft`.
-
-    另外数据结构中关于栈相关的属性可以去 LeetCode 20 上测试.
+    只实现了两个 O(1) 的函数 `appendleft` 和 `popleft`, 可用于实现栈.
     """
 
     def __init__(self):
-        self._head = ListNode(None)
+        self._head: Optional[ListNode] = None
         self._size = 0
+
+    def __iter__(self) -> Iterator:
+        cur = self._head
+        while cur:
+            yield cur.val
+            cur = cur.next
 
     def __len__(self) -> int:
         return self._size
 
-    def __iter__(self) -> Iterator:
-        # 相当于从索引为 0 的位置开始
-        needle = self._head.next
-        for _ in range(self._size):
-            yield needle.val
-            needle = needle.next
-
     def appendleft(self, value: Any):
-        self._head.next = ListNode(value, self._head.next)
+        self._head = ListNode(value, self._head)
         self._size += 1
 
     @not_empty
     def popleft(self) -> Any:
-        res = self._head.next
-        self._head.next = res.next
-        res.next = None
+        poped_val = self._head.val
+        self._head = self._head.next
         self._size -= 1
-        return res.val
+        return poped_val
 
 
 class LinkedListV2:

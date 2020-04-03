@@ -3,27 +3,35 @@ import pytest
 from structure import LinkedListV1, LinkedListV2
 
 
-@pytest.mark.parametrize('cls', (LinkedListV1, LinkedListV2))
-def test_LinkedListV1_and_part_of_LinkedListV2(cls):
-    """测试 `LinkedList` 的所有方法和 `LinkedListV2` 用于栈相关的操作.
+@pytest.mark.parametrize('cls', (LinkedListV1,
+                                 LinkedListV2,))
+def test_stack_related(cls):
+    """测试链表中和栈相关的方法."""
+    stack = cls()
 
-    1. 初始状态, 查看所有元素, 无法 `popleft`.
-    2. `appendleft` 四个元素, 查看所有元素. 再 `popleft` 两个元素, 查看所有元素.
-    """
-    l = cls()
-
-    # 1
-    assert list(l) == []
+    # 空栈不能 pop.
+    assert list(stack) == []
+    assert len(stack) == 0
     with pytest.raises(IndexError):
-        l.popleft()
+        stack.popleft()
 
-    # 2
-    for i in range(3, -1, -1):
-        l.appendleft(i)
-    assert list(l) == list(range(4))
-    for i in range(2):
-        assert i == l.popleft()
-    assert list(l) == [2, 3]
+    # 入 1 个出 1 个.
+    stack.appendleft(10)
+    assert list(stack) == [10]
+    assert len(stack) == 1
+    assert 10 == stack.popleft()
+    assert list(stack) == []
+    assert len(stack) == 0
+
+    # 入 4 个出 2 个.
+    for i in range(4):
+        stack.appendleft(i)
+    assert list(stack) == [3, 2, 1, 0]
+    assert len(stack) == 4
+    assert 3 == stack.popleft()
+    assert 2 == stack.popleft()
+    assert list(stack) == [1, 0]
+    assert len(stack) == 2
 
 
 def test_LinkedListV2():
