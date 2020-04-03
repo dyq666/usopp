@@ -3,7 +3,7 @@ __all__ = (
     'LinkedListV2',
 )
 
-from typing import Any, Iterator, Optional
+from typing import Any, Iterable, Iterator, Optional
 
 from .util import not_empty, size_change
 
@@ -102,3 +102,55 @@ class LinkedListV2:
             self._tail = self._head
 
         return res.val
+
+
+class LinkedListV3:
+
+    def __init__(self):
+        self._size = 0
+        self._head = None
+        self._tail = None
+
+    def __len__(self) -> int:
+        return self._size
+
+    @size_change(1)
+    def append(self, val: Any):
+        """在尾指针添加元素."""
+        # 因为插入的是链表中第一个元素, 所以头指针也要移动
+        if len(self) == 0:
+            self._head = self._tail = Node(val)
+            return
+
+        self._tail.next = Node(val)
+        self._tail = self._tail.next
+
+    @size_change(1)
+    def append_left(self, val: Any):
+        """在头指针添加元素."""
+        # 因为插入的是链表中第一个元素, 所以尾指针也要移动
+        if len(self) == 0:
+            self._tail = self._head = Node(val)
+            return
+
+        self._head = Node(val, self._head)
+
+    @size_change(-1)
+    def popleft(self) -> Any:
+        """在头指针弹出元素."""
+        poped_val = self._head.val
+
+        # 因为弹出的是链表中最后一个元素, 所以尾指针也要指向 None
+        if len(self) == 1:
+            self._tail = self._head = None
+        else:
+            self._head = self._head.next
+
+        return poped_val
+
+    @classmethod
+    def from_iterable(cls, vals: Iterable):
+        l = cls()
+        for val in vals:
+            l.append(val)
+        return l
