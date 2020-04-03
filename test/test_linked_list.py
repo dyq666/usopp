@@ -1,7 +1,6 @@
 import pytest
 
 from structure import LinkedListV1, LinkedListV2
-from structure.linked_list import LinkedListV3
 
 
 @pytest.mark.parametrize('cls', (LinkedListV1,
@@ -35,40 +34,10 @@ def test_stack_related(cls):
     assert len(stack) == 2
 
 
-def test_LinkedListV2():
-    """测试 `LinkedListV2` 关于队列相关的方法.
-
-    1. `append` 两个元素, 观察所有元素, `popleft` 两个元素后, 观察所有元素.
-    2. `append` 一个元素, 观察所有元素, `popleft` 此元素.
-        这一条主要是测试 `tail` 是否在只有一个元素的情况下 `popleft` 之后被重置了.
-    3. `appendleft` 一个元素, 再 `append` 一个元素, 查看所有元素.
-        这一条注意是测试 `tail` 是否在空的情况下 `appendleft` 之后移动了.
-    """
-    l = LinkedListV2()
-
-    # 1
-    l.append(0)
-    l.append(1)
-    assert list(l) == [0, 1]
-    assert 0 == l.popleft()
-    assert 1 == l.popleft()
-    assert list(l) == []
-
-    # 2
-    l.append(2)
-    assert list(l) == [2]
-    l.popleft()
-
-    # 3
-    l.appendleft('c')
-    l.append(10)
-    assert list(l) == ['c', 10]
-
-
-class TestLinkedListV3:
+class TestLinkedListV2:
 
     def test_empty(self):
-        l = LinkedListV3()
+        l = LinkedListV2()
 
         # 初始情况
         assert len(l) == 0
@@ -76,7 +45,7 @@ class TestLinkedListV3:
         assert l._tail is None
 
     def test_append(self):
-        l = LinkedListV3()
+        l = LinkedListV2()
 
         # 在尾指针添加元素, 因为插入的是链表中第一个元素, 所以头指针也移动了
         l.append(1)
@@ -91,22 +60,22 @@ class TestLinkedListV3:
         assert l._tail.val == 2
 
     def test_append_left(self):
-        l = LinkedListV3()
+        l = LinkedListV2()
 
         # 在头指针添加元素, 因为插入的是链表中第一个元素, 所以尾指针也移动了
-        l.append_left(1)
+        l.appendleft(1)
         assert len(l) == 1
         assert l._head.val == 1
         assert l._tail.val == 1
 
         # 在头指针插入第二个元素, 此时尾指针不移动
-        l.append_left(2)
+        l.appendleft(2)
         assert len(l) == 2
         assert l._head.val == 2
         assert l._tail.val == 1
 
     def test_popleft(self):
-        l = LinkedListV3.from_iterable([1, 2])
+        l = LinkedListV2.from_iterable([1, 2])
 
         # 在头指针弹出元素
         assert 1 == l.popleft()
