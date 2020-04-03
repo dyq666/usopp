@@ -88,3 +88,7 @@ class TestLinkedListV2:
         assert len(l) == 0
         assert l._head is None
         assert l._tail is None
+
+        # 空链表不能弹出元素
+        with pytest.raises(IndexError):
+            l.popleft()

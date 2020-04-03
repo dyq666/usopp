@@ -27,7 +27,7 @@ def not_empty(f: callable) -> callable:
     @wraps(f)
     def wrapper(self: Sized, *args: tuple, **kwargs: dict) -> Any:
         if len(self) == 0:
-            raise IndexError
+            raise IndexError('pop from empty structure')
         return f(self, *args, **kwargs)
 
     return wrapper

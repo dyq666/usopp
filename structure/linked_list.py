@@ -81,6 +81,7 @@ class LinkedListV2:
 
         self._head = Node(val, self._head)
 
+    @not_empty
     @size_change(-1)
     def popleft(self) -> Any:
         """在头指针弹出元素."""
