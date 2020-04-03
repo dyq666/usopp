@@ -8,8 +8,8 @@
 
   - 动态数组 DynamicArrayV2 (可用于实现栈)
   - 循环数组 LoopArrayV3 (可用于实现双向队列)
-  - 头指针链表 LinkedListV1 (可用于实现栈)
-  - 头尾指针链表 LinkedListV2 (可用于实现队列)
+  - 头指针单向链表 LinkedListV1 (可用于实现栈)
+  - 头尾指针单向链表 LinkedListV2 (可用于实现栈, 队列)
   - 二分搜索树 BST (可用于实现集合, 字典)
   - 最大堆 MaxHeap (可用于实现优先级队列)
   - 线段树 SegmentTree
