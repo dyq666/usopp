@@ -1,5 +1,5 @@
 __all__ = (
-    'check_index', 'no_value', 'not_empty',
+    'check_index', 'no_value', 'not_empty', 'size_change',
 )
 
 from functools import wraps
@@ -31,3 +31,17 @@ def not_empty(f: callable) -> callable:
         return f(self, *args, **kwargs)
 
     return wrapper
+
+
+def size_change(delta: int) -> callable:
+    """修改 `self._size`."""
+    def deco(f: callable) -> callable:
+        @wraps(f)
+        def wrapper(self, *args: tuple, **kwargs: dict) -> Any:
+            res = f(self, *args, **kwargs)
+            self._size += delta
+            return res
+
+        return wrapper
+
+    return deco

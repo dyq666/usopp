@@ -5,7 +5,7 @@ __all__ = (
 
 from typing import Any, Iterator, Optional
 
-from .util import not_empty
+from .util import not_empty, size_change
 
 
 class Node:
@@ -34,15 +34,15 @@ class LinkedListV1:
     def __len__(self) -> int:
         return self._size
 
+    @size_change(1)
     def appendleft(self, value: Any):
         self._head = Node(value, self._head)
-        self._size += 1
 
     @not_empty
+    @size_change(-1)
     def popleft(self) -> Any:
         poped_val = self._head.val
         self._head = self._head.next
-        self._size -= 1
         return poped_val
 
 
