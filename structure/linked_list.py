@@ -33,15 +33,15 @@ class LinkedListV1:
         self._head: Optional[Node] = None
         self._size = 0
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iterator[Any]:
         return Node.preorder(self._head)
 
     def __len__(self) -> int:
         return self._size
 
     @size_change(1)
-    def appendleft(self, value: Any):
-        self._head = Node(value, self._head)
+    def appendleft(self, val: Any):
+        self._head = Node(val, self._head)
 
     @not_empty
     @size_change(-1)
@@ -51,7 +51,7 @@ class LinkedListV1:
         return poped_val
 
     @classmethod
-    def from_iterable(cls, vals: Iterable):
+    def from_iterable(cls, vals: Iterable[Any]):
         l = cls()
         for val in vals:
             l.appendleft(val)
@@ -69,7 +69,7 @@ class LinkedListV2:
         self._head = None
         self._tail = None
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iterator[Any]:
         return Node.preorder(self._head)
 
     def __len__(self) -> int:
@@ -111,7 +111,7 @@ class LinkedListV2:
         return poped_val
 
     @classmethod
-    def from_iterable(cls, vals: Iterable):
+    def from_iterable(cls, vals: Iterable[Any]):
         l = cls()
         for val in vals:
             l.append(val)
