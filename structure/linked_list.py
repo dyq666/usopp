@@ -8,9 +8,9 @@ from typing import Any, Iterator, Optional
 from .util import not_empty
 
 
-class ListNode:
+class Node:
 
-    def __init__(self, val: Any, next_: Optional['ListNode'] = None):
+    def __init__(self, val: Any, next_: Optional['Node'] = None):
         self.val = val
         self.next = next_
 
@@ -22,7 +22,7 @@ class LinkedListV1:
     """
 
     def __init__(self):
-        self._head: Optional[ListNode] = None
+        self._head: Optional[Node] = None
         self._size = 0
 
     def __iter__(self) -> Iterator:
@@ -35,7 +35,7 @@ class LinkedListV1:
         return self._size
 
     def appendleft(self, value: Any):
-        self._head = ListNode(value, self._head)
+        self._head = Node(value, self._head)
         self._size += 1
 
     @not_empty
@@ -65,7 +65,7 @@ class LinkedListV2:
     """
 
     def __init__(self):
-        self._head = ListNode(None)
+        self._head = Node(None)
         self._tail = self._head
         self._size = 0
 
@@ -80,12 +80,12 @@ class LinkedListV2:
             needle = needle.next
 
     def append(self, value: Any):
-        self._tail.next = ListNode(value, self._tail.next)
+        self._tail.next = Node(value, self._tail.next)
         self._tail = self._tail.next
         self._size += 1
 
     def appendleft(self, value: Any):
-        self._head.next = ListNode(value, self._head.next)
+        self._head.next = Node(value, self._head.next)
         self._size += 1
 
         if len(self) == 1:
