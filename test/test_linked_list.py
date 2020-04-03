@@ -3,35 +3,37 @@ import pytest
 from structure import LinkedListV1, LinkedListV2
 
 
-@pytest.mark.parametrize('cls', (LinkedListV1,
-                                 LinkedListV2,))
-def test_stack_related(cls):
-    """测试链表中和栈相关的方法."""
-    stack = cls()
+class TestLinkedListV1:
 
-    # 空栈不能 pop.
-    assert list(stack) == []
-    assert len(stack) == 0
-    with pytest.raises(IndexError):
-        stack.popleft()
+    def test_empty(self):
+        l = LinkedListV1()
 
-    # 入 1 个出 1 个.
-    stack.appendleft(10)
-    assert list(stack) == [10]
-    assert len(stack) == 1
-    assert 10 == stack.popleft()
-    assert list(stack) == []
-    assert len(stack) == 0
+        # 初始情况
+        assert len(l) == 0
+        assert list(l) == []
+        assert l._head is None
 
-    # 入 4 个出 2 个.
-    for i in range(4):
-        stack.appendleft(i)
-    assert list(stack) == [3, 2, 1, 0]
-    assert len(stack) == 4
-    assert 3 == stack.popleft()
-    assert 2 == stack.popleft()
-    assert list(stack) == [1, 0]
-    assert len(stack) == 2
+    def test_append_left(self):
+        l = LinkedListV1()
+
+        # 在头指针添加元素, 因为插入的是链表中第一个元素, 所以尾指针也移动了
+        l.appendleft(1)
+        assert len(l) == 1
+        assert list(l) == [1]
+        assert l._head.val == 1
+
+    def test_popleft(self):
+        l = LinkedListV1.from_iterable([1])
+
+        # 在头指针弹出元素
+        assert 1 == l.popleft()
+        assert len(l) == 0
+        assert list(l) == []
+        assert l._head is None
+
+        # 空链表不能弹出元素
+        with pytest.raises(IndexError):
+            l.popleft()
 
 
 class TestLinkedListV2:

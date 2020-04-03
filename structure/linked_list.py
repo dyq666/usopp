@@ -1,6 +1,5 @@
 __all__ = (
-    'LinkedListV1',
-    'LinkedListV2',
+    'LinkedListV1', 'LinkedListV2',
 )
 
 from typing import Any, Generator, Iterable, Iterator, Optional
@@ -50,6 +49,13 @@ class LinkedListV1:
         poped_val = self._head.val
         self._head = self._head.next
         return poped_val
+
+    @classmethod
+    def from_iterable(cls, vals: Iterable):
+        l = cls()
+        for val in vals:
+            l.appendleft(val)
+        return l
 
 
 class LinkedListV2:
