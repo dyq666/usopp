@@ -3,7 +3,7 @@ __all__ = (
     'LinkedListV2',
 )
 
-from typing import Any, Iterable, Iterator, Optional
+from typing import Any, Generator, Iterable, Iterator, Optional
 
 from .util import not_empty, size_change
 
@@ -13,6 +13,15 @@ class Node:
     def __init__(self, val: Any, next_: Optional['Node'] = None):
         self.val = val
         self.next = next_
+
+    @staticmethod
+    def preorder(node: Optional['Node']) -> Generator:
+        """其实逻辑和二叉树的前序遍历一样, 所以也叫做 `preorder` :)"""
+        if node is None:
+            return
+
+        yield node.val
+        yield from Node.preorder(node.next)
 
 
 class LinkedListV1:
@@ -26,10 +35,7 @@ class LinkedListV1:
         self._size = 0
 
     def __iter__(self) -> Iterator:
-        cur = self._head
-        while cur:
-            yield cur.val
-            cur = cur.next
+        return Node.preorder(self._head)
 
     def __len__(self) -> int:
         return self._size
@@ -56,6 +62,9 @@ class LinkedListV2:
         self._size = 0
         self._head = None
         self._tail = None
+
+    def __iter__(self) -> Iterator:
+        return Node.preorder(self._head)
 
     def __len__(self) -> int:
         return self._size
