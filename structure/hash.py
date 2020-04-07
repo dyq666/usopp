@@ -48,13 +48,14 @@ class HashTable:
     """
 
     DICT_CLS = BSTDict
-    MIN_CAPACITY = 97
-    UPPER = 8  # 当 size 大于 capacity 的 8 倍时, 扩容
+    CAPACITYS = [53, 97, 193, 389, 769]  # 一些质数
+    UPPER = 10  # 当 size 大于 capacity 的 10 倍时, 扩容
     LOWER = 2  # 当 size 小于 capacity 的 2 倍时, 缩容
 
     def __init__(self):
         self._size = 0
-        self._dicts = [self.DICT_CLS() for _ in range(self.MIN_CAPACITY)]
+        self._capacity_idx = 0
+        self._dicts = [self.DICT_CLS() for _ in range(self.CAPACITYS[self._capacity_idx])]
 
     def __iter__(self) -> Iterator[Tuple[Any, Any]]:
         for dict_ in self._dicts:
@@ -73,7 +74,7 @@ class HashTable:
             dict_[key] = value
             self._size += 1
             if len(self) > self._capacity * self.UPPER:
-                self._resize(2 * self._capacity)
+                self._resize(True)
         # 如果已经存在的话, 更新值
         else:
             dict_[key] = value
@@ -85,24 +86,27 @@ class HashTable:
         del self._dicts[self._hash(key)][key]
         self._size -= 1
         if len(self) < self._capacity * self.LOWER:
-            self._resize(self._capacity // 2)
+            self._resize(False)
 
     @property
     def _capacity(self) -> int:
-        return len(self._dicts)
+        return self.CAPACITYS[self._capacity_idx]
 
     def _hash(self, key: Any, capacity: Optional[int] = None) -> int:
         capacity = self._capacity if capacity is None else capacity
         return abs(hash(key)) % capacity
 
-    def _resize(self, capacity: int):
-        if capacity < self.MIN_CAPACITY:
+    def _resize(self, is_increase: bool):
+        new_capacity_idx = self._capacity_idx + (1 if is_increase else -1)
+        if new_capacity_idx < 0:
             return
 
-        new_dicts = [self.DICT_CLS() for _ in range(capacity)]
+        self._capacity_idx = new_capacity_idx
+        new_capacity = self.CAPACITYS[self._capacity_idx]
+        new_dicts = [self.DICT_CLS() for _ in range(new_capacity)]
 
         for k, v in self:
-            dict_ = new_dicts[self._hash(k, capacity)]
+            dict_ = new_dicts[self._hash(k, new_capacity)]
             dict_[k] = v
         self._dicts = new_dicts
 
