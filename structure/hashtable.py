@@ -98,7 +98,7 @@ class HashTable:
 
     def _resize(self, is_increase: bool):
         new_capacity_idx = self._capacity_idx + (1 if is_increase else -1)
-        if new_capacity_idx < 0:
+        if new_capacity_idx < 0 or new_capacity_idx >= len(self.CAPACITYS):
             return
 
         self._capacity_idx = new_capacity_idx

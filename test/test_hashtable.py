@@ -1,3 +1,5 @@
+from itertools import count
+
 import pytest
 
 from structure import HashTable
@@ -34,8 +36,21 @@ class TestHashTable:
         assert ht._capacity == HashTable.CAPACITYS[0]
 
     def test_resize(self):
-        # TODO finish it
-        pass
+        ht = MockHashTable()
+        counter = count()
+
+        assert len(ht) == 0
+        assert ht._capacity == HashTable.CAPACITYS[0]
+
+        for i in range(len(HashTable.CAPACITYS)):
+            for _ in range(HashTable.CAPACITYS[i] * 3 + 1):
+                num = next(counter)
+                ht[num] = str(num)
+            # 到最大容量了, 不能继续扩容了.
+            if i == len(HashTable.CAPACITYS) - 1:
+                assert ht._capacity == HashTable.CAPACITYS[i]
+            else:
+                assert ht._capacity == HashTable.CAPACITYS[i + 1]
 
 
 def test_student():
