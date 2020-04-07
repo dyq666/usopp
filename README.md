@@ -16,6 +16,7 @@
   - 字典树 Trie
   - 并查集 UnionFindV2
   - AVL 树 AVL (可用于实现集合, 字典)
+  - 哈希表 HashTable (可用于实现集合, 字典)
 
 ### 相关练习题
 

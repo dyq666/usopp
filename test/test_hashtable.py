@@ -1,6 +1,7 @@
 import pytest
 
 from structure import HashTable
+from structure.hashtable import StudentV1, StudentV2
 
 
 class MockHashTable(HashTable):
@@ -35,3 +36,18 @@ class TestHashTable:
     def test_resize(self):
         # TODO finish it
         pass
+
+
+def test_student():
+    studentv1_a1 = StudentV1(1, 2, 'aaa')
+    studentv1_a2 = StudentV1(1, 2, 'aaa')
+    assert studentv1_a1 != studentv1_a2
+    assert studentv1_a1 is not studentv1_a2
+    assert len({studentv1_a1, studentv1_a2}) == 2
+
+    studentv2_a1 = StudentV2(1, 2, 'aaa')
+    studentv2_a2 = StudentV2(1, 2, 'aaa')
+    assert studentv2_a1 == studentv2_a2
+    assert studentv2_a1 is not studentv2_a2
+    assert len({studentv2_a1, studentv2_a2}) == 1
+
