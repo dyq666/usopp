@@ -5,6 +5,7 @@ __all__ = (
 from typing import Any, Iterator
 
 from .tree import BSTDict
+from .util import size_change
 
 
 class StudentV1:
@@ -62,16 +63,21 @@ class HashTable:
         return self._size
 
     def __contains__(self, key: Any) -> bool:
-        dict_ = self._dicts[self._hash(key)]
-        return key in dict_
+        return key in self._dicts[self._hash(key)]
 
-    def add(self, key: Any, value: Any):
-        hashed_key = self._hash(key)
-        dict_ = self._dicts[hashed_key]
+    def __setitem__(self, key: Any, value: Any):
+        dict_ = self._dicts[self._hash(key)]
 
         if key not in dict_:
             self._size += 1
         dict_[key] = value
+
+    def __getitem__(self, key: Any) -> Any:
+        return self._dicts[self._hash(key)][key]
+
+    @size_change(-1)
+    def __delitem__(self, key: Any):
+        del self._dicts[self._hash(key)][key]
 
     def _hash(self, key: Any) -> int:
         return abs(hash(key)) % self.CAPACITY
