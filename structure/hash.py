@@ -4,7 +4,7 @@ __all__ = (
 
 from typing import Any, Iterator
 
-from .avl import AVL
+from .tree import BSTDict
 
 
 class StudentV1:
@@ -42,30 +42,36 @@ class StudentV2:
 
 
 class HashTable:
+    """哈希表.
+
+    哈希表中每一个节点都是一个二分搜索树.
+    """
+
     CAPACITY = 97
 
     def __init__(self):
         self._size = 0
         self._m = self.CAPACITY
-        self._avls = [AVL() for _ in range(self.CAPACITY)]
+        self._dicts = [BSTDict() for _ in range(self.CAPACITY)]
 
     def __iter__(self) -> Iterator:
-        for avl in self._avls:
-            for val in avl:
-                if val is None:
-                    continue
-                yield val
+        for dict_ in self._dicts:
+            yield from dict_
 
     def __len__(self) -> int:
         return self._size
 
+    def __contains__(self, key: Any) -> bool:
+        dict_ = self._dicts[self._hash(key)]
+        return key in dict_
+
     def add(self, key: Any, value: Any):
         hashed_key = self._hash(key)
-        avl = self._avls[hashed_key]
+        dict_ = self._dicts[hashed_key]
 
-        if key not in avl:
+        if key not in dict_:
             self._size += 1
-        avl.add(key, value)
+        dict_[key] = value
 
     def _hash(self, key: Any) -> int:
         return abs(hash(key)) % self.CAPACITY
