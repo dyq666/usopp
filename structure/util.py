@@ -9,7 +9,7 @@ no_value = object()
 
 
 def check_index(offset: int = 0) -> callable:
-    """检查索引是否在范围 [0, len + offset) 中."""
+    """在运行函数前, 检查索引是否在范围 [0, len + offset) 中."""
     def deco(f: callable) -> callable:
         @wraps(f)
         def wrapper(self: Sized, index: int, *args: tuple, **kwargs: dict) -> Any:
@@ -23,7 +23,7 @@ def check_index(offset: int = 0) -> callable:
 
 
 def not_empty(f: callable) -> callable:
-    """检查实例是否为空."""
+    """在运行函数前, 检查实例是否为空."""
     @wraps(f)
     def wrapper(self: Sized, *args: tuple, **kwargs: dict) -> Any:
         if len(self) == 0:
@@ -34,7 +34,7 @@ def not_empty(f: callable) -> callable:
 
 
 def size_change(delta: int) -> callable:
-    """修改 `self._size`."""
+    """在运行函数后, 修改 `self._size`."""
     def deco(f: callable) -> callable:
         @wraps(f)
         def wrapper(self, *args: tuple, **kwargs: dict) -> Any:
