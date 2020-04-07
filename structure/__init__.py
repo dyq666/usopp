@@ -1,6 +1,6 @@
 __all__ = (
     'AVL', 'BST', 'BSTDict', 'BTNode', 'BTUtil',
-    'DynamicArrayV1', 'DynamicArrayV2',
+    'DynamicArrayV1', 'DynamicArrayV2', 'HashTable',
     'LinkedListV1', 'LinkedListV2',
     'LoopArrayV1', 'LoopArrayV2', 'LoopArrayV3',
     'MaxHeap', 'SegmentTree', 'SegmentTreeWithNode',
@@ -13,6 +13,7 @@ from .array import (
 )
 from .avl import AVL
 from .linked_list import LinkedListV1, LinkedListV2
+from .hash import HashTable
 from .heap import MaxHeap
 from .segment_tree import SegmentTree, SegmentTreeWithNode
 from .tree import BST, BSTDict, BTNode, BTUtil

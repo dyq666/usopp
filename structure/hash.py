@@ -1,6 +1,10 @@
-__all__ = ()
+__all__ = (
+    'HashTable',
+)
 
-from typing import Any
+from typing import Any, Iterator
+
+from .avl import AVL
 
 
 class StudentV1:
@@ -35,6 +39,36 @@ class StudentV2:
             # B 实际上可以是任意值, 这里选用 B = 26.
             val = val * 26 + attr
         return val
+
+
+class HashTable:
+    CAPACITY = 97
+
+    def __init__(self):
+        self._size = 0
+        self._m = self.CAPACITY
+        self._avls = [AVL() for _ in range(self.CAPACITY)]
+
+    def __iter__(self) -> Iterator:
+        for avl in self._avls:
+            for val in avl:
+                if val is None:
+                    continue
+                yield val
+
+    def __len__(self) -> int:
+        return self._size
+
+    def add(self, key: Any, value: Any):
+        hashed_key = self._hash(key)
+        avl = self._avls[hashed_key]
+
+        if key not in avl:
+            self._size += 1
+        avl.add(key, value)
+
+    def _hash(self, key: Any) -> int:
+        return abs(hash(key)) % self.CAPACITY
 
 
 def test_student():
