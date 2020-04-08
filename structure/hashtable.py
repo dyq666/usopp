@@ -42,7 +42,9 @@ class StudentV2:
 
 
 class HashTable:
-    """哈希表 (链地址法).
+    """哈希表.
+
+    使用链地址法 (separate chaining) 解决哈希冲突.
 
     哈希表中每一个节点都是一个二分搜索树.
     """
