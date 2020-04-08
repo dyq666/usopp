@@ -14,17 +14,17 @@ class TestHashTable:
 
     def test_basic(self):
         ht = MockHashTable()
-        test_size = int(HashTable.CAPACITYS[0] * 3.11)
+        test_size = int(ht.CAPACITYS[0] * 3.11)
 
+        # 测试添加元素
         for i in range(test_size):
             ht[i] = str(i)
             assert len(ht) == i + 1
             assert set(ht) == {(j, str(j)) for j in range(i + 1)}
             assert i in ht
             assert ht[i] == str(i)
-        # 增加元素期间扩容一次
-        assert ht._capacity == HashTable.CAPACITYS[1]
 
+        # 测试删除元素
         for i in range(test_size):
             del ht[i]
             assert len(ht) == test_size - (i + 1)
@@ -32,30 +32,47 @@ class TestHashTable:
             assert i not in ht
             with pytest.raises(KeyError):
                 assert ht[i] == str(i)
-        # 删除元素期间缩容一次
-        assert ht._capacity == HashTable.CAPACITYS[0]
+            with pytest.raises(KeyError):
+                del ht[i]
 
-        # TODO 更新测试
+        # 测试更新元素
+        ht[2] = 3
+        ht['2'] = 4
+        assert ht[2] == 3
+        ht[2] = 4
+        assert ht[2] == 4
 
     def test_resize(self):
         ht = MockHashTable()
-        counter = count()
 
         assert len(ht) == 0
-        assert ht._capacity == HashTable.CAPACITYS[0]
+        assert ht._capacity == ht.CAPACITYS[0]
 
         # 扩容测试
-        for i in range(len(HashTable.CAPACITYS)):
-            for _ in range(HashTable.CAPACITYS[i] * 3 + 1):
-                num = next(counter)
+        asc_counter = count()
+        for i in range(len(ht.CAPACITYS)):
+            # len(self) = self._capacity * self.UPPER + 1 时就会扩容.
+            for _ in range(ht._capacity * ht.UPPER + 1 - len(ht)):
+                num = next(asc_counter)
                 ht[num] = str(num)
-            # 到最大容量了, 不能继续扩容了.
-            if i == len(HashTable.CAPACITYS) - 1:
-                assert ht._capacity == HashTable.CAPACITYS[i]
+            # 到最大容量了, 不会继续扩容了.
+            if i == len(ht.CAPACITYS) - 1:
+                assert ht._capacity == ht.CAPACITYS[i]
             else:
-                assert ht._capacity == HashTable.CAPACITYS[i + 1]
+                assert ht._capacity == ht.CAPACITYS[i + 1]
 
-        # TODO 缩容测试
+        # 缩容测试
+        desc_counter = count(start=next(asc_counter) - 1, step=-1)
+        for i in range(len(ht.CAPACITYS) - 1, -1, -1):
+            # len(self) = self._capacity * self.LOWER - 1 时就会缩容.
+            for _ in range(len(ht) - (ht._capacity * ht.LOWER - 1)):
+                num = next(desc_counter)
+                del ht[num]
+            # 到最小容量了, 不会继续缩容了.
+            if i == 0:
+                assert ht._capacity == ht.CAPACITYS[i]
+            else:
+                assert ht._capacity == ht.CAPACITYS[i - 1]
 
 
 def test_student():
