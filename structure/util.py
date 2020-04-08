@@ -1,15 +1,46 @@
 __all__ = (
-    'HashPair', 'check_index', 'no_value',
+    'ComparePair', 'HashPair', 'check_index', 'no_value',
     'not_empty', 'size_change',
 )
 
-from functools import wraps
+from functools import total_ordering, wraps
 from typing import Any, Sized
 
 no_value = object()
 
 
+@total_ordering
+class ComparePair:
+    """使用树结构实现字典的辅助结构."""
+
+    def __init__(self, key: Any, value: Any):
+        self.key = key
+        self.value = value
+
+    def __repr__(self):
+        return (
+            f'<{self.__class__.__name__}'
+            f' key={self.key!r}'
+            f' value={self.value!r}'
+            f'>'
+        )
+
+    def __eq__(self, other: Any):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self.key == other.key
+
+    def __gt__(self, other: Any):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self.key > other.key
+
+
 class HashPair:
+    """使用哈希表实现字典的辅助结构.
+
+    和 `ComparePair` 不同, 哈希表只需要检查是否相等.
+    """
 
     def __init__(self, key: Any, value: Any):
         self.key = key
