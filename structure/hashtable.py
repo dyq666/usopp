@@ -82,7 +82,7 @@ class HashTable:
     def __contains__(self, key: Any) -> bool:
         return HashPair(key, None) in self._group(key)
 
-    def __setitem__(self, key: Any, value: Any):
+    def add(self, key: Any, value: Any = 0):
         group = self._group(key)
 
         try:
@@ -97,7 +97,7 @@ class HashTable:
             # 已经存在, 更新旧值.
             group[idx] = HashPair(key, value)
 
-    def __getitem__(self, key: Any) -> Any:
+    def get(self, key: Any) -> Any:
         """如果不存在 `key`, 会抛出 KeyError."""
         group = self._group(key)
         try:
@@ -107,7 +107,7 @@ class HashTable:
         else:
             return group[idx].value
 
-    def __delitem__(self, key: Any):
+    def remove(self, key: Any):
         """如果不存在 `key`, 会抛出 KeyError."""
         try:
             self._group(key).remove(HashPair(key, None))

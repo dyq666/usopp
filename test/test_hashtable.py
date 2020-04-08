@@ -18,29 +18,29 @@ class TestHashTable:
 
         # 测试添加元素
         for i in range(test_size):
-            ht[i] = str(i)
+            ht.add(i, str(i))
             assert len(ht) == i + 1
             assert set(ht) == {(j, str(j)) for j in range(i + 1)}
             assert i in ht
-            assert ht[i] == str(i)
+            assert ht.get(i) == str(i)
 
         # 测试删除元素
         for i in range(test_size):
-            del ht[i]
+            ht.remove(i)
             assert len(ht) == test_size - (i + 1)
             assert set(ht) == {(j, str(j)) for j in range(i + 1, test_size)}
             assert i not in ht
             with pytest.raises(KeyError):
-                assert ht[i] == str(i)
+                assert ht.get(i) == str(i)
             with pytest.raises(KeyError):
-                del ht[i]
+                ht.remove(i)
 
         # 测试更新元素
-        ht[2] = 3
-        ht['2'] = 4
-        assert ht[2] == 3
-        ht[2] = 4
-        assert ht[2] == 4
+        ht.add(2, 3)
+        ht.add('2', 3)
+        assert ht.get(2) == 3
+        ht.add(2, 4)
+        assert ht.get(2) == 4
 
     def test_resize(self):
         ht = MockHashTable()
@@ -54,7 +54,7 @@ class TestHashTable:
             # len(self) = self._capacity * self.UPPER + 1 时就会扩容.
             for _ in range(ht._capacity * ht.UPPER + 1 - len(ht)):
                 num = next(asc_counter)
-                ht[num] = str(num)
+                ht.add(num, str(num))
             # 到最大容量了, 不会继续扩容了.
             if i == len(ht.CAPACITYS) - 1:
                 assert ht._capacity == ht.CAPACITYS[i]
@@ -66,8 +66,7 @@ class TestHashTable:
         for i in range(len(ht.CAPACITYS) - 1, -1, -1):
             # len(self) = self._capacity * self.LOWER - 1 时就会缩容.
             for _ in range(len(ht) - (ht._capacity * ht.LOWER - 1)):
-                num = next(desc_counter)
-                del ht[num]
+                ht.remove(next(desc_counter))
             # 到最小容量了, 不会继续缩容了.
             if i == 0:
                 assert ht._capacity == ht.CAPACITYS[i]
