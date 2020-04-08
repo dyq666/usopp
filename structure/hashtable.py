@@ -48,8 +48,8 @@ class HashTable:
 
       - 本类使用 Python 底层的 list 代替链表.
       - 预置一些质数 `cls.CAPACITYS` 用于容量的扩展或缩小.
-      - 当元素数量大于容量的 `cls.UPPER` 倍时, 进行扩容.
-      - 当元素数量小于容量的 `cls.LOWER` 倍时, 进行缩容.
+      - 当元素数量大于容量的 `cls.UPPER` 倍时, 进行扩容 (也可以认为每组最多有 `cls.UPPER` 个元素).
+      - 当元素数量小于容量的 `cls.LOWER` 倍时, 进行缩容 (也可以认为每组最少有 `cls.LOWER` 个元素).
 
     个人对链地址法的理解: 链地址法可以看作对数据分组, 每个数据只能在组内
     进行增删改查. 数据通过哈希函数找到自己的组 id, 组和组 id 的关系就是
@@ -127,6 +127,10 @@ class HashTable:
         return self._groups[self._hash(key)]
 
     def _resize(self, is_increase: bool):
+        """修改容量.
+
+        `is_increase`: True 代表扩容, False 代表缩容.
+        """
         new_capacity_idx = self._capacity_idx + (1 if is_increase else -1)
         if not (0 <= new_capacity_idx < len(self.CAPACITYS)):
             return
@@ -139,4 +143,3 @@ class HashTable:
 
         self._groups = new_groups
         self._capacity_idx = new_capacity_idx
-
