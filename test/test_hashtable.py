@@ -65,4 +65,3 @@ def test_student():
     assert studentv2_a1 == studentv2_a2
     assert studentv2_a1 is not studentv2_a2
     assert len({studentv2_a1, studentv2_a2}) == 1
-
