@@ -57,10 +57,12 @@ class HashTable:
     一个函数 `self._group`. 另外, 改变容量 (`self._resize`) 意味
     着对所有数据重新分组.
 
-    # TODO 说明时间复杂度
+    时间复杂度分析: 每一组只有 `cls.LOWER` ~ `cls.UPPER` 个元素, 所以组内操作的
+    时间复杂度只有 O(LOWER) ~ O(UPPER), 即 O(1). 而 resize 中的时间可以均摊到
+    每次操作中, 也是 O(1) 的.
     """
 
-    CAPACITYS = [53, 97, 193, 389, 769]  # TODO 增加来源说明
+    CAPACITYS = [53, 97, 193, 389, 769]  # 质数来源: https://planetmath.org/goodhashtableprimes
     UPPER = 10
     LOWER = 2
 
