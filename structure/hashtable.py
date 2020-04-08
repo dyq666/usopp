@@ -44,87 +44,102 @@ class StudentV2:
 class HashTable:
     """哈希表.
 
-    使用链地址法 (separate chaining) 解决哈希冲突 (这里使用 Python 底层
-    的 list 代替链表).
+    使用链地址法 (separate chaining) 解决哈希冲突, 其中的一些细节如下:
+
+      - 本类使用 Python 底层的 list 代替链表.
+      - 预置一些质数 `cls.CAPACITYS` 用于容量的扩展或缩小.
+      - 当元素数量大于容量的 `cls.UPPER` 倍时, 进行扩容.
+      - 当元素数量小于容量的 `cls.LOWER` 倍时, 进行缩容.
+
+    个人对链地址法的理解: 链地址法可以看作对数据分组, 每个数据只能在组内
+    进行增删改查. 数据通过哈希函数找到自己的组 id, 组和组 id 的关系就是
+    底层数组和索引的关系, 因为这个找组的操作是许多函数的第一步, 所以封装了
+    一个函数 `self._group`. 另外, 改变容量 (`self._resize`) 意味
+    着对所有数据重新分组.
     """
 
-    CAPACITYS = [53, 97, 193, 389, 769]  # 一些质数
-    UPPER = 10  # 当 size 大于 capacity 的 10 倍时, 扩容
-    LOWER = 2  # 当 size 小于 capacity 的 2 倍时, 缩容
+    CAPACITYS = [53, 97, 193, 389, 769]  # TODO 增加来源说明
+    UPPER = 10
+    LOWER = 2
 
     def __init__(self):
         self._size = 0
         self._capacity_idx = 0
-        self._table: List[List[Pair]] = [[] for _ in range(self.CAPACITYS[self._capacity_idx])]
+        self._groups: List[List[Pair]] = [[] for _ in range(self.CAPACITYS[self._capacity_idx])]
 
     def __iter__(self) -> Iterator[Tuple[Any, Any]]:
-        for l in self._table:
-            for pair in l:
+        for group in self._groups:
+            for pair in group:
                 yield pair.key, pair.value
 
     def __len__(self) -> int:
         return self._size
 
     def __contains__(self, key: Any) -> bool:
-        l = self._table[self._hash(key)]
-        return Pair(key, None) in l
+        group = self._group(key)
+        return Pair(key, None) in group
 
     def __setitem__(self, key: Any, value: Any):
-        l = self._table[self._hash(key)]
+        group = self._group(key)
 
         try:
-            idx = l.index(Pair(key, None))
+            idx = group.index(Pair(key, None))
         except ValueError:
             # 不存在, 新增.
-            l.append(Pair(key, value))
+            group.append(Pair(key, value))
             self._size += 1
             if len(self) > self._capacity * self.UPPER:
-                self._resize(True)
+                self._resize(is_increase=True)
         else:
             # 已经存在, 更新旧值.
-            l[idx] = Pair(key, value)
+            group[idx] = Pair(key, value)
 
     def __getitem__(self, key: Any) -> Any:
         """如果不存在 `key`, 会抛出 KeyError."""
-        l = self._table[self._hash(key)]
+        group = self._group(key)
         try:
-            idx = l.index(Pair(key, None))
+            idx = group.index(Pair(key, None))
         except ValueError:
             raise KeyError
         else:
-            return l[idx].value
+            return group[idx].value
 
     def __delitem__(self, key: Any):
         """如果不存在 `key`, 会抛出 KeyError."""
-        l = self._table[self._hash(key)]
+        group = self._group(key)
 
         try:
-            l.remove(Pair(key, None))
+            group.remove(Pair(key, None))
         except ValueError:
             raise KeyError
         else:
             self._size -= 1
             if len(self) < self._capacity * self.LOWER:
-                self._resize(False)
+                self._resize(is_increase=False)
 
     @property
     def _capacity(self) -> int:
         return self.CAPACITYS[self._capacity_idx]
 
     def _hash(self, key: Any, capacity: Optional[int] = None) -> int:
+        """计算哈希值."""
         capacity = self._capacity if capacity is None else capacity
         return abs(hash(key)) % capacity
 
+    def _group(self, key: Any) -> list:
+        return self._groups[self._hash(key)]
+
     def _resize(self, is_increase: bool):
         new_capacity_idx = self._capacity_idx + (1 if is_increase else -1)
-        if new_capacity_idx < 0 or new_capacity_idx >= len(self.CAPACITYS):
+        if not (0 <= new_capacity_idx < len(self.CAPACITYS)):
             return
 
-        self._capacity_idx = new_capacity_idx
-        new_capacity = self.CAPACITYS[self._capacity_idx]
-        new_table = [[] for _ in range(new_capacity)]
-
+        new_capacity = self.CAPACITYS[new_capacity_idx]
+        new_groups = [[] for _ in range(new_capacity)]
         for k, v in self:
-            list_ = new_table[self._hash(k, new_capacity)]
-            list_.append(Pair(k, v))
-        self._table = new_table
+            group = new_groups[self._hash(k, new_capacity)]
+            group.append(Pair(k, v))
+
+        self._groups = new_groups
+        self._capacity_idx = new_capacity_idx
+

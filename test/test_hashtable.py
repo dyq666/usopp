@@ -42,6 +42,7 @@ class TestHashTable:
         assert len(ht) == 0
         assert ht._capacity == HashTable.CAPACITYS[0]
 
+        # 扩容测试
         for i in range(len(HashTable.CAPACITYS)):
             for _ in range(HashTable.CAPACITYS[i] * 3 + 1):
                 num = next(counter)
@@ -51,6 +52,8 @@ class TestHashTable:
                 assert ht._capacity == HashTable.CAPACITYS[i]
             else:
                 assert ht._capacity == HashTable.CAPACITYS[i + 1]
+
+        # TODO 缩容测试
 
 
 def test_student():
