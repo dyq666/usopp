@@ -2,9 +2,9 @@ __all__ = (
     'HashTable',
 )
 
-from typing import Any, Iterator, Optional, Tuple
+from typing import Any, List, Iterator, Optional, Tuple
 
-from .tree import BSTDict
+from .util import Pair
 
 
 class StudentV1:
@@ -44,12 +44,10 @@ class StudentV2:
 class HashTable:
     """哈希表.
 
-    使用链地址法 (separate chaining) 解决哈希冲突.
-
-    哈希表中每一个节点都是一个二分搜索树.
+    使用链地址法 (separate chaining) 解决哈希冲突 (这里使用 Python 底层
+    的 list 代替链表).
     """
 
-    DICT_CLS = BSTDict
     CAPACITYS = [53, 97, 193, 389, 769]  # 一些质数
     UPPER = 10  # 当 size 大于 capacity 的 10 倍时, 扩容
     LOWER = 2  # 当 size 小于 capacity 的 2 倍时, 缩容
@@ -57,38 +55,57 @@ class HashTable:
     def __init__(self):
         self._size = 0
         self._capacity_idx = 0
-        self._dicts = [self.DICT_CLS() for _ in range(self.CAPACITYS[self._capacity_idx])]
+        self._table: List[List[Pair]] = [[] for _ in range(self.CAPACITYS[self._capacity_idx])]
 
     def __iter__(self) -> Iterator[Tuple[Any, Any]]:
-        for dict_ in self._dicts:
-            yield from dict_
+        for l in self._table:
+            for pair in l:
+                yield pair.key, pair.value
 
     def __len__(self) -> int:
         return self._size
 
     def __contains__(self, key: Any) -> bool:
-        return key in self._dicts[self._hash(key)]
+        l = self._table[self._hash(key)]
+        return Pair(key, None) in l
 
     def __setitem__(self, key: Any, value: Any):
-        dict_ = self._dicts[self._hash(key)]
+        l = self._table[self._hash(key)]
 
-        if key not in dict_:
-            dict_[key] = value
+        try:
+            idx = l.index(Pair(key, None))
+        except ValueError:
+            # 不存在, 新增.
+            l.append(Pair(key, value))
             self._size += 1
             if len(self) > self._capacity * self.UPPER:
                 self._resize(True)
-        # 如果已经存在的话, 更新值
         else:
-            dict_[key] = value
+            # 已经存在, 更新旧值.
+            l[idx] = Pair(key, value)
 
     def __getitem__(self, key: Any) -> Any:
-        return self._dicts[self._hash(key)][key]
+        """如果不存在 `key`, 会抛出 KeyError."""
+        l = self._table[self._hash(key)]
+        try:
+            idx = l.index(Pair(key, None))
+        except ValueError:
+            raise KeyError
+        else:
+            return l[idx].value
 
     def __delitem__(self, key: Any):
-        del self._dicts[self._hash(key)][key]
-        self._size -= 1
-        if len(self) < self._capacity * self.LOWER:
-            self._resize(False)
+        """如果不存在 `key`, 会抛出 KeyError."""
+        l = self._table[self._hash(key)]
+
+        try:
+            l.remove(Pair(key, None))
+        except ValueError:
+            raise KeyError
+        else:
+            self._size -= 1
+            if len(self) < self._capacity * self.LOWER:
+                self._resize(False)
 
     @property
     def _capacity(self) -> int:
@@ -105,9 +122,9 @@ class HashTable:
 
         self._capacity_idx = new_capacity_idx
         new_capacity = self.CAPACITYS[self._capacity_idx]
-        new_dicts = [self.DICT_CLS() for _ in range(new_capacity)]
+        new_table = [[] for _ in range(new_capacity)]
 
         for k, v in self:
-            dict_ = new_dicts[self._hash(k, new_capacity)]
-            dict_[k] = v
-        self._dicts = new_dicts
+            list_ = new_table[self._hash(k, new_capacity)]
+            list_.append(Pair(k, v))
+        self._table = new_table

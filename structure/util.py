@@ -16,6 +16,14 @@ class Pair:
         self.key = key
         self.value = value
 
+    def __repr__(self):
+        return (
+            f'<{self.__class__.__name__}'
+            f' key={self.key!r}'
+            f' value={self.value!r}'
+            f'>'
+        )
+
     def __eq__(self, other: Any):
         if not isinstance(other, self.__class__):
             return NotImplemented
