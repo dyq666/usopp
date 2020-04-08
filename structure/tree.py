@@ -435,11 +435,7 @@ class BST:
         return root
 
     def get(self, key: Any, default: Any = None) -> Any:
-        """返回值为 `key` 的节点的值, 如果没有则返回 `default`.
-
-        虽然看起来这个函数比较奇怪, 但当 `key` 是一个可比较对象时, 就有意义了,
-        例如当 `key` 是下面用于字典的类 `Pair`.
-        """
+        """返回值为 `key` 的节点的值, 如果没有则返回 `default`."""
         geted = self._root
         while geted:
             if key == geted.key:

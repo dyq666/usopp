@@ -4,7 +4,7 @@ __all__ = (
 
 from typing import Any, List, Iterator, Optional, Tuple
 
-from .util import Pair
+from .util import HashPair
 
 
 class StudentV1:
@@ -65,7 +65,7 @@ class HashTable:
     def __init__(self):
         self._size = 0
         self._capacity_idx = 0
-        self._groups: List[List[Pair]] = [[] for _ in range(self.CAPACITYS[self._capacity_idx])]
+        self._groups: List[List[HashPair]] = [[] for _ in range(self.CAPACITYS[self._capacity_idx])]
 
     def __iter__(self) -> Iterator[Tuple[Any, Any]]:
         for group in self._groups:
@@ -76,29 +76,28 @@ class HashTable:
         return self._size
 
     def __contains__(self, key: Any) -> bool:
-        group = self._group(key)
-        return Pair(key, None) in group
+        return HashPair(key, None) in self._group(key)
 
     def __setitem__(self, key: Any, value: Any):
         group = self._group(key)
 
         try:
-            idx = group.index(Pair(key, None))
+            idx = group.index(HashPair(key, None))
         except ValueError:
             # 不存在, 新增.
-            group.append(Pair(key, value))
+            group.append(HashPair(key, value))
             self._size += 1
             if len(self) > self._capacity * self.UPPER:
                 self._resize(is_increase=True)
         else:
             # 已经存在, 更新旧值.
-            group[idx] = Pair(key, value)
+            group[idx] = HashPair(key, value)
 
     def __getitem__(self, key: Any) -> Any:
         """如果不存在 `key`, 会抛出 KeyError."""
         group = self._group(key)
         try:
-            idx = group.index(Pair(key, None))
+            idx = group.index(HashPair(key, None))
         except ValueError:
             raise KeyError
         else:
@@ -106,10 +105,8 @@ class HashTable:
 
     def __delitem__(self, key: Any):
         """如果不存在 `key`, 会抛出 KeyError."""
-        group = self._group(key)
-
         try:
-            group.remove(Pair(key, None))
+            self._group(key).remove(HashPair(key, None))
         except ValueError:
             raise KeyError
         else:
@@ -138,7 +135,7 @@ class HashTable:
         new_groups = [[] for _ in range(new_capacity)]
         for k, v in self:
             group = new_groups[self._hash(k, new_capacity)]
-            group.append(Pair(k, v))
+            group.append(HashPair(k, v))
 
         self._groups = new_groups
         self._capacity_idx = new_capacity_idx

@@ -1,16 +1,15 @@
 __all__ = (
-    'Pair', 'check_index', 'no_value',
+    'HashPair', 'check_index', 'no_value',
     'not_empty', 'size_change',
 )
 
-from functools import total_ordering, wraps
+from functools import wraps
 from typing import Any, Sized
 
 no_value = object()
 
 
-@total_ordering
-class Pair:
+class HashPair:
 
     def __init__(self, key: Any, value: Any):
         self.key = key
@@ -28,11 +27,6 @@ class Pair:
         if not isinstance(other, self.__class__):
             return NotImplemented
         return self.key == other.key
-
-    def __gt__(self, other: Any):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return self.key > other.key
 
 
 def check_index(offset: int = 0) -> callable:

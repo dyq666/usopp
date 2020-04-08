@@ -35,6 +35,8 @@ class TestHashTable:
         # 删除元素期间缩容一次
         assert ht._capacity == HashTable.CAPACITYS[0]
 
+        # TODO 更新测试
+
     def test_resize(self):
         ht = MockHashTable()
         counter = count()
