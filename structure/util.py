@@ -6,6 +6,8 @@ __all__ = (
 from functools import total_ordering, wraps
 from typing import Any, Sized
 
+from .typing_ import Comparable, Equable
+
 no_value = object()
 
 
@@ -13,7 +15,7 @@ no_value = object()
 class ComparablePair:
     """使用树结构实现字典的辅助结构."""
 
-    def __init__(self, key: Any, value: Any):
+    def __init__(self, key: Comparable, value: Any):
         self.key = key
         self.value = value
 
@@ -37,12 +39,9 @@ class ComparablePair:
 
 
 class EquablePair:
-    """使用哈希表实现字典的辅助结构.
+    """使用哈希表实现字典的辅助结构."""
 
-    和 `ComparePair` 不同, 哈希表只需要检查是否相等.
-    """
-
-    def __init__(self, key: Any, value: Any):
+    def __init__(self, key: Equable, value: Any):
         self.key = key
         self.value = value
 
