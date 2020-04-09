@@ -7,40 +7,6 @@ from typing import Any, List, Iterator, Tuple
 from .util import HashPair
 
 
-class StudentV1:
-
-    def __init__(self, grade: int, class_: int, name: str):
-        self.grade = grade
-        self.class_ = class_
-        self.name = name
-
-
-class StudentV2:
-
-    def __init__(self, grade: int, class_: int, name: str):
-        self.grade = grade
-        self.class_ = class_
-        self.name = name
-
-    def __eq__(self, other: Any) -> bool:
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-        return (
-            self.grade == other.grade
-            and self.class_ == other.class_
-            and self.name == other.name
-        )
-
-    def __hash__(self) -> int:
-        # hash = self.grade * B^2 + self.class_ * B^1 + hash(self.name) * B^0
-        # hash = (self.grade * B + self.class_) * B + hash(self.name)
-        val = 0
-        for attr in (self.grade, self.class_, hash(self.name)):
-            # B 实际上可以是任意值, 这里选用 B = 26.
-            val = val * 26 + attr
-        return val
-
-
 class HashTable:
     """哈希表.
 
@@ -64,6 +30,31 @@ class HashTable:
     为什么要模一个质数 ? 首先我们希望哈希值尽可能分布均匀, 越均匀哈希冲突越少.
     如果数据均匀分布, 那么模任意一个数得到的哈希值都是均匀分布的. 如果数据分布
     不均匀, 那么通常模一个质数可以使哈希值分布更均匀.
+
+    如何将数据转换成整数 ?
+      - 浮点数. 浮点数在底层是 32 位 / 64 位的大小, 我们直接将这些位看成 int 即可.
+      - 字符串. 字符串不能像浮点数一样, 直接把底层的大小看成 int, 因为字符串是动态数据,
+               底层大小不确定, 而且很可能超出 int 可承受的范围, 因而需要使用其他转换
+               方式. 假设字符串中只有 26 个小写字母, 那么可以将字符串看成 26 进制:
+                 ```
+                 对于一个 10 进制的数来说, 134 = 1 * 10 ^ 2 + 3 * 10 ^ 1 + 4 * 10 ^ 0.
+                 因而, 对于一个 26 进制的数来说, ice = 9 * 26 ^ 2 + 3 * 26 ^ 1 + 5 * 26 ^ 0.
+                 ```
+               那么, 如果字符串中有 B 种字符, 那么可以将字符串看成 B 进制, 此时 ice
+               就不是在 26 进制下的一个整数了, 而是 B 进制下的一个整数:
+                 ```
+                 ice = 9 * B ^ 2 + 3 * B ^ 1 + 5 * 26 ^ 0.
+                 因为幂运算比较慢, 因此可以将公式变为: ice = (9 * B + 3) * B + 5.
+                 ```
+               另外 B 的选择不一定非得和实际种类相同, 可以根据实际情况调整.
+      - 其他类型. 例如有个 Student 类型, 属性有学号 (int), 评分 (float), 姓名 (float).
+                由于学号不可能重复, 因而我们可以直接用学号作为此类的哈希值. 另外更通用的做法
+                是, 将所有属性组合起来转成一个哈希值, 我们先将所有类型按照上述规则转成 int.
+                然后按照字符串中的做法选择一个进制 B, 最终哈希值就等于:
+                  ```
+                  hash = self.id * B ^ 2 + hash(self.float) * B ^ 1 + hash(self.name) * B ^ 0.
+                  ```
+                总结, 尽可能将自定义类型转成均匀分布的 int.
     """
 
     CAPACITYS = [53, 97, 193, 389, 769]  # 质数来源: https://planetmath.org/goodhashtableprimes
