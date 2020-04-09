@@ -64,7 +64,7 @@ class HashTable:
     def __init__(self):
         self._size = 0
         self._capacity_idx = 0
-        self._groups: List[List[HashPair]] = [[] for _ in range(self.CAPACITYS[self._capacity_idx])]
+        self._groups: List[List[HashPair]] = [[] for _ in range(self._capacity)]
 
     def __iter__(self) -> Iterator[Tuple[Any, Any]]:
         for group in self._groups:

@@ -13,33 +13,42 @@ class TestHashTable:
 
     def test_basic(self):
         ht = MockHashTable()
-        test_size = int(ht.CAPACITYS[0] * 3.11)
+        # 乘以 1.1 的目的是保证增加和删除期间分别修改一次容量
+        test_size = int(ht.CAPACITYS[0] * ht.UPPER * 1.1)
 
         # 测试添加元素
         for i in range(test_size):
-            ht.add(i, str(i))
+            k, v = i, str(i)
+            ht.add(k, v)
             assert len(ht) == i + 1
             assert set(ht) == {(j, str(j)) for j in range(i + 1)}
-            assert i in ht
-            assert ht.get(i) == str(i)
+            assert k in ht
+            assert ht.get(k) == v
+        # 增加元素期间扩容一次
+        assert ht._capacity == ht.CAPACITYS[1]
 
         # 测试删除元素
         for i in range(test_size):
-            ht.remove(i)
+            k, v = i, str(i)
+            ht.remove(k)
             assert len(ht) == test_size - (i + 1)
             assert set(ht) == {(j, str(j)) for j in range(i + 1, test_size)}
-            assert i not in ht
+            assert k not in ht
             with pytest.raises(KeyError):
-                assert ht.get(i) == str(i)
+                ht.get(k)
             with pytest.raises(KeyError):
-                ht.remove(i)
+                ht.remove(k)
+        # 删除元素期间缩容一次
+        assert ht._capacity == ht.CAPACITYS[0]
 
         # 测试更新元素
         ht.add(2, 3)
         ht.add('2', 3)
         assert ht.get(2) == 3
+        assert ht.get('2') == 3
         ht.add(2, 4)
         assert ht.get(2) == 4
+        assert ht.get('2') == 3
 
     def test_resize(self):
         ht = MockHashTable()
