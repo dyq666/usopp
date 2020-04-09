@@ -5,7 +5,7 @@ __all__ = (
 from typing import Any, List, Iterator, Tuple
 
 from .typing_ import Hashable
-from .util import HashPair
+from .util import EquablePair
 
 
 class HashTable:
@@ -65,7 +65,7 @@ class HashTable:
     def __init__(self):
         self._size = 0
         self._capacity_idx = 0
-        self._groups: List[List[HashPair]] = [[] for _ in range(self._capacity)]
+        self._groups: List[List[EquablePair]] = [[] for _ in range(self._capacity)]
 
     def __iter__(self) -> Iterator[Tuple[Hashable, Any]]:
         for group in self._groups:
@@ -76,28 +76,28 @@ class HashTable:
         return self._size
 
     def __contains__(self, key: Hashable) -> bool:
-        return HashPair(key, None) in self._group(key)
+        return EquablePair(key, None) in self._group(key)
 
     def add(self, key: Hashable, value: Any):
         group = self._group(key)
 
         try:
-            idx = group.index(HashPair(key, None))
+            idx = group.index(EquablePair(key, None))
         except ValueError:
             # 不存在, 新增.
-            group.append(HashPair(key, value))
+            group.append(EquablePair(key, value))
             self._size += 1
             if len(self) > self._capacity * self.UPPER:
                 self._resize(is_increase=True)
         else:
             # 已经存在, 更新旧值.
-            group[idx] = HashPair(key, value)
+            group[idx] = EquablePair(key, value)
 
     def get(self, key: Hashable) -> Any:
         """如果 `key` 不存在, 会抛出 KeyError."""
         group = self._group(key)
         try:
-            idx = group.index(HashPair(key, None))
+            idx = group.index(EquablePair(key, None))
         except ValueError:
             raise KeyError
         else:
@@ -106,7 +106,7 @@ class HashTable:
     def remove(self, key: Hashable):
         """如果 `key` 不存在, 会抛出 KeyError."""
         try:
-            self._group(key).remove(HashPair(key, None))
+            self._group(key).remove(EquablePair(key, None))
         except ValueError:
             raise KeyError
         else:
@@ -140,5 +140,5 @@ class HashTable:
         new_groups = [[] for _ in range(self._capacity)]
         for k, v in self:
             group = new_groups[self._hash(k)]
-            group.append(HashPair(k, v))
+            group.append(EquablePair(k, v))
         self._groups = new_groups

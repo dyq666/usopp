@@ -1,5 +1,5 @@
 __all__ = (
-    'ComparePair', 'HashPair', 'check_index', 'no_value',
+    'ComparablePair', 'EquablePair', 'check_index', 'no_value',
     'not_empty', 'size_change',
 )
 
@@ -10,7 +10,7 @@ no_value = object()
 
 
 @total_ordering
-class ComparePair:
+class ComparablePair:
     """使用树结构实现字典的辅助结构."""
 
     def __init__(self, key: Any, value: Any):
@@ -36,7 +36,7 @@ class ComparePair:
         return self.key > other.key
 
 
-class HashPair:
+class EquablePair:
     """使用哈希表实现字典的辅助结构.
 
     和 `ComparePair` 不同, 哈希表只需要检查是否相等.
