@@ -4,6 +4,7 @@ __all__ = (
 
 from typing import Any, List, Iterator, Tuple
 
+from .typing_ import Hashable
 from .util import HashPair
 
 
@@ -66,7 +67,7 @@ class HashTable:
         self._capacity_idx = 0
         self._groups: List[List[HashPair]] = [[] for _ in range(self._capacity)]
 
-    def __iter__(self) -> Iterator[Tuple[Any, Any]]:
+    def __iter__(self) -> Iterator[Tuple[Hashable, Any]]:
         for group in self._groups:
             for pair in group:
                 yield pair.key, pair.value
@@ -74,10 +75,10 @@ class HashTable:
     def __len__(self) -> int:
         return self._size
 
-    def __contains__(self, key: Any) -> bool:
+    def __contains__(self, key: Hashable) -> bool:
         return HashPair(key, None) in self._group(key)
 
-    def add(self, key: Any, value: Any):
+    def add(self, key: Hashable, value: Any):
         group = self._group(key)
 
         try:
@@ -92,7 +93,7 @@ class HashTable:
             # 已经存在, 更新旧值.
             group[idx] = HashPair(key, value)
 
-    def get(self, key: Any) -> Any:
+    def get(self, key: Hashable) -> Any:
         """如果 `key` 不存在, 会抛出 KeyError."""
         group = self._group(key)
         try:
@@ -102,7 +103,7 @@ class HashTable:
         else:
             return group[idx].value
 
-    def remove(self, key: Any):
+    def remove(self, key: Hashable):
         """如果 `key` 不存在, 会抛出 KeyError."""
         try:
             self._group(key).remove(HashPair(key, None))
@@ -117,11 +118,11 @@ class HashTable:
     def _capacity(self) -> int:
         return self.CAPACITYS[self._capacity_idx]
 
-    def _hash(self, key: Any) -> int:
+    def _hash(self, key: Hashable) -> int:
         """计算哈希值."""
         return abs(hash(key)) % self._capacity
 
-    def _group(self, key: Any) -> list:
+    def _group(self, key: Hashable) -> list:
         return self._groups[self._hash(key)]
 
     def _resize(self, is_increase: bool):
