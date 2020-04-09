@@ -13,7 +13,7 @@ from .array import (
 )
 from .avl import AVL
 from .linked_list import LinkedListV1, LinkedListV2
-from .hashtable import HashTable
+from .hash_table import HashTable
 from .heap import MaxHeap
 from .segment_tree import SegmentTree, SegmentTreeWithNode
 from .tree import BST, BSTDict, BTNode, BTUtil
