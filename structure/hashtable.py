@@ -2,7 +2,7 @@ __all__ = (
     'HashTable',
 )
 
-from typing import Any, List, Iterator, Optional, Tuple
+from typing import Any, List, Iterator, Tuple
 
 from .util import HashPair
 
@@ -82,7 +82,7 @@ class HashTable:
     def __contains__(self, key: Any) -> bool:
         return HashPair(key, None) in self._group(key)
 
-    def add(self, key: Any, value: Any = 0):
+    def add(self, key: Any, value: Any):
         group = self._group(key)
 
         try:
@@ -98,7 +98,7 @@ class HashTable:
             group[idx] = HashPair(key, value)
 
     def get(self, key: Any) -> Any:
-        """如果不存在 `key`, 会抛出 KeyError."""
+        """如果 `key` 不存在, 会抛出 KeyError."""
         group = self._group(key)
         try:
             idx = group.index(HashPair(key, None))
@@ -108,7 +108,7 @@ class HashTable:
             return group[idx].value
 
     def remove(self, key: Any):
-        """如果不存在 `key`, 会抛出 KeyError."""
+        """如果 `key` 不存在, 会抛出 KeyError."""
         try:
             self._group(key).remove(HashPair(key, None))
         except ValueError:
@@ -122,10 +122,9 @@ class HashTable:
     def _capacity(self) -> int:
         return self.CAPACITYS[self._capacity_idx]
 
-    def _hash(self, key: Any, capacity: Optional[int] = None) -> int:
+    def _hash(self, key: Any) -> int:
         """计算哈希值."""
-        capacity = self._capacity if capacity is None else capacity
-        return abs(hash(key)) % capacity
+        return abs(hash(key)) % self._capacity
 
     def _group(self, key: Any) -> list:
         return self._groups[self._hash(key)]
@@ -139,11 +138,11 @@ class HashTable:
         if not (0 <= new_capacity_idx < len(self.CAPACITYS)):
             return
 
-        new_capacity = self.CAPACITYS[new_capacity_idx]
-        new_groups = [[] for _ in range(new_capacity)]
-        for k, v in self:
-            group = new_groups[self._hash(k, new_capacity)]
-            group.append(HashPair(k, v))
-
-        self._groups = new_groups
+        # 注意这里必须先更新容量, 下面计算哈希值 `self._hash` 和
+        # 计算容量 `self._capacity` 都会依赖此属性.
         self._capacity_idx = new_capacity_idx
+        new_groups = [[] for _ in range(self._capacity)]
+        for k, v in self:
+            group = new_groups[self._hash(k)]
+            group.append(HashPair(k, v))
+        self._groups = new_groups

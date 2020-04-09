@@ -45,10 +45,11 @@ class TestHashTable:
     def test_resize(self):
         ht = MockHashTable()
 
+        # 初始容量
         assert len(ht) == 0
         assert ht._capacity == ht.CAPACITYS[0]
 
-        # 扩容测试
+        # 测试容量是否正确扩展.
         asc_counter = count()
         for i in range(len(ht.CAPACITYS)):
             # len(self) = self._capacity * self.UPPER + 1 时就会扩容.
@@ -61,7 +62,7 @@ class TestHashTable:
             else:
                 assert ht._capacity == ht.CAPACITYS[i + 1]
 
-        # 缩容测试
+        # 测试容量是否正确缩小.
         desc_counter = count(start=next(asc_counter) - 1, step=-1)
         for i in range(len(ht.CAPACITYS) - 1, -1, -1):
             # len(self) = self._capacity * self.LOWER - 1 时就会缩容.
