@@ -2,13 +2,13 @@ __all__ = (
     'HashTable',
 )
 
-from typing import Any, List, Iterator, Tuple
+from typing import Generic, List, Iterator, Tuple
 
-from .typing_ import Hashable
+from .typing_ import Hashable, T
 from .util import EquablePair
 
 
-class HashTable:
+class HashTable(Generic[T]):
     """哈希表.
 
     使用链地址法 (separate chaining) 解决哈希冲突, 其中的一些细节如下:
@@ -67,7 +67,7 @@ class HashTable:
         self._capacity_idx = 0
         self._groups: List[List[EquablePair]] = [[] for _ in range(self._capacity)]
 
-    def __iter__(self) -> Iterator[Tuple[Hashable, Any]]:
+    def __iter__(self) -> Iterator[Tuple[Hashable, T]]:
         for group in self._groups:
             for pair in group:
                 yield pair.key, pair.value
@@ -78,7 +78,7 @@ class HashTable:
     def __contains__(self, key: Hashable) -> bool:
         return EquablePair(key, None) in self._group(key)
 
-    def add(self, key: Hashable, value: Any):
+    def add(self, key: Hashable, value: T):
         group = self._group(key)
 
         try:
@@ -93,7 +93,7 @@ class HashTable:
             # 已经存在, 更新旧值.
             group[idx] = EquablePair(key, value)
 
-    def get(self, key: Hashable) -> Any:
+    def get(self, key: Hashable) -> T:
         """如果 `key` 不存在, 会抛出 KeyError."""
         group = self._group(key)
         try:

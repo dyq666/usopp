@@ -1,8 +1,10 @@
 __all__ = (
-    'Comparable', 'Equable', 'Hashable',
+    'Comparable', 'Equable', 'Hashable', 'T',
 )
 
-from typing import Any, Protocol
+from typing import Any, Protocol, TypeVar
+
+T = TypeVar('T')
 
 
 class Comparable(Protocol):
