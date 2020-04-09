@@ -33,3 +33,8 @@
 链表:
   - **LeetCode 92, 翻转链表. 强烈推荐, 这是一道纯链表的题目!**
   - LeetCode 141, 检查循环链表.
+
+TODO:
+  - 实现开放地址法的哈希表, 
+    [原理说明](https://www.geeksforgeeks.org/hashing-set-3-open-addressing/), 
+    [参考实现](https://gist.github.com/EntilZha/5397c02dc6be389c85d8)
