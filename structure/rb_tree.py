@@ -2,7 +2,8 @@ __all__ = (
     'Tree23',
 )
 
-from typing import Generator, Iterator, List, Optional
+import bisect
+from typing import Generator, Iterable, Iterator, List, Optional
 
 from .typing_ import Comparable
 
@@ -14,6 +15,13 @@ class Node23:
                  children: Optional[List['Node23']] = None):
         self.keys = [] if keys is None else keys
         self.children = [] if children is None else children
+
+    @property
+    def isleaf(self) -> bool:
+        return not self.children
+
+    def add(self, key: Comparable):
+        bisect.insort(self.keys, key)
 
     def preorder(self) -> Generator['Node23', None, None]:
         """前序遍历."""
@@ -78,7 +86,20 @@ class Tree23:
             self._root = Node23([key])
             self._size += 1
         else:
-            self._add(self._root, key)
+            self._root = self._add(self._root, key)
 
-    def _add(self, root: Node23, key: Comparable):
-        pass
+    @classmethod
+    def from_iterable(cls, keys: Iterable[Comparable]) -> 'Tree23':
+        tree = cls()
+        for k in keys:
+            tree.add(k)
+        return tree
+
+    def _add(self, root: Node23, key: Comparable) -> Node23:
+        if root.isleaf:
+            if len(root.keys) == 1:
+                # TODO 这个查询操作是 O(N) 的, 可能不太好.
+                if key not in root.keys:
+                    root.add(key)
+                    self._size += 1
+                return root
