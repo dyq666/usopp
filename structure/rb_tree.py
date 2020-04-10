@@ -29,7 +29,7 @@ class Node23:
         while nodes:
             n = nodes.pop()
             yield n
-            nodes.extend(reversed(self.children))
+            nodes.extend(reversed(n.children))
 
 
 class Tree23:
@@ -97,9 +97,20 @@ class Tree23:
 
     def _add(self, root: Node23, key: Comparable) -> Node23:
         if root.isleaf:
-            if len(root.keys) == 1:
-                # TODO 这个查询操作是 O(N) 的, 可能不太好.
-                if key not in root.keys:
-                    root.add(key)
-                    self._size += 1
+            # TODO 如果将来做成 k/v 的模式, 这里要更新
+            # TODO 这个查询操作是 O(N) 的, 可能不太好.
+            if key in root.keys:
                 return root
+
+            root.add(key)
+            self._size += 1
+            # 1,2    ->   1,2
+            if len(root.keys) == 2:
+                return root
+            #               2
+            # 1,2,3  ->   1   3
+            if len(root.keys) == 3:
+                return Node23([root.keys[1]], children=[
+                    Node23([root.keys[0]]),
+                    Node23([root.keys[2]]),
+                ])
