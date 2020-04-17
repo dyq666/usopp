@@ -114,3 +114,25 @@ class Tree23:
                     Node23([root.keys[0]]),
                     Node23([root.keys[2]]),
                 ])
+
+    def _split(self, root: Node23):
+        """
+
+        应该一个节点中有三个 key 只有下面两种情况.
+        # TODO 需要确认这个是否只有这两种情况.
+
+        ```
+          2,4,6    ->     4
+                        2   6
+
+                          4
+          2,4,6    ->   2   6
+         1 3 5 7       1 3 5 7
+        ```
+        """
+        children = root.children
+        keys = root.keys
+        if children:
+            pass
+        else:
+            pass
