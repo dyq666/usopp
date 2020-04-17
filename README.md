@@ -41,6 +41,8 @@
   - LeetCode 387, 寻找第一个只出现一次的字符. 这是一道帮助理解哈希函数的题目.
 
 TODO:
+  - 实现 23 树添加操作
+  - 实现红黑树添加操作
   - 实现开放地址法的哈希表, 
     [原理说明](https://www.geeksforgeeks.org/hashing-set-3-open-addressing/), 
     [参考实现](https://gist.github.com/EntilZha/5397c02dc6be389c85d8)
